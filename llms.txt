@@ -1,0 +1,146 @@
+# Accessibility Bloom · El florecer de la accesibilidad
+
+> Lección magistral interactiva y objeto de arte digital sobre el Árbol de
+> Accesibilidad, pintada solo con HTML semántico, CSS y Web Audio API.
+> Autora: María Rogles. 2026. Licencia CC BY-NC-SA 4.0.
+> Idioma: español. Duración estimada del recorrido: 25 minutos.
+
+## Qué es
+
+Una enredadera geométrica sobre lienzo de lino en la que la estructura del
+documento ES el cuadro: el <main> es el tronco, cada <section> una rama y
+cada elemento interactivo una flor que florece cuando su estado es cierto.
+No hay imágenes ni SVG: todo son formas de CSS. La obra enseña, mostrándolo
+en vivo, cómo el navegador construye el Árbol de Accesibilidad y qué lee de
+él la tecnología de apoyo. No es un escáner de fallos: es un cuaderno de
+patrones explicados, con su razón y su impacto en la experiencia.
+
+## La gramática de la obra (una forma, un color, un timbre)
+
+- Círculo azul #0047ab = <button aria-pressed> · onda senoidal
+- Triángulo amarillo #f2b705 = <a href> · onda triangular
+- Cuadrado rojo #d81e3f = <input type="checkbox"> · onda cuadrada
+- Rombo violeta #4b2e83 = <input type="radio"> · seno agudo
+- Barra cian #0f7f8c = campo de texto · onda de sierra
+- Arco de corteza ocre #8a5a00 = encabezados, tronco y ramas · silencio
+- Gris marchito #8d857a = <div> sin semántica · mudo
+
+Las tres primeras correspondencias son de Kandinsky; el rombo, la barra y el
+arco son extensión de esta obra. El ocre no entra nunca en la flor: es el
+color de la savia.
+
+## La geometría del mandala (sin una sola rotación)
+
+Veinte círculos del mismo radio, 12,6: diez generadores con el centro en el
+radio 30,2 y paso de 36°, y diez más centrados justo en los cruces externos
+de los primeros (37,19), con lo que la malla se cierra sobre sí misma —la
+trama de la Flor de la Vida—. Todos se dibujan enteros y a la vista. Cada
+pétalo es la intersección real de dos generadores vecinos, recortada con las
+dos máscaras circulares de sus centros. Dos vecinos se cortan en 20,26
+(cruce interno: es el radio del aro del corazón, con una cuenta enhebrada en
+cada cruce) y en 37,19 (cruce externo: el centro de la segunda familia). Las
+cinco formas de la gramática van en el hueco vacío que queda sobre la línea
+del centro de cada generador, entre el aro del corazón y la punta interior del
+pétalo menor, dos veces cada una y con simetría exacta de 72°, y cada pétalo lleva el color de la
+forma que hay en el centro del círculo que lo engendra. Hay dos órdenes de pétalos: los grandes, del solape de dos generadores, y los
+menores, del solape de dos círculos de la segunda familia —la lente que queda
+entre dos pétalos grandes, con una punta en el centro del generador donde está
+la forma y otra en 40,54—, rellenos del mismo color rebajado con lino. La
+envolvente de todo es 49,79, trazada con una línea fina de tinta, y en ella se enhebran veinte
+piezas menudas cada 18° —rombos y triángulos alternos en los cinco colores—:
+la orla que hace guirnalda. El latido son dos respiraciones, una por familia de círculos, con el mismo
+periodo y un tercio de ciclo de diferencia, y cada pétalo sigue a los círculos
+que lo engendran: por eso un orden de pétalos parece salir del otro. Mueve los
+centros, así que son los solapes —los pétalos— los que abren y cierran; encima corren un brillo que
+gira pétalo a pétalo y un pulso escalonado de la orla, que no tocan la
+geometría y se paran con el mismo botón. Todas las formas son geometría real:
+el rombo es un rombo, no un cuadrado girado.
+
+## Recorrido (catorce estaciones)
+
+1. La estructura y sus lectores — #structure
+2. La sinestesia de la obra — #synesthesia
+3. Lo que leen las máquinas — #machines
+4. El rol: qué es esto — #role
+5. El nombre: cómo se llama — #name
+6. El estado: cómo está ahora — #state
+7. Relaciones y agrupación — #relations
+8. El foco: por dónde va la atención — #focus
+9. El error: cómo se cuenta lo que falta — #errors
+10. El color: nunca el único canal — #color
+11. Las flores marchitas — #wilted
+12. Patrones de diseño accesible — #patterns
+13. El suelo: lo que aún no es rama — #ground
+14. Las raíces: manifiesto WCAG 2.2 AA — pie de página
+
+## Qué enseña
+
+- La diferencia entre árbol de renderizado y Árbol de Accesibilidad.
+- Rol, nombre y estado: de dónde salen y en qué orden se calculan.
+- Primera regla de ARIA: no usarlo si una etiqueta nativa ya da el rol.
+- Relaciones y agrupación: fieldset/legend, listas, landmarks, encabezados.
+- Orden de foco (el del DOM), foco visible y por qué el tabindex positivo daña.
+- Mensajes de error: aria-describedby, aria-invalid y regiones aria-live.
+- Contraste medido y color como canal nunca único.
+- Antipatrones como espécimen, con el trozo de árbol que generan al lado:
+  el div-botón, el estado solo por color, el revelado solo al hover, el
+  sonido automático, el foco secuestrado, la prisa artificial.
+- Propuestas emergentes: AOM (Accessibility Object Model) y HTML in Canvas.
+
+## Contraste de la paleta contra el lino #f3ead6
+
+- Tinta #17150f — 15,3:1 — texto, líneas, tronco
+- Violeta #4b2e83 — 8,7:1 — forma y texto
+- Azul #0047ab — 7,1:1 — forma, enlaces y texto
+- Ocre #8a5a00 — 5,0:1 — ramas y notas al margen
+- Rojo #d81e3f — 4,2:1 — forma y texto grande (para texto pequeño, #b3132f, 5,8:1)
+- Cian #0f7f8c — 4,0:1 — solo grafismo
+- Amarillo #f2b705 — 1,5:1 — relleno con contorno de tinta; jamás texto
+
+## Contrato de estados (igual en toda la obra)
+
+La flor se abre cuando es verdad que está abierta.
+
+- Reposo: capullo cerrado, a su tamaño pleno.
+- Puntero: el capullo crece y se aclara. No abre: invita.
+- Foco: lo mismo que el puntero, más halo de trazo discontinuo.
+- Estado cierto: floración plena y el aro se rellena del color de la forma
+  (aria-pressed="true", :checked).
+- Desactivado: trazo discontinuo y ningún cambio al puntero.
+- Excepción razonada, el enlace: no guarda estado, así que florece pleno con
+  la atención (puntero o foco); y la flor de la sección actual queda
+  florecida con aria-current, de modo que al pulsar y navegar la floración
+  se ve al llegar. Ninguna flor se encoge al recibir atención: solo crece.
+
+## Datos para agentes
+
+- JSON-LD en la cabecera: VisualArtwork + LearningResource (teaches,
+  accessMode, accessibilityFeature, accessibilitySummary, timeRequired) y
+  BreadcrumbList con las trece estaciones del recorrido.
+- El inspector muestra los niveles reales del árbol y también los nodos de
+  texto (StaticText) de los nodos sin nombre accesible, que es lo que lee la
+  tecnología de apoyo.
+- El Árbol de Accesibilidad se puede descargar en JSON desde la sección
+  «Lo que leen las máquinas»: rol, nombre, origen del nombre, estado e
+  identificador de cada nodo, con la misma poda que aplica el navegador.
+- Región aria-live="polite" con el relato de cada cambio de estado.
+
+## Garantías de accesibilidad
+
+WCAG 2.2 AA. Operable al 100 % con teclado, sin trampas y con foco siempre
+visible. Objetivos de 44x44 px como mínimo. Reflow hasta 400 % de zoom y
+320 px de ancho, sin scroll horizontal. Respeta prefers-reduced-motion,
+prefers-contrast y forced-colors. El sonido solo suena tras una interacción
+y es silenciable de forma persistente. El latido se pausa en el fotograma
+exacto, sin reiniciarse.
+
+## El código
+
+Clases, atributos data-*, identificadores, variables CSS y nombres de archivo
+están en inglés (.mandala, .petal, .branch__arc, --axis-x, data-heartbeat,
+#structure, tree-ax.js). Los comentarios y el contenido visible, en español.
+
+## Uso
+
+Reutilizable citando la autoría, sin fines comerciales y compartiendo con la
+misma licencia (CC BY-NC-SA 4.0).

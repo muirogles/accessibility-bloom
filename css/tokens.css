@@ -1,0 +1,60 @@
+/* ============================================================
+   TOKENS — modo claro: lienzo de lino Kandinsky, tinta negra,
+   formas planas saturadas. Referencia cromática de su etapa
+   Bauhaus sobre soporte claro.
+   ============================================================ */
+:root {
+  /* --- Primitivos --- */
+  --k-linen: #f3ead6;      /* el lino del cuadro */
+  --k-linen-2: #eadfc6;    /* bandas y suelo */
+  --k-surface: #fbf5e7;  /* placas y panel */
+  --ink: #17150f;
+  --ink-soft: #453f33;
+  --line: #17150f;         /* la línea: tronco, ramas, contornos */
+  --k-yellow: #f2b705;
+  --k-red: #d81e3f;
+  --k-blue: #0047ab;
+  --k-green: #4e7c3a;
+  --k-ochre: #8a5a00;
+  --k-cyan: #0f7f8c;
+  --k-violet: #4b2e83;
+  --k-grey: #8d857a;
+  --k-grey-dark: #565048;
+
+  /* --- Semánticos: una forma, un color, una etiqueta --- */
+  --shape-circle: var(--k-blue);       /* <button> */
+  --shape-triangle: var(--k-yellow); /* <a> */
+  --shape-square: var(--k-red);      /* <input type="checkbox"> */
+  --shape-rhombus: var(--k-violet);      /* <input type="radio"> */
+  --shape-bar: var(--k-cyan);         /* <input type="text|email"> */
+  /* Ocre = savia: SOLO tronco, ramas y notas al margen. Nunca en la flor. */
+  --sap: var(--k-ochre);
+  --sprout: var(--k-green);              /* hoja: grafismo (4,1:1) */
+  --sprout-text: #3d6129;               /* el mismo verde para texto (6,0:1) */
+  --link: var(--k-blue);
+  /* El rojo de las formas da 4,2:1: vale para grafismo y texto grande,
+     no para texto pequeño. Para texto, un paso más oscuro (5,8:1). */
+  --red-text: #b3132f;
+  --link-active: var(--red-text);
+  --focus: var(--ink);
+
+  /* --- Geometría compartida: eje del tronco en la retícula --- */
+  --panel-col: clamp(16rem, 21vw, 20rem);
+  --canvas-pad: clamp(0.75rem, 2vw, 2rem);
+  --gap-canvas: clamp(1rem, 2vw, 2rem);
+  --trunk-center: calc(var(--canvas-pad) + (100% - 2 * var(--canvas-pad) - var(--panel-col) - var(--gap-canvas)) / 2);
+
+  /* --- Tipografía y ritmo (rem + clamp para reflow al 400 %) --- */
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Archivo', system-ui, sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Mono', 'Courier New', monospace;
+  --step-0: clamp(0.95rem, 0.9rem + 0.3vw, 1.08rem);
+  --step-1: clamp(1.05rem, 1rem + 0.5vw, 1.3rem);
+  --step-2: clamp(1.2rem, 1.05rem + 0.9vw, 1.55rem);
+  --space-s: clamp(0.5rem, 0.4rem + 0.5vw, 0.8rem);
+  --space-m: clamp(1rem, 0.8rem + 1vw, 1.6rem);
+  --space-l: clamp(2rem, 1.5rem + 2.5vw, 3.4rem);
+
+  /* --- Garantías de accesibilidad --- */
+  --touch: 2.75rem; /* 44 px mínimos */
+}

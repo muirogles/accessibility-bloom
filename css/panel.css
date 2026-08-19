@@ -1,0 +1,127 @@
+/* ============================================================
+   PANEL — inspector tipo DevTools.
+   Mobile-first: vive en un <dialog> modal que abre el botón
+   flotante «Ver árbol». Desde 64rem el dialog se disuelve
+   (display: contents) y el aside queda sticky en su columna.
+   Solo el árbol tiene scroll; la Ficha del nodo queda SIEMPRE
+   visible debajo.
+   ============================================================ */
+
+/* Botón flotante (solo móvil/tablet) */
+.open-panel {
+  position: fixed; right: 1rem; bottom: 1rem; z-index: 55;
+  min-height: var(--touch); min-width: var(--touch);
+  padding: 0.7rem 1.1rem;
+  font-family: var(--font-display); font-weight: 600; font-size: 0.9rem;
+  background: var(--k-blue); color: #ffffff;
+  border: 2px solid var(--line); border-radius: 2rem;
+  cursor: pointer; box-shadow: 0.25rem 0.25rem 0 rgba(23, 21, 15, 0.35);
+}
+.open-panel:hover { background: var(--k-violet); }
+
+/* El dialog modal (móvil) */
+.panel-box {
+  width: min(94vw, 30rem); max-height: 88dvh;
+  margin: auto; padding: 0; border: 0; background: none;
+}
+.panel-box::backdrop { background: rgba(23, 21, 15, 0.55); }
+
+.panel {
+  display: flex; flex-direction: column;
+  max-height: 88dvh;
+  background: var(--k-surface); border: 2px solid var(--line);
+  border-radius: 1.6rem 1.6rem 0 0; /* el arco: aside */
+  padding: 1rem 0.9rem 0.9rem;
+  box-shadow: 0.4rem 0.4rem 0 rgba(23, 21, 15, 0.12);
+}
+.panel__header { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; }
+.panel__title { font-size: 1.02rem; margin: 0 0 0.35rem; color: var(--ink); }
+.panel__close {
+  flex: none; min-height: var(--touch); min-width: var(--touch);
+  font-family: var(--font-body); font-size: 0.8rem; font-weight: 600;
+  border: 2px solid var(--line); background: var(--k-linen); color: var(--ink);
+  padding: 0.3rem 0.7rem; cursor: pointer;
+}
+.panel__close:hover { background: var(--k-yellow); }
+.panel__note { font-size: 0.78rem; color: var(--ink-soft); margin: 0 0 0.55rem; line-height: 1.45; }
+.panel__focus {
+  font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.4;
+  color: var(--ink);
+  background: var(--k-linen); border: 1px solid var(--line);
+  padding: 0.5rem 0.6rem; margin: 0 0 0.55rem;
+}
+.panel__actions { display: flex; gap: 0.5rem; margin: 0.55rem 0; }
+.panel__action {
+  font-family: var(--font-body); font-size: 0.78rem;
+  border: 1.5px solid var(--line); background: var(--k-linen);
+  color: var(--ink); padding: 0.35rem 0.6rem; cursor: pointer; min-height: 2rem;
+}
+.panel__action:hover { background: var(--k-yellow); }
+
+/* Árbol: la ÚNICA zona con scroll del panel */
+.tree {
+  flex: 1 1 auto; min-height: 4rem; overflow: auto;
+  border-block: 1px solid rgba(23, 21, 15, 0.25); padding: 0.35rem 0;
+  overscroll-behavior: contain;
+}
+.tree ul { list-style: none; margin: 0; padding-left: 0.9rem; border-left: 1px dotted rgba(23, 21, 15, 0.35); }
+.tree > ul { padding-left: 0; border-left: 0; }
+.node__row { display: flex; align-items: center; gap: 0.15rem; margin-bottom: 2px; }
+.node__toggle {
+  flex: none; width: 24px; height: 28px;
+  background: none; border: 0; cursor: pointer;
+  font-size: 0.7rem; line-height: 1; color: var(--ink);
+}
+.node__indent { flex: none; width: 24px; }
+.node__sel {
+  display: flex; align-items: center; gap: 0.4rem; flex: 1; min-width: 0; min-height: 28px;
+  text-align: left; background: none; border: 0; font: inherit;
+  font-size: 0.75rem; line-height: 1.35; padding: 0.25rem 0.35rem;
+  cursor: pointer; border-radius: 0.25rem; color: var(--ink);
+}
+.node__sel:hover { background: rgba(242, 183, 5, 0.28); }
+.node__sel[aria-current="true"] { background: var(--k-yellow); }
+.node__role { font-family: var(--font-mono); font-weight: 600; color: var(--k-blue); flex: none; }
+/* El nodo de texto no es un elemento: se pinta en gris y sin negrita para
+   que se distinga de un nodo con rol propio */
+.node--text > .node__row > .node__sel > .node__role { font-weight: 400; color: var(--ink-soft); }
+.node--text > .node__row > .node__sel > .node__name { color: var(--ink); font-style: italic; }
+.node__name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.node__state { font-family: var(--font-mono); color: var(--k-ochre); flex: none; margin-left: auto; padding-left: 0.4rem; }
+.node__sel[aria-current="true"] .node__state { color: #5c3b00; }
+
+/* Ficha del nodo: fija bajo el árbol, nunca dentro del scroll */
+.card { flex: none; border-top: 2px solid var(--line); margin-top: 0.6rem; padding-top: 0.5rem; }
+
+/* Pantallas bajas: compactar lo fijo para que la ficha SIEMPRE quepa,
+   con scroll de rescate en el propio panel como última red */
+@media (max-height: 40rem) {
+  .panel__note { display: none; }
+  .panel__focus { margin-bottom: 0.35rem; }
+  .panel { overflow: auto; }
+  .card__dl { font-size: 0.72rem; }
+}
+.card__title { font-size: 0.92rem; margin: 0 0 0.3rem; color: var(--ink); font-family: var(--font-display); }
+.card__dl {
+  display: grid; grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+  align-items: baseline; gap: 0.3rem 0.6rem;
+  font-size: 0.76rem; line-height: 1.35; margin: 0.3rem 0 0; color: var(--ink-soft);
+}
+.card__dl dt { font-family: var(--font-mono); font-weight: 600; color: var(--ink); }
+.card__dl dd { margin: 0; overflow-wrap: anywhere; }
+
+/* ============================================================
+   ≥ 64rem: el dialog se disuelve y el aside queda sticky
+   ============================================================ */
+@media (min-width: 64rem) {
+  .open-panel { display: none; }
+  .panel-box { display: contents; }
+  .panel-box::backdrop { display: none; }
+  .panel__close { display: none; }
+  .panel {
+    position: sticky; top: 1rem;
+    max-height: min(92vh, 54rem);
+    border-radius: 2.8rem 2.8rem 0 0;
+    padding: 1.4rem 1rem 1rem;
+  }
+}
