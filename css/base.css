@@ -1,0 +1,84 @@
+/* ============================================================
+   BASE — reset, tipografía, foco, utilidades, preferencias
+   (modo claro: tinta negra sobre lienzo de lino)
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--k-linen-2);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: 1.55;
+  overflow-x: clip;
+}
+
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; text-wrap: pretty; }
+p { text-wrap: pretty; }
+
+a { color: var(--link); text-decoration: underline; text-underline-offset: 0.16em; }
+a:hover { color: var(--link-active); }
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: rgba(23, 21, 15, 0.08);
+  padding: 0.05em 0.3em;
+  border-radius: 0.2rem;
+}
+kbd {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  border: 1px solid var(--ink);
+  border-bottom-width: 2px;
+  border-radius: 0.25rem;
+  padding: 0.05em 0.35em;
+  background: var(--k-surface);
+}
+
+/* Solo para lectores de pantalla */
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* Enlaces de salto */
+.skip {
+  position: absolute; left: 1rem; top: -4rem; z-index: 60;
+  background: var(--k-blue); color: #ffffff;
+  padding: 0.75rem 1.25rem; font-weight: 600; text-decoration: none;
+  transition: top 0.15s;
+}
+/* Los dos enlaces de salto se apilan: en 320 px el segundo no puede
+   salirse de la pantalla al recibir el foco (2.4.7 y 1.4.10) */
+.skip:focus { top: 1rem; }
+.skip--2:focus { top: calc(1rem + var(--touch) + 0.4rem); }
+@media (min-width: 48rem) {
+  .skip--2 { left: 24rem; }
+  .skip--2:focus { top: 1rem; }
+}
+
+/* Foco visible: trazo discontinuo, un elemento más del cuadro */
+:focus { outline: none; }
+:focus-visible { outline: 3px dashed var(--focus); outline-offset: 5px; }
+
+/* Preferencias del sistema */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+@media (forced-colors: active) {
+  .flower__petal, .dot, .key__shape, .crown__petal, .seed > * { forced-color-adjust: none; }
+  :focus-visible { outline: 3px solid Highlight; outline-offset: 5px; }
+}
+@media (prefers-contrast: more) {
+  .plate, .panel, .sprout { border-width: 3px !important; }
+  a { text-decoration-thickness: 2px; }
+  body { background: #ffffff; }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "accessibility-bloom",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Obra interactiva accesible: el Árbol de Accesibilidad pintado como una enredadera Kandinsky en HTML y CSS.",
+  "author": "María Rogles",
+  "license": "CC-BY-NC-SA-4.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0"
+  }
+}
