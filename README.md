@@ -181,7 +181,7 @@ más oscuro: `--rojo-texto #b3132f` (5,8:1) y `--brote-texto #3d6129` (6,0:1).
   `LearningResource` —`teaches`, `accessMode`, `accessibilityFeature`,
   `accessibilitySummary`, `timeRequired`— y un `BreadcrumbList` con las
   trece estaciones.
-- **`llms.txt`**: el resumen de la obra en texto plano, con su índice, su
+- **`public/llms.txt`**: el resumen de la obra en texto plano, con su índice, su
   gramática, sus contrastes y sus garantías.
 - **El árbol, exportable**: desde la estación 3 se descarga en JSON el rol,
   el nombre, el origen del nombre y el estado de cada nodo, con la misma
@@ -209,7 +209,8 @@ inspecciona a sí mismo.
 ```
 accessibility-bloom/
 ├── index.html          # la obra
-├── llms.txt            # resumen legible por máquinas
+├── public/
+│   └── llms.txt        # resumen legible por máquinas y archivo publicado
 ├── css/
 │   ├── tokens.css      # paleta y tokens semánticos
 │   ├── base.css        # reset, tipografía, foco, preferencias del sistema
