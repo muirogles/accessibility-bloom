@@ -8,8 +8,6 @@
  *   · The focus order (7): four real buttons in DOM order. «Mover con CSS»
  *     reorders them with the CSS `order` property only: the numbers
  *     (the DOM) stay, so Tab visibly jumps. Nothing else can fail.
- *   · The echo (8) writes what the work's polite live region says, so
- *     the room sees what a screen reader hears.
  *   · The layer (9) is a native <dialog> opened with showModal(): the
  *     rest of the page turns inert, Escape closes it and focus returns
  *     to the button that opened it. No script traps focus.
@@ -89,16 +87,6 @@ function wireFocusOrder({ announce, refresh }) {
   });
 }
 
-function wireEcho() {
-  const live = document.querySelector('[data-announce]');
-  const echo = document.querySelector('[data-echo]');
-  if (!live || !echo) return;
-  new MutationObserver(() => {
-    const text = live.textContent.trim();
-    if (text) echo.textContent = text;
-  }).observe(live, { childList: true, characterData: true, subtree: true });
-}
-
 function wireLayer({ play }) {
   const open = document.querySelector('[data-layer-open]');
   const layer = document.querySelector('[data-layer]');
@@ -130,7 +118,6 @@ function wireVision({ announce, refresh }) {
 export function initStations({ announce = () => {}, play = () => {}, refresh = () => {} } = {}) {
   buildAtlas();
   wireFocusOrder({ announce, refresh });
-  wireEcho();
   wireLayer({ play });
   wireVision({ announce, refresh });
 }

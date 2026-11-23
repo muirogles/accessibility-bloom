@@ -81,12 +81,10 @@
   flex: none; width: var(--control-mark); aspect-ratio: 1; border-radius: var(--radius-round);
   border: var(--stroke-fine) solid var(--control-c); background: transparent;
 }
-/* A control with a state wears the mark: a toggle (aria-pressed) and a
-   disclosure (<summary>, open or closed) fill it when true or open */
-.control[aria-pressed="true"], details[open] > summary.control { background: var(--control-wash); }
-.control[aria-pressed="true"] .control__mark, details[open] > summary.control .control__mark { background: var(--control-c); }
-summary.control { list-style: none; }
-summary.control::-webkit-details-marker { display: none; }
+/* A control with a state wears the mark: a toggle (aria-pressed) fills
+   it while true */
+.control[aria-pressed="true"] { background: var(--control-wash); }
+.control[aria-pressed="true"] .control__mark { background: var(--control-c); }
 .control:hover, .control[aria-pressed]:hover { background: var(--control-hover); }
 /* Unavailable now (aria-disabled: still focusable, announced as not
    available): the grammar's disabled grey, as on a disabled flower; no
@@ -354,16 +352,6 @@ summary.control::-webkit-details-marker { display: none; }
 }
 /* 6 · take it with you */
 .lesson__take { padding-left: var(--space-2); border-left: var(--stroke-bold) solid var(--rim, var(--line)); }
-/* «Para saber más» and «Leer de cerca» are native disclosures: their
-   <summary> is a .control with the state mark (an empty ring closed, a
-   filled one open). «Leer de cerca» folds the fine print (code, tree
-   fragments) that a room cannot read: it stays one press away for
-   whoever reads at a desk. */
-.lesson__more { margin-top: var(--space-1); }
-.closer { min-width: 0; }
-.closer[open] > summary { margin-bottom: var(--space-2); }
-.lesson__more ul { margin: var(--space-1) 0 0; padding-left: var(--space-3); }
-.lesson__more li { font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink-soft); }
 
 /* 3 · THE BENCH HANGS FROM THE BRANCH, as every flower of the work.
    The sap stem leaves the branch's knot and runs down the bench; each
@@ -877,10 +865,6 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   height: calc(var(--rise) + var(--legend-lh) / 2 + var(--stroke-1));
 }
 
-/* On phones long code WRAPS (pre-wrap): reading one line of code never
-   asks for a sideways scroll. From 48rem it keeps its real layout. */
-.pair__code { white-space: pre-wrap; overflow-wrap: anywhere; }
-
 /* ------------------------------------------------------------
    THE SCORE ON A STAFF — synesthesia made visible: every voice of the
    grammar sits at the note it really sounds (the median of the distinct
@@ -1067,21 +1051,22 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   width: var(--stem); background: var(--sprout);
 }
 .sprout {
-  --grow: var(--sprout-unit);
+  --sprout-grow: var(--sprout-unit);
+  --sprout-pad: calc(var(--seedbed-x) + var(--stem) + var(--space-3));
   position: relative; display: flex; flex-direction: column; justify-content: flex-end;
-  padding-left: calc(var(--seedbed-x) + var(--stem) + var(--space-3));
+  padding-left: var(--sprout-pad);
 }
-.sprout--rising { --grow: calc(var(--sprout-unit) * var(--phi)); }
-.sprout--grown { --grow: calc(var(--sprout-unit) * var(--phi) * var(--phi)); }
+.sprout--rising { --sprout-grow: calc(var(--sprout-unit) * var(--phi)); }
+.sprout--grown { --sprout-grow: calc(var(--sprout-unit) * var(--phi) * var(--phi)); }
 /* the stem, from the card down to the soil */
 .sprout::after {
-  content: ""; display: block; width: var(--stem); height: var(--grow);
+  content: ""; display: block; width: var(--stem); height: var(--sprout-grow);
   margin-left: var(--space-2); background: var(--sprout);
 }
 /* one leaf on each stem, half way down */
 .sprout::before {
-  content: ""; position: absolute; bottom: calc(var(--grow) / 2);
-  left: calc(var(--seedbed-x) + var(--stem) + var(--space-3) + var(--space-2) + var(--stem));
+  content: ""; position: absolute; bottom: calc(var(--sprout-grow) / 2);
+  left: calc(var(--sprout-pad) + var(--space-2) + var(--stem));
   width: var(--leaf-w); height: var(--leaf-h); background: var(--sprout);
   border-radius: 100% 0 100% 0;
 }
@@ -1090,6 +1075,35 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
 .sprout p { margin: 0 0 var(--space-1); font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink-soft); }
 .sprout p:last-child { margin-bottom: 0; }
 .sprout .sprout__status { font-family: var(--font-display); font-weight: var(--fw-semibold); color: var(--sprout-text); }
+/* no word left alone on a line: titles and statuses wrap balanced */
+.sprout h3, .sprout .sprout__status { text-wrap: balance; }
+/* What each proposal changes in the tree, drawn with the grammar of
+   station 1 (knot, arc, circle), smaller. A node the proposal would add
+   with no HTML behind it is a circle in the sprout's green: not yet a
+   branch. The drawing is one image (role="img"); its name says it. */
+.sprout__sketch {
+  --sk-knot: var(--space-1);
+  --sk-shape: var(--space-4);
+  --sk-reach: var(--space-2);
+  --sk-stroke: var(--stroke-fine);
+  margin: var(--space-1) 0;
+}
+.ax-sketch__node--virtual > .ax-sketch__shape {
+  width: var(--sk-shape); height: var(--sk-shape); box-sizing: border-box;
+  border: var(--sk-stroke) solid var(--sprout); border-radius: var(--radius-round);
+}
+/* ONE PLANT, TWO SHOOTS. The element references and the virtual nodes
+   were born in the same proposal, the AOM: one stem rises from the
+   soil, names its origin at the fork, and opens in two. The short shoot
+   goes straight up; the tall one leaves along an arc and climbs.
+   Joints: the plant's stem ends on the fork line; the arc starts on the
+   short shoot's stem axis and ends where the tall shoot's stem starts. */
+.sprout__shoots { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--gap-s); }
+.sprout__shoot { display: flex; flex-direction: column; justify-content: flex-end; }
+.sprout__origin { margin: 0; font-family: var(--font-display); font-weight: var(--fw-semibold); font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--sprout-text); }
+/* the proposal's real API, as written in its source */
+.sprout .sprout__code { font-family: var(--font-mono); font-size: var(--type-caption); line-height: var(--type-caption-lh); color: var(--ink); overflow-wrap: anywhere; }
+.sprout__code code { font-size: inherit; line-height: inherit; }
 .ground__soil {
   --soil: var(--space-1);
   position: relative; height: var(--soil); background: var(--line);
@@ -1144,8 +1158,12 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   border-top: var(--collar) solid var(--line);
 }
 .roots__main::before { right: 100%; border-top-right-radius: 100% 100%; }
+/* The root that drinks: it goes on from the main root's tip, tangent to
+   it (down, then bending into the horizontal), and runs into the spring.
+   Only where the spring stands beside the roots. */
+.roots__drink { display: none; }
 .roots__main::after { left: 100%; border-top-left-radius: 100% 100%; }
-.roots__box { grid-row: 1; padding-top: var(--space-5); max-width: var(--space-120); margin: 0 auto; position: relative; z-index: var(--z-base); }
+.roots__box { grid-row: 1; grid-column: 1; padding-top: var(--space-5); max-width: var(--space-120); margin: 0 auto; position: relative; z-index: var(--z-base); }
 .roots__title { padding-left: var(--load-indent); }
 /* The roots are the footer, not a station: their title has no numeral, so
    it does not take the plates' two-column title grid (numeral · text),
@@ -1174,7 +1192,7 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   content: ""; position: absolute; top: calc(-1 * var(--space-1));
   left: calc(var(--root-x) - var(--roots-pad));
   width: var(--space-3); height: calc(var(--type-body-lh) / 2 + var(--space-1));
-  border-left: var(--rootlet) solid var(--sap); border-bottom: var(--rootlet) solid var(--sap);
+  border-left: var(--rootlet) solid var(--line); border-bottom: var(--rootlet) solid var(--line);
   border-bottom-left-radius: 100% 100%;
 }
 .score { margin: 0; }
@@ -1188,9 +1206,40 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
    and "NC-SA" at the start of the next do not read as one name */
 .roots__license { white-space: nowrap; }
 .roots__credit {
-  grid-row: 2; margin: var(--space-3) auto 0; text-align: center;
+  grid-row: 3; margin: var(--space-3) auto 0; text-align: center;
   font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft);
 }
+
+/* ------------------------------------------------------------
+   THE SOURCES — the spring the roots drink from, beside them: a still
+   pool of water (a light wash of the sky) whose surface is one calm
+   horizontal line, Kandinsky's cold line. Every source the work cites,
+   grouped by what it feeds, each group one line of links. The WCAG
+   criteria show their number; their name is in the link for whoever
+   does not see it. The long notes on each source are told aloud.
+   ------------------------------------------------------------ */
+.sources {
+  --water: color-mix(in oklab, var(--k-sky) var(--wash-16), transparent);
+  grid-row: 2; position: relative; z-index: var(--z-base);
+  margin: var(--space-6) 0 0; padding: var(--space-3);
+  background: var(--water); border-top: var(--stroke-bold) solid var(--k-sky);
+}
+.sources__heading {
+  margin: 0; font-family: var(--font-display); font-weight: var(--fw-bold);
+  font-size: var(--type-heading); line-height: var(--type-heading-lh); color: var(--ink);
+}
+.sources__lead { margin: var(--half) 0 var(--space-2); font-size: var(--type-caption); line-height: var(--type-caption-lh); color: var(--ink-soft); }
+.sources__group { margin: 0 0 var(--space-2); }
+.sources__group:last-child { margin-bottom: 0; }
+.sources__title {
+  margin: 0; font-family: var(--font-display); font-weight: var(--fw-semibold);
+  font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink);
+}
+/* one line of links: a middle dot between them, silent for assistive tech */
+.sources__list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; column-gap: var(--space-1); }
+.sources__list li { font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink); }
+.sources__list li:not(:last-child)::after { content: "·" / ""; margin-left: var(--space-1); color: var(--ink-soft); }
+.sources__who { color: var(--ink-soft); }
 
 .flower--disabled { cursor: not-allowed; }
 .flower--disabled .flower__bud { opacity: 0.45; }
@@ -1230,7 +1279,7 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   margin: 0; font-family: var(--font-display); font-weight: var(--fw-semibold);
   font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink);
 }
-.ax-sketch__gloss { font-family: var(--font-body); font-weight: var(--fw-regular); color: var(--ink-soft); }
+.ax-sketch__gloss, .craft__gloss { font-family: var(--font-body); font-weight: var(--fw-regular); color: var(--ink-soft); }
 .ax-sketch__html {
   margin: 0 0 var(--space-2); padding: var(--space-1) var(--space-2); overflow-x: auto;
   background: var(--surface-plate); border-left: var(--sk-stroke) solid var(--line);
@@ -1343,7 +1392,6 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
 .ax-sketch__plain { color: var(--ink-soft); }
 /* what an agent takes, the visitor can see and take too: the whole tree */
 .ax-sketch__export { margin-top: var(--half); }
-.ax-sketch__foot { margin: var(--space-1) 0 0; font-size: var(--type-caption); line-height: var(--type-caption-lh); color: var(--ink-soft); }
 
 /* ------------------------------------------------------------
    THE AGENT'S PATH — what an AI agent takes from this page, in the
@@ -1478,14 +1526,6 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   :tool-submit-active { outline: var(--focus-width) solid var(--focus); outline-offset: var(--focus-offset); }
 }
 
-/* 11 · Change: the polite live region, written for the room */
-.echo {
-  margin: 0; display: grid; gap: var(--half);
-  padding: var(--space-2) var(--space-3);
-  border-left: var(--stroke-heavy) solid var(--station-live); background: var(--surface-plate);
-}
-.echo__label { font-family: var(--font-display); font-weight: var(--fw-semibold); font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink-soft); }
-.echo__text { font-family: var(--font-display); font-size: var(--type-subhead); line-height: var(--type-subhead-lh); color: var(--ink); }
 
 /* 12 · Layers: two planes, one over the other. While the real dialog is
    open, the plane underneath goes grey — inert — on the plate too. */
@@ -1541,80 +1581,6 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
 }
 
 /* ============================================================
-   PATTERN / ANTIPATTERN PAIR — two specimens next to each other.
-   The difference is never colour alone: the label, the shape mark
-   and the stroke change too (a closed frame against the wilted line,
-   which does not close).
-   ============================================================ */
-.pair { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gap-xs); max-width: var(--space-64); }
-.pair__case { border: var(--stroke-fine) solid var(--line); background: var(--surface-plate); padding: var(--space-2); }
-.pair__case--anti { border-color: transparent; background: none; }
-.pair__tag {
-  display: flex; align-items: center; gap: var(--space-1); margin: 0 0 var(--space-1);
-  font-family: var(--font-display); font-weight: var(--fw-bold);
-  font-size: var(--type-label); line-height: var(--type-label-lh);
-  text-transform: uppercase; letter-spacing: var(--tracking-caps);
-}
-.pair__mark { width: var(--space-2); height: var(--space-2); flex: none; }
-.pair__mark--pattern { border-radius: var(--radius-round); background: var(--k-blue); }
-/* the antipattern's mark is the wilted bud: its tilt means it */
-.pair__mark--anti { background: var(--k-grey); border-radius: 50% 50% 50% 0; rotate: 45deg; }
-.pair__code {
-  font-family: var(--font-mono); font-size: var(--type-label); line-height: var(--type-label-lh);
-  margin: 0 0 var(--space-1); padding: var(--space-1) var(--space-2); background: var(--surface-canvas);
-  border-left: var(--stroke-bold) solid var(--k-blue); overflow-x: auto;
-}
-.pair__case--anti .pair__code { border-left-color: var(--k-grey); }
-.pair__why { margin: 0; font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); }
-.pair__foot {
-  margin: var(--space-1) 0 0; font-family: var(--font-mono);
-  font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); max-width: var(--space-64);
-}
-
-/* ============================================================
-   THE TREE FRAGMENT — the visual proof of each pattern pair: next
-   to each piece of code, the piece of Accessibility Tree that code
-   really produces. The difference stops being an opinion: one side
-   has nodes with role, name and state; the other has holes. Same
-   drawing as the work's inspector.
-   ============================================================ */
-.ax-frag { margin-top: var(--space-2); border-top: var(--stroke-fine) solid var(--line); padding-top: var(--space-1); }
-.ax-frag__title {
-  margin: 0 0 var(--space-1); font-family: var(--font-display); font-weight: var(--fw-bold);
-  font-size: var(--type-label); line-height: var(--type-label-lh);
-  text-transform: uppercase; letter-spacing: var(--tracking-caps);
-}
-.ax-frag__nodes {
-  list-style: none; margin: 0; padding-left: var(--space-2);
-  border-left: var(--stroke-fine) solid var(--line); display: grid; gap: var(--space-1);
-}
-.ax-frag--broken .ax-frag__nodes { border-left-color: var(--k-grey-dark); }
-.ax-frag__node { position: relative; font-family: var(--font-mono); font-size: var(--type-label); line-height: var(--type-label-lh); }
-/* the connector from the tree's line to the node */
-.ax-frag__node::before {
-  content: ""; position: absolute; left: calc(-1 * var(--space-2)); top: calc(var(--type-label-lh) / 2);
-  width: var(--space-1); border-top: var(--stroke-fine) solid var(--line);
-}
-.ax-frag--broken .ax-frag__node::before { border-top-color: var(--k-grey-dark); }
-.ax-frag__role {
-  display: inline-block; background: var(--k-blue); color: var(--k-white);
-  padding: 0 var(--half); border-radius: var(--radius-1); font-weight: var(--fw-bold);
-}
-.ax-frag--broken .ax-frag__role { --wilt-gap: var(--space-1); background: none; color: var(--k-grey-dark); border: var(--stroke-fine) solid transparent; }
-.ax-frag__missing { color: var(--link-active); font-weight: var(--fw-bold); }
-.ax-frag__meta { display: block; color: var(--ink-soft); }
-.ax-frag__gap {
-  display: flex; align-items: center; gap: var(--space-1);
-  font-family: var(--font-mono); font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--link-active);
-}
-.ax-frag__gap::before {
-  content: ""; width: var(--space-2); height: var(--space-2); flex: none;
-  background:
-    linear-gradient(45deg, transparent 42%, currentColor 42% 58%, transparent 58%),
-    linear-gradient(-45deg, transparent 42%, currentColor 42% 58%, transparent 58%);
-}
-
-/* ============================================================
    THE WATERING — the grammar's text field: a cyan bar. An error
    in three channels: text starting with "Error", a red ink cross
    and the bottom border turning double.
@@ -1639,7 +1605,9 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
 .field__input:focus-visible { outline: var(--focus-width) solid var(--focus); outline-offset: var(--focus-offset); }
 .field__input[aria-invalid="true"] { border-bottom: var(--space-1) double var(--k-red); }
 .field__help { margin: 0; font-size: var(--type-caption); line-height: var(--type-caption-lh); color: var(--ink-soft); }
-.field__error[hidden], .field__ok[hidden] { display: none; }
+.field__ok[hidden] { display: none; }
+.field__error[hidden] { visibility: hidden; }
+.field__error { min-height: calc(var(--type-body-lh) * 2); }
 .field__error {
   display: flex; gap: var(--space-1); align-items: flex-start; margin: 0;
   font-size: var(--type-body); line-height: var(--type-body-lh); font-weight: var(--fw-semibold); color: var(--link-active);
@@ -1702,17 +1670,71 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
 .palette figcaption { font-size: var(--type-caption); line-height: var(--type-caption-lh); color: var(--ink-soft); }
 
 /* ============================================================
-   THE CRAFT — a notebook of decisions: pattern, reason, experience
+   THE CRAFT — the work's six decisions, each next to the antipattern
+   it refuses, one row each, all on screen (a table: each row compares).
+   · What the work does hangs on one ink stem, a blue circle on it: it
+     reaches the tree, as the living <button> does.
+   · What it refuses is the wilted bud of the pattern pair (station 7),
+     loose, with no stem: it never reaches the tree.
+   · Name and one line; the reasons are told aloud, not written.
+   Joints: each decision draws the stem from its circle's centre down
+   to the next circle's centre (every cell has the same padding, so
+   100 % of its height is exactly that); the last one draws none.
    ============================================================ */
-.practice { margin: 0 0 var(--space-3); max-width: var(--space-64); display: grid; gap: var(--gap-xs); }
-.practice__case { border-left: var(--stroke-bold) solid var(--sap); padding: 0 0 0 var(--space-2); }
-/* Arriving from a manifesto root, the pattern is tinted with sap */
-.practice__case, .practice__anti-title, .note p { scroll-margin-block: var(--space-4); }
-.practice__case:target, .practice__anti-title:target, .note p:target { background: color-mix(in oklab, var(--sap) var(--wash-16), transparent); }
-.practice dt { font-family: var(--font-display); font-weight: var(--fw-bold); font-size: var(--type-body); line-height: var(--type-body-lh); }
-.practice dd { margin: 0; font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); }
-.practice b { color: var(--ink); }
-.practice__anti { border: var(--stroke-fine) solid transparent; padding: var(--space-2); max-width: var(--space-64); }
+.craft {
+  --craft-key: var(--space-5);                  /* the marks' column */
+  --craft-mark: var(--space-3);
+  --craft-pad: var(--half);
+  --craft-mid: calc(var(--craft-pad) + var(--type-subhead-lh) / 2);   /* a mark's centre: on the name's line */
+  margin: 0; width: 100%; table-layout: fixed; border-collapse: separate; border-spacing: 0;
+}
+/* on phones two columns leave a word per line: each decision stacks
+   over what it refuses, and the stem waits for the two columns */
+.craft, .craft thead, .craft tbody, .craft tr, .craft__head, .craft__case { display: block; }
+.craft tbody tr { padding-block: var(--space-1); }
+@media (min-width: 48rem) {
+  .craft { display: table; }
+  .craft thead { display: table-header-group; }
+  .craft tbody { display: table-row-group; }
+  .craft tr { display: table-row; }
+  .craft__head, .craft__case { display: table-cell; }
+  .craft tbody tr { padding-block: var(--space-0); }
+}
+.craft__head {
+  padding: 0 0 var(--space-1) var(--craft-key); text-align: start;
+  font-family: var(--font-display); font-weight: var(--fw-semibold);
+  font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink);
+}
+.craft__case {
+  position: relative; vertical-align: top; text-align: start; font-weight: var(--fw-regular);
+  padding: var(--craft-pad) var(--space-1) var(--craft-pad) var(--craft-key);
+  hyphens: auto;
+}
+.craft__name {
+  display: block; font-family: var(--font-display); font-weight: var(--fw-semibold);
+  font-size: var(--type-subhead); line-height: var(--type-subhead-lh); color: var(--ink);
+}
+.craft__line { display: block; font-size: var(--type-caption); line-height: var(--type-caption-lh); color: var(--ink-soft); }
+.craft__line code { font-size: inherit; line-height: inherit; }
+/* the mark, centred on the name's line */
+.craft__case::before {
+  content: ""; position: absolute; z-index: var(--z-base);
+  left: calc(var(--craft-key) / 2 - var(--craft-mark) / 2); top: calc(var(--craft-mid) - var(--craft-mark) / 2);
+  width: var(--craft-mark); height: var(--craft-mark);
+  border-radius: var(--radius-round); background: var(--k-blue);
+}
+/* the stem, to the next circle */
+@media (min-width: 48rem) {
+  .craft__case:not(.craft__case--anti, .craft__case--end)::after {
+    content: ""; position: absolute;
+    left: calc(var(--craft-key) / 2 - var(--stroke-bold) / 2); top: var(--craft-mid);
+    width: var(--stroke-bold); height: 100%; background: var(--line);
+  }
+}
+.craft__case--anti::before { background: var(--k-grey); border-radius: 50% 50% 50% 0; rotate: 45deg; }
+/* Arriving from a manifesto root, the row is tinted with sap */
+.craft tr, .craft__head, .note p { scroll-margin-block: var(--space-4); }
+.craft tr:target > *, .craft__head:target, .note p:target { background: color-mix(in oklab, var(--sap) var(--wash-16), transparent); }
 
 /* ============================================================
    THE WILTED LINE — what fails, breaks or is an antipattern.
@@ -1724,21 +1746,17 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
    content is never clipped. The wilted flower's ring says the same
    with an open arc (flowers.css).
    ============================================================ */
-:is(.lesson__fail, .pair__case--anti, .practice__anti, .ax-frag--broken .ax-frag__role) {
+.lesson__fail {
   --wilt-gap: var(--space-2);
   position: relative;
 }
-:is(.lesson__fail, .pair__case--anti, .practice__anti, .ax-frag--broken .ax-frag__role)::before {
+.lesson__fail::before {
   content: ""; position: absolute; inset: calc(-1 * var(--stroke-fine)); pointer-events: none;
   border: var(--stroke-fine) solid var(--k-grey-dark);
   clip-path: polygon(0 0, calc(100% - var(--wilt-gap)) 0, calc(100% - var(--wilt-gap)) var(--wilt-gap),
                      100% var(--wilt-gap), 100% 100%, 0 100%);
 }
 .lesson__fail { border: var(--stroke-fine) solid transparent; }
-.practice__anti-title { margin: 0 0 var(--space-1); font-size: var(--type-body); line-height: var(--type-body-lh); font-family: var(--font-display); }
-.practice__anti ul { margin: 0; padding-left: var(--space-3); display: grid; gap: var(--space-1); }
-.practice__anti li { font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); }
-.practice__anti b { color: var(--ink); }
 
 /* ============================================================
    ≥ 48rem (768 px): more air, staggered clusters
@@ -1751,7 +1769,6 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   }
   .cluster { --slot-x: calc(var(--space-3) + var(--dz, 0) * var(--space-2)); }
   .branch { --pb: var(--space-4); }
-  .pair__code { white-space: pre; overflow-wrap: normal; }
 }
 
 /* ============================================================
@@ -1876,10 +1893,51 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   /* The leaf-bullet stays pinned to the seedbed's stem, which starts
      at the knot */
   /* the seedlings stand on the soil: the list fills its bank down to it */
-  .ground__load > .sprouts__list { grid-column: 2; grid-template-columns: repeat(3, minmax(0, 1fr)); padding-left: calc(var(--seedbed-x) + var(--stem) + var(--space-3)); align-self: stretch; }
-  .sprouts__list::before { top: calc(-1 * var(--rise)); }
-  .sprout { padding-left: 0; }
-  .sprout::before { left: calc(var(--space-2) + var(--stem)); }
+  /* The sprouts take both banks, in growing order: the seed stands
+     under the claim, the two older ones share the evidence bank, the
+     tallest last. Tracks: the claim bank in two, the trunk's lane, and
+     the evidence bank in two. The two on trial stand under the claim,
+     side by side; the AOM plant takes the evidence bank */
+  .ground__load > .sprouts__list {
+    grid-column: 1 / -1; grid-row: 1; align-self: stretch;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) var(--col-gap) minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: var(--space-0); padding-left: var(--space-0);
+  }
+  /* the claim and the sprouts share the row: the note on top, the seed
+     standing on the soil under it */
+  .ground__load > .note { grid-row: 1; position: relative; z-index: var(--z-base); }
+  /* every plant rises from the soil on its own: no seedbed hangs from
+     the knot, which only ends the branch arc */
+  .sprouts__list::before { content: none; }
+  .sprout--rising { --sprout-pad: var(--space-0); }
+  .sprout--rising + .sprout--rising { --sprout-pad: var(--gap-s); }
+  .sprout--plant {
+    --fork: var(--space-6);               /* the fork's height over the soil */
+    --fork-r: var(--space-2);             /* the tall shoot's arc */
+    --sprout-grow: var(--fork);
+    grid-column: 4 / -1; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto var(--fork); align-items: end;
+  }
+  /* the shoots stand on the fork line; the origin is written beside the stem, under it */
+  /* the tall shoot's card takes both columns, high over the short one;
+     its stem climbs in the second column */
+  .sprout--plant > .sprout__shoots { grid-row: 1; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: end; }
+  .sprout__shoot--seed { grid-column: 1; grid-row: 1; }
+  .sprout__shoot--grown { grid-column: 1 / -1; grid-row: 1; --stem-x: calc(50% + var(--gap-s) / 2 + var(--space-2)); }
+  .sprout--plant .sprout__shoot--grown::after { margin-left: var(--stem-x); }
+  .sprout--plant > .sprout__origin { grid-row: 2; align-self: center; padding-left: calc(var(--space-2) + var(--stem) + var(--leaf-w) + var(--space-2)); }
+  /* the plant's own stem: from the soil to the fork */
+  .sprout--plant::after { position: absolute; left: calc(var(--sprout-pad) + var(--space-2)); bottom: var(--space-0); height: var(--fork); margin: var(--space-0); }
+  .sprout__shoot::after { content: ""; display: block; width: var(--stem); margin-left: var(--space-2); background: var(--sprout); height: var(--shoot); }
+  /* the tall shoot leaves along an arc: from the short shoot's axis,
+     along the fork line, curving up into its own stem */
+  .sprout__shoot--grown { position: relative; padding-bottom: var(--fork-r); }
+  .sprout__shoot--grown::before {
+    content: ""; position: absolute; bottom: var(--space-0);
+    left: var(--space-2);
+    width: calc(var(--stem-x) - var(--space-2) + var(--stem)); height: var(--fork-r); box-sizing: border-box;
+    border-bottom: var(--stem) solid var(--sprout); border-right: var(--stem) solid var(--sprout);
+    border-bottom-right-radius: var(--fork-r);
+  }
   .ground__soil { margin: 0; }
   /* The footer reserves the inspector's column: its centre is then the
      trunk's axis and the root falls straight from it */
@@ -1952,12 +2010,34 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
    ============================================================ */
 @media (min-width: 90rem) and (min-height: 56rem) {
   html { scroll-snap-type: y proximity; }
-  /* Opening «Leer de cerca» makes its scene taller: with snapping on,
-     the browser re-snaps and the page jumps. While one is open, the
-     scenes stop snapping. (Interim: batch 2 redesigns these folds so
-     everything is on screen.) */
-  html:has(.closer[open]) { scroll-snap-type: none; }
   .branch, .ground, .roots { scroll-snap-align: start; min-height: 100dvh; }
+  /* the spring stands beside the roots, in the column the inspector
+     keeps free (its panel does not reach the footer): from the edge of
+     the root box to the canvas padding. Out of the grid, so the row of
+     the roots (and the main root measured on it) keeps its own height */
+  .roots {
+    --spring-w: calc(var(--panel-col) + var(--gap-canvas) + (100% - 2 * var(--canvas-pad) - var(--panel-col) - var(--gap-canvas) - var(--space-120)) / 2 - var(--gap-m));
+    --drink-w: calc(var(--trunk-width) * 0.24);   /* the main root's tip: 62 % - 38 % of the trunk */
+    --drink-r: var(--space-8);
+  }
+  .sources {
+    position: absolute; grid-row: 1 / 2; bottom: calc(-1 * (var(--drink-r) + var(--space-3))); right: var(--canvas-pad); margin: var(--space-0);
+    width: var(--spring-w); box-sizing: border-box;
+  }
+  /* Joints: it starts inside the tip (where the root is still wider, so
+     the seam is covered by the same ink) and its axis is the root's; it
+     ends on the spring's left edge, inside the water */
+  .roots__drink {
+    display: block; position: absolute; grid-row: 1 / 2; pointer-events: none; z-index: var(--z-under);
+    top: calc(100% - var(--space-1) - var(--drink-w)); left: calc(var(--root-x) - var(--drink-w) / 2);
+    width: calc(100% - var(--canvas-pad) - var(--spring-w) - var(--root-x) + var(--drink-w) / 2);
+    height: calc(var(--drink-r) + var(--drink-w)); box-sizing: border-box;
+    border-left: var(--drink-w) solid var(--line); border-bottom: var(--drink-w) solid var(--line);
+    border-bottom-left-radius: var(--drink-r);
+  }
+  /* the signature weighs against the spring: on the left, on the edge of
+     the roots */
+  .roots__credit { justify-self: start; text-align: start; margin-left: calc((100% - var(--space-120)) / 2); }
   /* The canvas uses the whole screen width: wider banks, fewer lines */
   .canvas { max-width: none; }
   .branch, .ground {
@@ -1999,20 +2079,17 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   :is(#color) .branch__load--flowers { grid-template-rows: auto 1fr; }
   #live .branch__visual { display: contents; }
   /* 8 · Change: the claim alone on its bank; the proof reads try it (the
-     watering) → what is heard (the echo, large) → the pair, folded */
-  #live .branch__load--flowers { grid-template-rows: auto auto 1fr; }
-  #live .branch__load--flowers > .note { grid-column: var(--bank-claim); grid-row: 1 / span 3; }
+     watering) → the pairs, drawn */
+  #live .branch__load--flowers { grid-template-rows: auto 1fr; }
+  #live .branch__load--flowers > .note { grid-column: var(--bank-claim); grid-row: 1 / span 2; }
   #live .watering { grid-column: var(--bank-proof); grid-row: 1; max-width: none; }
-  #live .echo { grid-column: var(--bank-proof); grid-row: 2; }
-  #live .closer { grid-column: var(--bank-proof); grid-row: 3; align-self: start; }
-  #live .pair { max-width: none; }
+  #live .craft { grid-column: var(--bank-proof); grid-row: 2; align-self: start; }
   /* 1 · Structure: the HTML and its tree and, under them, the four readings on
      the proof bank; under the claim, what an agent takes from the page */
   :is(#structure, #route, #patterns) .branch__visual { display: contents; }
   :is(#structure, #route, #patterns) .branch__load--flowers > .note { grid-column: var(--bank-claim); grid-row: 1; }
   /* The free height goes to the last row only: shared between two auto
-     rows, it pushed «Leer de cerca» down while closed and the summary
-     slid up under the pointer when it opened */
+     rows, it pushed the lower piece down */
   :is(#structure, #patterns) .branch__load--flowers { grid-template-rows: auto 1fr; }
   /* EACH BANK STACKS ON ITS OWN. Rows only line up the two banks'
      tops; a piece never waits for the other bank's height. Three rows:
@@ -2034,16 +2111,15 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   /* 3 · The map on the proof bank; the group (the bouquet) under the claim */
   #route .atlas { grid-column: var(--bank-proof); grid-row: 1 / span 2; }
   #route .bouquet { grid-column: var(--bank-claim); grid-row: 2; align-self: start; }
-  /* 10 · The three flowers on the proof bank; the close reading under the claim */
+  /* 10 · The three flowers on the proof bank; the decisions under the claim */
   #patterns .cluster { grid-column: var(--bank-proof); grid-row: 1 / span 2; }
-  #patterns .closer { grid-column: var(--bank-claim); grid-row: 2; align-self: start; }
+  #patterns .craft { grid-column: var(--bank-claim); grid-row: 2; align-self: start; }
   /* 10 · Colour: the palette in two columns, under the flower that turns
      it grey; the claim spans both rows */
   #color .branch__load--flowers > .note { grid-row: 1 / span 2; }
   #color .palette { max-width: none; }
   #color .palette__list { grid-template-columns: 1fr 1fr; column-gap: var(--gap-s); }
   /* The pattern pair and the long boxes fill their bank */
-  #focus .pair, .practice__anti { max-width: none; }
 
   /* Clusters measured by height too: three flowers and their cartelas
      fit one screen. Never under the 48 px touch target. (.cluster in
@@ -2081,9 +2157,14 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   #route { --hc: calc(var(--unit) * 83); }
   #live { --hc: calc(var(--unit) * 80); }
   #layers { --hc: calc(var(--unit) * 48); }
-  #patterns { --hc: calc(var(--unit) * 79); }
+  /* the stems measure the screen: 1 · 2 · 4 rungs (blocked, on trial,
+     Baseline), so the tallest card stands highest */
+  .sprouts__list { --rung: 11dvh; }
+  .sprout--rising { --sprout-grow: calc(var(--rung) * 2); }
+  .sprout__shoot--seed { --shoot: calc(var(--rung) - var(--fork)); }
+  .sprout__shoot--grown { --shoot: calc(var(--rung) * 4 - var(--fork) - var(--fork-r)); }
   .ground {
-    --hc: calc(var(--unit) * 43); --bend: 0.45;
+    --hc: 100dvh; --bend: 0.45;
     --drop: calc(var(--space-10) + max(var(--space-0), (100dvh - var(--pb) - var(--space-10) - var(--load-pad) - var(--space-2) - var(--hc)) * var(--bend)));
   }
 
@@ -2093,7 +2174,13 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   .ground__load { flex: 1 1 auto; }
   .ground__soil { margin-top: auto; }
   /* The roots: manifesto at the top, rows not stretched */
-  .roots { align-content: start; }
+  /* The roots fill their screen: their row takes the height left by the
+     signature, the promises spread down it, and the main root reaches
+     the bottom, where it drinks */
+  .roots { grid-template-rows: minmax(0, 1fr) auto; align-content: stretch; }
+  .roots__credit { grid-row: 2; }
+  .roots__box { grid-template-rows: auto minmax(0, 1fr); }
+  .roots__box > .manifesto { align-self: stretch; align-content: space-between; }
   .roots__box { padding-top: var(--space-4); }
   .manifesto li { margin-bottom: var(--space-1); }
 }

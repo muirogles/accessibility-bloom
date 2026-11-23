@@ -193,10 +193,11 @@
   --shape-square: var(--k-red);        /* <input type="checkbox"> */
   --shape-rhombus: var(--k-violet);    /* <input type="radio"> */
   --shape-bar: var(--k-cyan);          /* <input type="text|email"> */
-  /* Ochre = sap: ONLY flower stems, tendrils, manifesto rootlets and
-     margin notes. Never inside the flower. Trunk and branches are ink
-     (--line), and the cover flower has no sap stem: the trunk itself
-     carries it. */
+  /* Ochre = sap, what flows through the tree: ONLY flower stems,
+     tendrils, the manifesto's «Sube a» line, margin notes and the
+     readings that drink from a node. Never inside the flower. The tree
+     itself is ink (--line): trunk, branches, the main root and its
+     rootlets; the cover flower has no sap stem: the trunk carries it. */
   --sap: var(--k-ochre);
   --sprout: var(--k-green);            /* leaf: graphics only (4.1:1) */
   --sprout-text: var(--k-green-deep);
