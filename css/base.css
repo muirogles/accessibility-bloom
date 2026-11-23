@@ -125,13 +125,12 @@ html:has(dialog:modal) { overflow: hidden; scrollbar-gutter: stable; }
 @media (forced-colors: active) {
   :root { --line: var(--forced-structure); --sap: var(--forced-structure); --sprout: var(--forced-structure); }
   .flower__petal, .flower__bud, .dot, .key__shape, .palette__swatch,
-  .pair__mark,
   .trunk__axis, .branch__node, .branch__node::after, .branch__arc::after,
   .tendril::before, .tendril::after, .cluster::before, .flower-card__canvas::before, .ladder__rung::before,
-  .branch__load--flowers > .bouquet::before, .agent-path__step::before,
+  .branch__load--flowers > .bouquet::before, .agent-path__step::before, .craft__case::before, .craft__case::after,
   .ax-sketch__node::before, .ax-sketch__node::after, .ax-sketch__reading::before, .ax-sketch__reading::after,
   .ax-sketch__knot, .ax-sketch__shape, .ax-sketch__line::before,
-  .ground__load::before, .sprouts__list::before, .sprouts__list::after, .sprout::before,
+  .ground__load::before, .sprouts__list::before, .sprouts__list::after, .sprout::before, .sprout::after, .sprout__shoot::before, .sprout__shoot::after,
   .ground__soil, .roots__main,
   .field__ok-mark, .key__sharp, .control__mark { forced-color-adjust: none; }
   /* the score's staff is structure too */
