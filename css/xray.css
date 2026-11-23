@@ -17,8 +17,7 @@
 
 /* --- The toggle, in the inspector: a toggle of the control system
    (artwork.css), an empty ring at rest, filled while the x-ray is on --- */
-.panel__xray { display: flex; width: 100%; justify-content: flex-start; margin: 0 0 var(--space-1); --control-pad: var(--space-2); }
-.panel__xray-hint { font-weight: var(--fw-regular); font-size: var(--type-label); line-height: var(--type-label-lh); }
+.panel__xray { display: flex; width: 100%; justify-content: flex-start; margin: 0 0 var(--space-1); }
 
 /* --- The layer: one per host, over the host's whole box --- */
 .xray {

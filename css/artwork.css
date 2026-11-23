@@ -71,14 +71,28 @@
   border: var(--stroke-fine) solid var(--control-c); border-radius: var(--radius-pill);
   cursor: pointer; text-align: center;
 }
+/* Variants, never ad-hoc paddings:
+   --primary  the action that leads its scene or its dialog, filled
+   --compact  controls that share a tight row (the five channels, the
+              inspector's two actions): the short padding */
 .control--primary { background: var(--control-c); color: var(--k-white); }
+.control--compact { --control-pad: var(--space-1); }
 .control__mark {
   flex: none; width: var(--control-mark); aspect-ratio: 1; border-radius: var(--radius-round);
   border: var(--stroke-fine) solid var(--control-c); background: transparent;
 }
-.control[aria-pressed="true"] { background: var(--control-wash); }
-.control[aria-pressed="true"] .control__mark { background: var(--control-c); }
+/* A control with a state wears the mark: a toggle (aria-pressed) and a
+   disclosure (<summary>, open or closed) fill it when true or open */
+.control[aria-pressed="true"], details[open] > summary.control { background: var(--control-wash); }
+.control[aria-pressed="true"] .control__mark, details[open] > summary.control .control__mark { background: var(--control-c); }
+summary.control { list-style: none; }
+summary.control::-webkit-details-marker { display: none; }
 .control:hover, .control[aria-pressed]:hover { background: var(--control-hover); }
+/* Unavailable now (aria-disabled: still focusable, announced as not
+   available): the grammar's disabled grey, as on a disabled flower; no
+   hover wash, the not-allowed pointer */
+.control[aria-disabled="true"] { --control-c: var(--k-grey-dark); cursor: not-allowed; }
+.control[aria-disabled="true"]:hover { background: var(--surface-canvas); }
 .control--primary:hover { background: color-mix(in oklab, var(--ink) var(--wash-24), var(--control-c)); }
 
 /* ============================================================
@@ -199,7 +213,7 @@
 /* A lesson needs no reordering: its DOM order — claim, bench, coda — is
    already its reading order on every screen (1.3.2) */
 .lesson .branch__load--flowers > .note { order: 0; }
-.branch__load--flowers .cluster, .branch__load--flowers .bouquet, .branch__load--flowers .data-card { width: fit-content; max-width: 100%; }
+.branch__load--flowers .cluster, .branch__load--flowers .bouquet { width: fit-content; max-width: 100%; }
 .satellite { position: absolute; z-index: var(--z-under); left: calc(var(--axis) + var(--space-1)); top: var(--space-1); opacity: 0.85; }
 .satellite--dot { width: var(--space-2); height: var(--space-2); border-radius: var(--radius-round); background: var(--tint); }
 .satellite--arc {
@@ -302,9 +316,13 @@
 .note p { margin: 0 0 var(--space-1); font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink-soft); }
 .note p:last-child { margin-bottom: 0; }
 .note strong { color: var(--ink); }
+/* The invitation: what to try now. Read from the room, so at caption
+   size in the body face (an invitation, not code); sap and medium
+   weight set it apart from the prose above (sap on linen ≥ 5:1 in
+   every vision palette) */
 .note .note__look {
-  font-family: var(--font-mono); font-size: var(--type-label); line-height: var(--type-label-lh);
-  color: var(--sap);
+  font-family: var(--font-body); font-size: var(--type-caption); line-height: var(--type-caption-lh);
+  font-weight: var(--fw-medium); color: var(--sap);
 }
 
 /* ============================================================
@@ -320,15 +338,11 @@
    on the lesson's table.
    ============================================================ */
 .lesson__heading { display: flex; flex-direction: column; }
-.lesson__tag {
-  font-family: var(--font-mono); font-weight: var(--fw-semibold);
+/* category labels: display semibold, soft; mono is for code only */
+.lesson__tag, .lesson__label {
+  font-family: var(--font-display); font-weight: var(--fw-semibold);
   font-size: var(--type-body); line-height: var(--type-body-lh);
-  color: var(--ink-soft); text-transform: uppercase;
-}
-.lesson__label {
-  font-family: var(--font-mono); font-weight: var(--fw-semibold);
-  font-size: var(--type-label); line-height: var(--type-label-lh);
-  color: var(--ink-soft); text-transform: uppercase;
+  color: var(--ink-soft);
 }
 .lesson__label { margin: 0 0 var(--half); }
 .lesson__fail p { margin: 0; font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink-soft); }
@@ -340,28 +354,14 @@
 }
 /* 6 · take it with you */
 .lesson__take { padding-left: var(--space-2); border-left: var(--stroke-bold) solid var(--rim, var(--line)); }
-/* «Para saber más» and «Leer de cerca» are native disclosures: a
-   control of the system, with the state mark (an empty ring closed, a
+/* «Para saber más» and «Leer de cerca» are native disclosures: their
+   <summary> is a .control with the state mark (an empty ring closed, a
    filled one open). «Leer de cerca» folds the fine print (code, tree
    fragments) that a room cannot read: it stays one press away for
    whoever reads at a desk. */
 .lesson__more { margin-top: var(--space-1); }
 .closer { min-width: 0; }
 .closer[open] > summary { margin-bottom: var(--space-2); }
-:is(.lesson__more, .closer) summary {
-  display: inline-flex; align-items: center; gap: var(--gap-2xs);
-  min-height: var(--touch); padding: 0 var(--space-2); cursor: pointer; list-style: none;
-  font-family: var(--font-display); font-weight: var(--fw-semibold);
-  font-size: var(--type-body); line-height: var(--type-body-lh);
-  color: var(--shape-circle); border: var(--stroke-fine) solid var(--shape-circle); border-radius: var(--radius-pill);
-}
-:is(.lesson__more, .closer) summary::-webkit-details-marker { display: none; }
-:is(.lesson__more, .closer) summary::before {
-  content: ""; flex: none; width: var(--space-2); aspect-ratio: 1; border-radius: var(--radius-round);
-  border: var(--stroke-fine) solid var(--shape-circle);
-}
-:is(.lesson__more, .closer)[open] summary { background: color-mix(in oklab, var(--shape-circle) var(--wash-16), var(--k-white)); }
-:is(.lesson__more, .closer)[open] summary::before { background: var(--shape-circle); }
 .lesson__more ul { margin: var(--space-1) 0 0; padding-left: var(--space-3); }
 .lesson__more li { font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink-soft); }
 
@@ -807,11 +807,11 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
 .channels__item { display: grid; justify-items: center; row-gap: var(--half); }
 /* Each channel is a toggle of the control system: filled ring while
    the channel is on, empty once it is taken away */
-.channel { width: 100%; --control-pad: var(--space-1); }
-.channel__wcag { font-family: var(--font-mono); font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); }
+.channel { width: 100%; }
+.channel__wcag { font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); }
 .channels__caption {
-  margin: 0; min-height: var(--type-label-lh);
-  font-family: var(--font-mono); font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft);
+  margin: 0; min-height: var(--type-caption-lh);
+  font-size: var(--type-caption); line-height: var(--type-caption-lh); color: var(--ink-soft);
 }
 
 /* What a machine reads: the node, the same for a screen reader, voice
@@ -821,13 +821,13 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   border: var(--stroke-fine) solid var(--line); background: var(--surface-plate);
   padding: var(--space-1) var(--space-2);
 }
-.machine__title { margin: 0; font-family: var(--font-mono); font-size: var(--type-label); line-height: var(--type-label-lh); font-weight: var(--fw-bold); color: var(--ink); }
-.machine__who { font-weight: var(--fw-regular); color: var(--ink-soft); }
+.machine__title { margin: 0; font-family: var(--font-display); font-size: var(--type-body); line-height: var(--type-body-lh); font-weight: var(--fw-semibold); color: var(--ink-soft); }
+.machine__who { font-family: var(--font-body); font-weight: var(--fw-regular); font-size: var(--type-label); color: var(--ink-soft); }
 .machine__json {
   margin: var(--space-1) 0; white-space: pre-wrap; overflow-wrap: anywhere;
   font-family: var(--font-mono); font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink);
 }
-.machine__voice { margin: 0; font-size: var(--type-body); line-height: var(--type-body-lh); font-style: italic; color: var(--ink); }
+.machine__voice { margin: 0; font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink); }
 [data-ch-all="off"] .machine { border-color: var(--sap); border-width: var(--stroke-bold); padding: calc(var(--space-1) - var(--stroke-fine)) calc(var(--space-2) - var(--stroke-fine)); }
 @media (prefers-reduced-motion: no-preference) {
   [data-ch-all="off"] .machine__json { animation: sap var(--dur-4) var(--ease-out); }
@@ -850,17 +850,17 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   padding: var(--space-1) var(--space-3); margin: 0; background: none;
 }
 .bouquet__legend {
-  font-family: var(--font-display); font-size: var(--type-body); line-height: var(--legend-lh);
+  font-family: var(--font-display); font-weight: var(--fw-semibold); font-size: var(--type-body); line-height: var(--legend-lh);
   color: var(--ink); padding: 0 var(--space-1);
 }
 .bouquet__flowers { display: flex; flex-wrap: wrap; gap: clamp(var(--space-1), 2vw, var(--space-3)); justify-content: center; }
 .bouquet__foot {
-  margin: var(--space-1) 0 0; font-family: var(--font-mono);
-  font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); text-align: center;
+  margin: var(--space-1) 0 0;
+  font-size: var(--type-caption); line-height: var(--type-caption-lh); color: var(--ink-soft); text-align: center;
 }
-/* Bouquet and JSON frame also hang from the branch by their stem */
-.branch__load--flowers > .bouquet, .branch__load--flowers > .data-card { position: relative; }
-.branch__load--flowers > .bouquet::before, .branch__load--flowers > .data-card::before {
+/* The bouquet also hangs from the branch by its stem */
+.branch__load--flowers > .bouquet { position: relative; }
+.branch__load--flowers > .bouquet::before {
   content: ""; position: absolute; left: var(--hang-x);
   top: calc(-1 * var(--rise)); height: var(--rise);
   width: var(--stem); background: var(--sap);
@@ -877,24 +877,9 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   height: calc(var(--rise) + var(--legend-lh) / 2 + var(--stroke-1));
 }
 
-/* figure + figcaption: the captioned frame (JSON-LD) */
-.data-card {
-  margin: 0; max-width: var(--space-56);
-  border: var(--stroke-fine) solid var(--line); padding: var(--space-2); background: var(--surface-plate);
-}
 /* On phones long code WRAPS (pre-wrap): reading one line of code never
    asks for a sideways scroll. From 48rem it keeps its real layout. */
-.data-card__json, .pair__code, .anatomy__code { white-space: pre-wrap; overflow-wrap: anywhere; }
-.data-card__json {
-  font-family: var(--font-mono); font-size: var(--type-label); line-height: var(--type-label-lh);
-  color: var(--ink); margin: 0; overflow-x: auto;
-  background: var(--surface-canvas); border-left: var(--stroke-bold) solid var(--sprout); padding: var(--space-1) var(--space-2);
-}
-.data-card figcaption {
-  margin-top: var(--space-1); padding-top: var(--space-1);
-  font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft);
-  border-top: var(--stroke-hair) solid var(--tint-shadow);
-}
+.pair__code { white-space: pre-wrap; overflow-wrap: anywhere; }
 
 /* ------------------------------------------------------------
    THE SCORE ON A STAFF — synesthesia made visible: every voice of the
@@ -912,14 +897,16 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
    its own piece of staff (8 px line gap); from 64rem the voices are the
    staff's columns and the lines run continuously (16 px line gap).
    Every vertical position is a whole number of half-steps:
-     staff height 19 · bottom line at 13 · a note at 13 − step
+     staff height 17 · bottom line at 11 · a note at 11 − step
+     (the top voice, Fa♯5 with its sharp, needs 3 half-steps above the
+     top line; the fallen div needs 6 under the bottom one)
    ------------------------------------------------------------ */
 .key {
   --line-gap: var(--space-1);
   --half-step: calc(var(--line-gap) / 2);
   --key-shape: var(--space-2);
-  --staff-h: calc(var(--half-step) * 19);
-  --base: calc(var(--half-step) * 13);           /* the bottom line, Mi4 */
+  --staff-h: calc(var(--half-step) * 17);
+  --base: calc(var(--half-step) * 11);           /* the bottom line, Mi4 */
   --staff-ink: var(--tint-line);
   list-style: none; margin: var(--space-2) 0; padding: 0;
   display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-1);
@@ -927,7 +914,7 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
 .key__row {
   display: grid; grid-template-columns: var(--space-10) minmax(0, 1fr);
   grid-template-rows: auto auto 1fr; column-gap: var(--space-2); align-items: start;
-  font-family: var(--font-mono); font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink);
+  font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink);
 }
 /* The row's piece of staff: five lines, bottom one at --base */
 .key__staff {
@@ -947,7 +934,7 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   translate: -50% 0; background: var(--line);
 }
 .key__note { color: var(--ink-soft); }
-.key__note b { color: var(--ink); font-family: var(--font-display); font-size: var(--type-body); line-height: var(--type-label-lh); }
+.key__note b { color: var(--ink); font-family: var(--font-display); font-weight: var(--fw-semibold); font-size: var(--type-body); line-height: var(--type-body-lh); }
 /* The octave index (scientific: Do4 is middle C). Re4 and Re5 share a
    name and differ by it, as by their place on the staff */
 .key__oct { font-size: var(--type-label); line-height: 0; }
@@ -1002,14 +989,16 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
 }
 @media (min-width: 64rem) {
   /* The voices become the staff's columns: one continuous staff */
+  /* The score is a grid item here: the row gap above it and its
+     caption's margin under it already set it apart */
   .key {
     --line-gap: var(--space-2);
     --key-shape: var(--space-3);
-    grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0;
+    grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0; margin: 0;
   }
   .key__row {
     grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; row-gap: 0;
-    justify-items: center; text-align: center; padding-bottom: var(--space-1);
+    justify-items: center; text-align: center;
     align-content: start;   /* every column starts its labels on the same line */
   }
   .key__staff { grid-row: auto; justify-self: stretch; margin-bottom: var(--space-1); }
@@ -1097,7 +1086,7 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   border-radius: 100% 0 100% 0;
 }
 .sprout article { padding: var(--space-2); border-top: var(--stroke-bold) solid var(--sprout); background: var(--surface-plate); }
-.sprout h3 { margin: 0 0 var(--space-1); font-size: var(--type-subhead); line-height: var(--type-subhead-lh); color: var(--ink); }
+.sprout h3 { margin: 0 0 var(--space-1); font-weight: var(--fw-semibold); font-size: var(--type-subhead); line-height: var(--type-subhead-lh); color: var(--ink); }
 .sprout p { margin: 0 0 var(--space-1); font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink-soft); }
 .sprout p:last-child { margin-bottom: 0; }
 .sprout .sprout__status { font-family: var(--font-display); font-weight: var(--fw-semibold); color: var(--sprout-text); }
@@ -1189,10 +1178,7 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   border-bottom-left-radius: 100% 100%;
 }
 .score { margin: 0; }
-.score figcaption { margin-top: var(--space-1); font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); max-width: var(--space-48); }
-.gloss { margin: var(--space-1) 0 0; font-size: var(--type-label); line-height: var(--type-label-lh); }
-.gloss dt { font-family: var(--font-mono); color: var(--sap); }
-.gloss dd { margin: 0 0 var(--space-1); color: var(--ink-soft); }
+.score figcaption { margin-top: var(--space-1); font-size: var(--type-caption); line-height: var(--type-caption-lh); color: var(--ink-soft); max-width: var(--space-48); }
 .roots__artwork {
   display: block; font-family: var(--font-display); font-weight: var(--fw-bold);
   font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink);
@@ -1211,113 +1197,197 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
 .flower--disabled .flower__name { color: var(--k-grey-dark); }
 
 /* ------------------------------------------------------------
-   TWO TREES — one single DOM (black square, the root) growing two
-   crowns: the pixels' one (a grid) and the meaning's one (blue).
-   A tree reads from the root up, and each crown wears its name above
-   it, like a title: the name in ink, its gloss softer underneath.
-   Drawn only with the grammar's shapes; the fork is one continuous U
-   from crown to crown, so no seam can show.
+   FROM THE HTML TO THE TREE — this page's own header, as written and
+   as understood, drawn in the work's grammar, Kandinsky's point, line
+   and plane, and read by four readers.
+   · The tree, in ink, grows down like the inspector (and like the
+     agent's path on the other bank): the region is the KNOT (a point:
+     every plate hangs from a knot of the trunk); the heading is the
+     branch ARC (a line, a rest) born from its branch and bending down,
+     as every plate's arc does; the button is the blue CIRCLE (a plane),
+     EMPTY because it is not pressed: the state is seen, not only read.
+   · Each line of HTML wears, small, the shape of the node it becomes,
+     so the eye pairs them without words.
+   · The four readings are not nodes: they DRINK from the button, so
+     they hang from it by sap, not ink, and live outside the tree list.
+   · The render tree is not drawn: it is this HTML plus its CSS, the
+     cover already seen.
+   Joints: every stem piece and branch is drawn by the item it leads to
+   (the last one stops at its centre), so they meet exactly.
    ------------------------------------------------------------ */
 .branch__visual { display: flex; flex-direction: column; gap: var(--gap-m); order: 3; }
-.two-trees {
-  --tt-stroke: var(--stroke-bold);
-  --tt-crown: clamp(var(--space-7), 22cqw, var(--space-12));
-  --tt-col-gap: var(--space-2);
-  margin: 0; padding: 0;
-  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: repeat(5, auto);
-  justify-items: center; align-items: end;
-  row-gap: 0; column-gap: var(--tt-col-gap);
+.ax-sketch {
+  --sk-knot: var(--space-2);
+  --sk-shape: var(--space-6);
+  --sk-mark: var(--space-2);
+  --sk-stroke: var(--stroke-bold);
+  --sk-reach: var(--space-3);                 /* a branch, from its stem to its shape */
+  --sk-gap: var(--space-1);
+  --sk-stem-x: calc(var(--sk-knot) / 2 - var(--sk-stroke) / 2);
+  margin: 0; display: grid; gap: var(--space-1);
 }
-/* Explicit placement: no auto-placement (it would create implicit
-   columns and drop the labels outside the drawing) */
-.two-trees__tag {
-  grid-row: 1; margin: 0 0 var(--space-1); text-align: center; max-width: 100%; hyphens: auto;
-  font-family: var(--font-display); font-weight: var(--fw-semibold);
+.ax-sketch__label {
+  margin: 0; font-family: var(--font-display); font-weight: var(--fw-semibold);
   font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink);
 }
-.two-trees__tag:nth-of-type(1) { grid-column: 1; }
-.two-trees__tag:nth-of-type(2) { grid-column: 2; }
-.two-trees__tag em {
-  font-family: var(--font-body); font-style: normal; font-weight: var(--fw-regular);
-  font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft);
+.ax-sketch__gloss { font-family: var(--font-body); font-weight: var(--fw-regular); color: var(--ink-soft); }
+.ax-sketch__html {
+  margin: 0 0 var(--space-2); padding: var(--space-1) var(--space-2); overflow-x: auto;
+  background: var(--surface-plate); border-left: var(--sk-stroke) solid var(--line);
+  font-family: var(--font-mono); font-size: var(--type-caption); line-height: var(--type-caption-lh);
+  color: var(--ink); white-space: pre-wrap; overflow-wrap: anywhere;
 }
-.two-trees__crown { grid-row: 2; width: var(--tt-crown); aspect-ratio: 1; border-radius: var(--radius-round); }
-.two-trees__crown--pixels {
-  grid-column: 1;
-  border: var(--tt-stroke) solid var(--line);
-  background-image: linear-gradient(var(--k-grey-dark) var(--stroke-1), transparent var(--stroke-1)),
-                    linear-gradient(90deg, var(--k-grey-dark) var(--stroke-1), transparent var(--stroke-1));
-  background-size: var(--space-1) var(--space-1);
+/* on phones the code wraps (no sideways scroll); from 48rem, its real layout */
+@media (min-width: 48rem) { .ax-sketch__html { white-space: pre; overflow-wrap: normal; } }
+.ax-sketch__html code { padding: 0; background: none; }
+/* each line wears its node's shape, small; a line without a node keeps the room */
+.ax-sketch__line::before {
+  content: ""; display: inline-block; box-sizing: border-box; vertical-align: middle;
+  width: var(--sk-mark); height: var(--sk-mark); margin-right: var(--space-1);
 }
-.two-trees__crown--meaning {
-  grid-column: 2;
-  background: var(--k-blue);
-  box-shadow: inset 0 0 0 var(--space-1) var(--surface-canvas),
-              inset 0 0 0 calc(var(--space-1) + var(--stroke-bold)) var(--k-yellow);
+.ax-sketch__line--region::before { background: radial-gradient(circle closest-side, var(--line) 50%, transparent 0); }
+.ax-sketch__line--heading::before {
+  height: calc(var(--sk-mark) / 2); vertical-align: baseline;
+  border-top: var(--stroke-fine) solid var(--line); border-right: var(--stroke-fine) solid var(--line);
+  border-left: var(--stroke-fine) solid transparent;
+  border-top-right-radius: 100% 100%;
 }
-/* The fork: ONE U whose arms rise to the centre of each crown. Crown
-   centres sit at 25 % − gap/4 and 75 % + gap/4, so the U is half the
-   figure plus half the gap, plus one stroke so both arms are centred. */
-.two-trees__fork {
-  grid-row: 3; grid-column: 1 / 3; align-self: start;
-  width: calc(50% + var(--tt-col-gap) / 2 + var(--tt-stroke)); height: var(--space-5);
-  border: var(--tt-stroke) solid var(--line); border-top: 0;
-  border-radius: 0 0 50% 50% / 0 0 100% 100%;
+.ax-sketch__line--button::before { border: var(--stroke-fine) solid var(--shape-circle); border-radius: var(--radius-round); }
+
+/* The tree: the knot and its name, then the children down its stem */
+.ax-sketch__tree, .ax-sketch__children { list-style: none; margin: 0; padding: 0; }
+.ax-sketch__root {
+  display: grid; grid-template-columns: var(--sk-knot) minmax(0, 1fr); column-gap: var(--space-1); align-items: center;
+  font-size: var(--type-caption); line-height: var(--type-caption-lh);
 }
-/* The stem: from the bottom of the U down to the DOM square */
-.two-trees__stem {
-  grid-row: 4; grid-column: 1 / 3;
-  width: var(--tt-stroke); height: var(--space-3); background: var(--line);
+.ax-sketch__knot { width: var(--sk-knot); height: var(--sk-knot); border-radius: var(--radius-round); background: var(--line); }
+/* the stem starts at the knot's bottom edge */
+.ax-sketch__children {
+  grid-column: 1 / -1; margin-top: calc((var(--sk-knot) - var(--type-caption-lh)) / 2);
+  margin-left: var(--sk-stem-x);
 }
-.two-trees__foot {
-  grid-row: 5; grid-column: 1 / 3; max-width: 100%;
-  display: flex; flex-direction: column; align-items: center;
-  gap: var(--space-1); font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); text-align: center;
+.ax-sketch__node {
+  position: relative; display: grid; grid-template-columns: var(--sk-reach) var(--sk-shape) minmax(0, 1fr);
+  column-gap: var(--space-0); align-items: center; padding-top: var(--sk-gap);
 }
-.two-trees__dom { flex: none; width: var(--space-3); height: var(--space-3); background: var(--line); }
-.two-trees__foot span:last-child { max-width: min(100%, var(--space-40)); }
+.ax-sketch__node > .ax-sketch__shape { grid-column: 2; }
+.ax-sketch__node > .ax-sketch__text { grid-column: 3; padding-left: var(--space-2); }
+/* the stem piece down to this node, and on, unless it is the last */
+.ax-sketch__node::before {
+  content: ""; position: absolute; left: var(--space-0); top: var(--space-0); bottom: var(--space-0);
+  width: var(--sk-stroke); background: var(--line);
+}
+.ax-sketch__node--end::before { bottom: auto; height: calc(var(--sk-gap) + var(--sk-shape) / 2 + var(--sk-stroke) / 2); }
+/* the branch, from the stem to the shape, at the shape's centre */
+.ax-sketch__node::after {
+  content: ""; position: absolute; left: var(--space-0);
+  top: calc(var(--sk-gap) + var(--sk-shape) / 2 - var(--sk-stroke) / 2);
+  width: var(--sk-reach); height: var(--sk-stroke); background: var(--line);
+}
+/* the heading's arc continues its branch and bends down, as a plate's arc */
+.ax-sketch__node--heading > .ax-sketch__shape {
+  align-self: start; margin-top: calc(var(--sk-shape) / 2 - var(--sk-stroke) / 2);
+  width: var(--sk-shape); height: calc(var(--sk-shape) / 2); box-sizing: border-box;
+  border-top: var(--sk-stroke) solid var(--line); border-right: var(--sk-stroke) solid var(--line);
+  /* a transparent left border of the same width: without it Chrome draws
+     a hairline where the curved right border meets a zero-width edge */
+  border-left: var(--sk-stroke) solid transparent;
+  border-top-right-radius: 100% 100%;
+}
+/* that left border mitres the arc's first corner: the branch reaches one
+   stroke into the arc so the joint stays solid */
+.ax-sketch__node--heading::after { width: calc(var(--sk-reach) + var(--sk-stroke)); }
+/* the button's circle: blue, empty while not pressed */
+.ax-sketch__node--button > .ax-sketch__shape {
+  width: var(--sk-shape); height: var(--sk-shape); box-sizing: border-box;
+  border: var(--sk-stroke) solid var(--shape-circle); border-radius: var(--radius-round);
+}
+.ax-sketch__text { min-width: 0; overflow-wrap: anywhere; font-size: var(--type-caption); line-height: var(--type-caption-lh); color: var(--ink); }
+.ax-sketch__role { font-family: var(--font-mono); color: var(--ink); }
+.ax-sketch__state { font-family: var(--font-mono); color: var(--ink-soft); }
+
+/* The four readings drink from the button: a sap stem from the circle's
+   bottom, a sap branch to each reading's label */
+.ax-sketch__readings {
+  --sk-sap-x: calc(var(--sk-stem-x) + var(--sk-reach) + var(--sk-shape) / 2 - var(--sk-stroke) / 2);
+  /* the figure's row gap is undone: the sap starts at the circle's bottom */
+  margin: calc(-1 * var(--space-1)) 0 0; padding-left: var(--sk-sap-x);
+}
+.ax-sketch__reading {
+  position: relative; display: grid; grid-template-columns: var(--sk-reach) minmax(0, 1fr);
+  padding-top: var(--sk-gap);
+}
+.ax-sketch__reading > dt, .ax-sketch__reading > dd { grid-column: 2; padding-left: var(--space-2); }
+.ax-sketch__reading::before {
+  content: ""; position: absolute; left: var(--space-0); top: var(--space-0); bottom: var(--space-0);
+  width: var(--sk-stroke); background: var(--sap);
+}
+.ax-sketch__reading--end::before { bottom: auto; height: calc(var(--sk-gap) + var(--type-body-lh) / 2 + var(--sk-stroke) / 2); }
+.ax-sketch__reading::after {
+  content: ""; position: absolute; left: var(--space-0);
+  top: calc(var(--sk-gap) + var(--type-body-lh) / 2 - var(--sk-stroke) / 2);
+  width: var(--sk-reach); height: var(--sk-stroke); background: var(--sap);
+}
+/* who reads: a category label; what reaches them: the readout */
+.ax-sketch__reading > dt {
+  font-family: var(--font-display); font-weight: var(--fw-semibold);
+  font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink-soft);
+}
+.ax-sketch__reading > dd {
+  margin: 0; font-family: var(--font-display);
+  font-size: var(--type-subhead); line-height: var(--type-subhead-lh); color: var(--ink);
+}
+/* the real Unicode Braille Patterns of «Sonido» (capital sign 46, s, o,
+   n, i, d, o), hidden from assistive tech, which reads «Sonido» */
+.ax-sketch__cells { font-size: var(--type-title); line-height: var(--type-title-lh); letter-spacing: var(--tracking-caps); overflow-wrap: anywhere; }
+.ax-sketch__plain { color: var(--ink-soft); }
+/* what an agent takes, the visitor can see and take too: the whole tree */
+.ax-sketch__export { margin-top: var(--half); }
+.ax-sketch__foot { margin: var(--space-1) 0 0; font-size: var(--type-caption); line-height: var(--type-caption-lh); color: var(--ink-soft); }
 
 /* ------------------------------------------------------------
-   THE ANATOMY OF A NODE — one tag, read the way the tree reads it:
-   role, name and state, each with where it comes from. It is the
-   same card the inspector shows live, so it teaches how to read it.
-   Role wears the element's grammar colour (a <button>: blue circle);
-   state wears sap, the colour of what is alive and changes.
+   THE AGENT'S PATH — what an AI agent takes from this page, in the
+   order it takes it: it finds the page, learns what it is, reads the
+   summary, reads every node, and acts. Each step: its source, a chip
+   on one stem (the way flowers hang on one), a verb read from the
+   room, and one line. Four steps read, so their chips are outlined;
+   the last one acts, so its chip is filled and the stem ends there.
+   Each step draws its own piece of stem, from its chip's centre to
+   the next chip's centre, so every joint meets whatever the lines.
+   The outline is an inset outline, not a shadow: forced colours keep
+   outlines and drop shadows.
    ------------------------------------------------------------ */
-.anatomy {
-  --anatomy-key: var(--space-10);
-  margin: 0; padding: var(--space-2);
-  border: var(--stroke-fine) solid var(--line); background: var(--surface-plate);
-  display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gap-xs);
+.agent-path {
+  --path-key: var(--space-14);                     /* the chips' column */
+  --path-gap: var(--space-1);
+  --path-stem: var(--stroke-bold);
+  --path-mid: calc(var(--type-caption-lh) / 2);    /* a chip's centre: on the verb's line */
+  margin: 0; display: grid; gap: var(--gap-xs);
 }
-.anatomy__title {
-  font-family: var(--font-display); font-weight: var(--fw-bold);
-  font-size: var(--type-label); line-height: var(--type-label-lh);
-  text-transform: uppercase; letter-spacing: var(--tracking-caps);
+.agent-path__steps { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--path-gap); }
+.agent-path__step {
+  position: relative; display: grid; grid-template-columns: var(--path-key) minmax(0, 1fr);
+  column-gap: var(--gap-xs); align-items: start;
 }
-.anatomy__code {
-  margin: 0; padding: var(--space-1) var(--space-2); overflow-x: auto;
-  font-family: var(--font-mono); font-size: var(--type-body); line-height: var(--type-body-lh);
-  background: var(--surface-canvas); border-left: var(--stroke-bold) solid var(--shape-circle);
+.agent-path__step:not(.agent-path__step--act)::before {
+  content: ""; position: absolute;
+  left: calc(var(--path-key) / 2 - var(--path-stem) / 2); top: var(--path-mid);
+  width: var(--path-stem); height: calc(100% + var(--path-gap));
+  background: var(--line);
 }
-.anatomy__parts { margin: 0; display: grid; gap: var(--space-1); }
-.anatomy__part {
-  display: grid; grid-template-columns: var(--anatomy-key) minmax(0, 1fr); align-items: baseline; gap: var(--space-2);
-  padding-left: var(--space-2); border-left: var(--stroke-bold) solid var(--part, var(--line));
+.agent-path__source {
+  position: relative; z-index: var(--z-base); justify-self: center;
+  padding: 0 var(--space-1);
+  font-family: var(--font-mono); font-size: var(--type-caption); line-height: var(--type-caption-lh);
+  color: var(--ink); background: var(--surface-canvas);
+  outline: var(--stroke-fine) solid var(--line); outline-offset: calc(-1 * var(--stroke-fine));
 }
-.anatomy__part--role { --part: var(--shape-circle); }
-.anatomy__part--name { --part: var(--line); }
-.anatomy__part--state { --part: var(--sap); }
-.anatomy__part dt {
-  font-family: var(--font-mono); font-weight: var(--fw-semibold);
-  font-size: var(--type-label); line-height: var(--type-body-lh); color: var(--ink);
+.agent-path__step--act .agent-path__source { color: var(--surface-canvas); background: var(--line); }
+.agent-path__text { margin: 0; font-size: var(--type-caption); line-height: var(--type-caption-lh); color: var(--ink-soft); }
+.agent-path__verb {
+  display: block; font-family: var(--font-display); font-weight: var(--fw-semibold);
+  font-size: var(--type-subhead); line-height: var(--type-subhead-lh); color: var(--ink);
 }
-.anatomy__part dd {
-  margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; column-gap: var(--space-2);
-  font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink);
-}
-.anatomy__part dd > span { font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); }
-.anatomy__foot { margin: 0; font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); }
 
 /* ============================================================
    THE NEW STATIONS — read from the back of the room: every word on
@@ -1335,7 +1405,7 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   --atlas-petal: var(--space-3);
   margin: 0; display: grid; gap: var(--gap-xs); max-width: var(--space-64);
 }
-.atlas__title, .readers__title, .focus-order__title, .strata__title {
+.atlas__title, .focus-order__title, .strata__title, .agent-path__title {
   font-family: var(--font-display); font-weight: var(--fw-bold);
   font-size: var(--type-heading); line-height: var(--type-heading-lh); color: var(--ink);
 }
@@ -1349,8 +1419,8 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
 .atlas__region--main { padding-block: var(--space-1); }
 /* a landmark inside another one hangs one module in */
 .atlas__region--nested { margin-left: var(--space-4); }
-.atlas__role { font-family: var(--font-mono); font-weight: var(--fw-bold); color: var(--ink); }
-.atlas__name { font-family: var(--font-display); color: var(--ink-soft); }
+.atlas__role { font-family: var(--font-mono); color: var(--ink); }
+.atlas__name { font-family: var(--font-display); color: var(--ink); }
 .atlas__petals { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: var(--half); margin-top: var(--space-1); }
 /* a petal: a circle with two opposite corners pulled square — the
    cover's leaf, upright, never rotated */
@@ -1373,26 +1443,7 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   margin: 0; display: grid; gap: var(--half);
   font-family: var(--font-display); font-size: var(--type-subhead); line-height: var(--type-subhead-lh); color: var(--ink);
 }
-.atlas__say-label { font-family: var(--font-mono); color: var(--ink-soft); }
-
-/* 1 · One node, four readings: the same <button> as heard, felt,
-   called and parsed. Each reading is a band with the trunk's ink edge;
-   the braille cells are the real Unicode Braille Patterns of «Do»
-   (capital sign, d, o), hidden from assistive tech, which reads «Do». */
-.readers { margin: 0; display: grid; gap: var(--gap-xs); max-width: var(--space-64); }
-.readers__node { margin: 0; font-size: var(--type-subhead); line-height: var(--type-subhead-lh); }
-.readers__list { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gap-2xs); }
-.readers__item {
-  display: grid; align-content: start; gap: var(--half);
-  padding: var(--half) var(--space-2); border-left: var(--stroke-heavy) solid var(--line); background: var(--surface-plate);
-}
-.readers__item dt { font-family: var(--font-mono); font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink-soft); }
-.readers__item dd { margin: 0; font-family: var(--font-display); font-size: var(--type-subhead); line-height: var(--type-subhead-lh); color: var(--ink); }
-.readers__cells { font-size: var(--type-title); line-height: var(--type-title-lh); letter-spacing: var(--tracking-caps); }
-.readers__plain { color: var(--ink-soft); }
-/* the agent reads the node and, with WebMCP, can also act: said under its JSON */
-.readers__item--agent code { font-size: var(--type-body); line-height: var(--type-body-lh); }
-.readers__acts { display: block; margin-top: var(--half); font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink-soft); }
+.atlas__say-label { font-weight: var(--fw-semibold); font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink-soft); }
 
 /* 7 · The focus order: four real buttons, each wearing its place in
    the HTML as a big numeral. «Mover con CSS» only changes `order`:
@@ -1433,8 +1484,8 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   padding: var(--space-2) var(--space-3);
   border-left: var(--stroke-heavy) solid var(--station-live); background: var(--surface-plate);
 }
-.echo__label { font-family: var(--font-mono); font-size: var(--type-subhead); line-height: var(--type-subhead-lh); color: var(--ink-soft); }
-.echo__text { font-family: var(--font-display); font-size: var(--type-heading); line-height: var(--type-heading-lh); color: var(--ink); }
+.echo__label { font-family: var(--font-display); font-weight: var(--fw-semibold); font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink-soft); }
+.echo__text { font-family: var(--font-display); font-size: var(--type-subhead); line-height: var(--type-subhead-lh); color: var(--ink); }
 
 /* 12 · Layers: two planes, one over the other. While the real dialog is
    open, the plane underneath goes grey — inert — on the plate too. */
@@ -1456,7 +1507,7 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   right: 0; bottom: 0; z-index: var(--z-base);
   background: color-mix(in oklab, var(--station-layers) var(--wash-24), var(--surface-canvas));
 }
-:root:has(.layer[open]) .strata__plane--under { background: var(--k-grey); color: var(--ink-soft); }
+:root:has([data-layer][open]) .strata__plane--under { background: var(--k-grey); color: var(--ink-soft); }
 .layer {
   max-width: min(calc(100% - var(--space-4)), var(--space-64));
   padding: var(--space-4); border: var(--stroke-bold) solid var(--line);
@@ -1468,7 +1519,21 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   font-size: var(--type-title); line-height: var(--type-title-lh);
 }
 .layer__text { margin: 0 0 var(--space-3); font-size: var(--type-lead); line-height: var(--type-lead-lh); }
-.layer__foot { margin: 0; }
+.layer__foot { margin: 0; display: flex; flex-wrap: wrap; gap: var(--gap-xs); }
+/* 1 · The tree an agent takes: the same layer, wider, tinted by its
+   station; the data scrolls inside it (focusable, so the keyboard
+   scrolls it too), never the page */
+.layer--tree { max-width: min(calc(100% - var(--space-4)), var(--space-100)); }
+.layer--tree::backdrop { background: color-mix(in oklab, var(--station-structure) var(--wash-48), transparent); }
+.layer__data {
+  margin: 0 0 var(--space-3); max-height: 50dvh; overflow: auto;
+  padding: var(--space-2); background: var(--surface-plate);
+  border-left: var(--stroke-bold) solid var(--line);
+  font-family: var(--font-mono); font-size: var(--type-caption); line-height: var(--type-caption-lh);
+  white-space: pre; color: var(--ink);
+}
+/* the data is one block: no chip behind every line */
+.layer__data code { padding: 0; background: none; font-size: inherit; line-height: inherit; }
 
 @media (forced-colors: active) {
   .atlas__petal, .atlas__bar { forced-color-adjust: none; }
@@ -1559,13 +1624,13 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   padding: var(--space-2); max-width: var(--space-64); display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gap-xs);
 }
 .watering__title {
-  margin: 0; font-family: var(--font-display); font-weight: var(--fw-bold);
+  margin: 0; font-family: var(--font-display); font-weight: var(--fw-semibold);
   font-size: var(--type-body); line-height: var(--type-body-lh);
 }
-.watering__title span { font-weight: var(--fw-regular); font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); }
+.watering__title span { font-family: var(--font-body); font-weight: var(--fw-regular); font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); }
 .field { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-1); }
 .field__label { font-family: var(--font-display); font-weight: var(--fw-semibold); font-size: var(--type-body); line-height: var(--type-body-lh); }
-.field__req { font-weight: var(--fw-regular); font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); }
+.field__req { font-family: var(--font-body); font-weight: var(--fw-regular); font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); }
 .field__input {
   font-family: var(--font-body); font-size: var(--type-body); line-height: var(--type-body-lh); min-height: var(--touch);
   padding: var(--space-1) var(--space-2); color: var(--ink); background: var(--surface-canvas);
@@ -1573,7 +1638,7 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
 }
 .field__input:focus-visible { outline: var(--focus-width) solid var(--focus); outline-offset: var(--focus-offset); }
 .field__input[aria-invalid="true"] { border-bottom: var(--space-1) double var(--k-red); }
-.field__help { margin: 0; font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); }
+.field__help { margin: 0; font-size: var(--type-caption); line-height: var(--type-caption-lh); color: var(--ink-soft); }
 .field__error[hidden], .field__ok[hidden] { display: none; }
 .field__error {
   display: flex; gap: var(--space-1); align-items: flex-start; margin: 0;
@@ -1631,10 +1696,10 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   content: ""; position: absolute; inset: 0; background: var(--swatch-c);
   clip-path: polygon(50% 15%, 89% 93%, 11% 93%);
 }
-.palette__name { font-family: var(--font-display); font-weight: var(--fw-semibold); }
+.palette__name { font-weight: var(--fw-semibold); color: var(--ink); }
 .palette__ratio { font-family: var(--font-mono); }
 .palette__use { grid-column: 2 / -1; color: var(--ink-soft); }
-.palette figcaption { font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); }
+.palette figcaption { font-size: var(--type-caption); line-height: var(--type-caption-lh); color: var(--ink-soft); }
 
 /* ============================================================
    THE CRAFT — a notebook of decisions: pattern, reason, experience
@@ -1676,16 +1741,6 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
 .practice__anti b { color: var(--ink); }
 
 /* ============================================================
-   WHAT MACHINES TAKE AWAY — a summary readable by agents
-   ============================================================ */
-.agents { border: var(--stroke-fine) solid var(--sprout); background: var(--surface-plate); padding: var(--space-2); max-width: var(--space-64); }
-.agents__title { margin: 0 0 var(--space-1); font-size: var(--type-body); line-height: var(--type-body-lh); font-family: var(--font-display); }
-.agents p { margin: 0 0 var(--space-1); font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); }
-.agents ul { margin: 0 0 var(--space-1); padding-left: var(--space-3); display: grid; gap: var(--space-1); }
-.agents li { font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); }
-.agents__actions { display: flex; flex-wrap: wrap; gap: var(--gap-xs); align-items: center; }
-
-/* ============================================================
    ≥ 48rem (768 px): more air, staggered clusters
    ============================================================ */
 @media (min-width: 48rem) {
@@ -1696,7 +1751,7 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   }
   .cluster { --slot-x: calc(var(--space-3) + var(--dz, 0) * var(--space-2)); }
   .branch { --pb: var(--space-4); }
-  .data-card__json, .pair__code, .anatomy__code { white-space: pre; overflow-wrap: normal; }
+  .pair__code { white-space: pre; overflow-wrap: normal; }
 }
 
 /* ============================================================
@@ -1783,6 +1838,10 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   .flower-card__canvas::before { content: none; }
   /* centred on the stem */
   .cluster .flower-card { justify-items: center; }
+  /* A cluster gives each flower its own row, so its cartela may be
+     wider than the flower: read at caption size, it stays at two
+     lines, centred on the stem, instead of a tall column of three */
+  .cluster .flower-card__caption { width: max-content; max-width: var(--space-40); }
   .satellite { left: calc(50% + var(--space-6)); top: var(--space-2); }
   .branch--left .satellite { left: auto; right: calc(50% + var(--space-6)); }
   .tendril { left: calc(50% + var(--space-8)); top: calc(var(--arc-top) + var(--space-4)); }
@@ -1947,17 +2006,31 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   #live .echo { grid-column: var(--bank-proof); grid-row: 2; }
   #live .closer { grid-column: var(--bank-proof); grid-row: 3; align-self: start; }
   #live .pair { max-width: none; }
-  /* 1 · Structure: the two trees and, under them, the four readings on
-     the proof bank; the close reading under the claim */
+  /* 1 · Structure: the HTML and its tree and, under them, the four readings on
+     the proof bank; under the claim, what an agent takes from the page */
   :is(#structure, #route, #patterns) .branch__visual { display: contents; }
   :is(#structure, #route, #patterns) .branch__load--flowers > .note { grid-column: var(--bank-claim); grid-row: 1; }
   /* The free height goes to the last row only: shared between two auto
      rows, it pushed «Leer de cerca» down while closed and the summary
      slid up under the pointer when it opened */
   :is(#structure, #patterns) .branch__load--flowers { grid-template-rows: auto 1fr; }
-  #structure .two-trees { grid-column: var(--bank-proof); grid-row: 1; }
-  #structure .readers { grid-column: var(--bank-proof); grid-row: 2; }
-  #structure .closer { grid-column: var(--bank-claim); grid-row: 2; align-self: start; }
+  /* EACH BANK STACKS ON ITS OWN. Rows only line up the two banks'
+     tops; a piece never waits for the other bank's height. Three rows:
+     the first piece of each bank, a hinge, and the free height (1fr,
+     always last, so opening a fold never shifts what is above it).
+     A bank's first piece spans the hinge when it is the taller one;
+     the other bank's second piece starts in the hinge. */
+  #structure .branch__load--flowers { grid-template-rows: auto auto 1fr; }
+  #structure .branch__load--flowers > .note { grid-row: 1 / span 2; }
+  #structure .ax-sketch { grid-column: var(--bank-proof); grid-row: 1 / span 3; }
+  #structure .agent-path { grid-column: var(--bank-claim); grid-row: 3; align-self: start; }
+  /* 2 · Synesthesia: the flower, and right under it the switches that
+     take its channels away; the claim, and under it the score */
+  #synesthesia .branch__load--flowers { grid-template-rows: auto auto 1fr; }
+  #synesthesia .branch__load--flowers > .note { grid-column: var(--bank-claim); grid-row: 1 / span 2; }
+  #synesthesia .cluster { grid-column: var(--bank-proof); grid-row: 1; }
+  #synesthesia .channels { grid-column: var(--bank-proof); grid-row: 2 / span 2; }
+  #synesthesia .branch__load--flowers > .score { grid-column: var(--bank-claim); grid-row: 3; }
   /* 3 · The map on the proof bank; the group (the bouquet) under the claim */
   #route .atlas { grid-column: var(--bank-proof); grid-row: 1 / span 2; }
   #route .bouquet { grid-column: var(--bank-claim); grid-row: 2; align-self: start; }
@@ -1970,7 +2043,7 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   #color .palette { max-width: none; }
   #color .palette__list { grid-template-columns: 1fr 1fr; column-gap: var(--gap-s); }
   /* The pattern pair and the long boxes fill their bank */
-  #focus .pair, .practice__anti, .data-card { max-width: none; }
+  #focus .pair, .practice__anti { max-width: none; }
 
   /* Clusters measured by height too: three flowers and their cartelas
      fit one screen. Never under the 48 px touch target. (.cluster in
@@ -1996,16 +2069,19 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
     --drop: calc(var(--drop0) + max(var(--space-0), (100dvh - var(--pb) - var(--drop0) - var(--load-pad) - var(--space-2) - var(--hc)) * var(--bend)));
   }
   .branch--thick { --drop0: var(--space-12); }
-  /* measured load heights, in grid modules (1707 × 917) */
+  /* measured load heights, in grid modules (1707 × 917). Declaring
+     less than the real load bends the branch too deep and pushes the
+     scene past the screen: re-measure when a plate's type changes
+     (route and patterns, 2026-11-23, after the caption tier) */
   #synesthesia { --hc: calc(var(--unit) * 93); }
   #role { --hc: calc(var(--unit) * 72); }   /* claim + coda, the taller bank */
   #name { --hc: calc(var(--unit) * 85); }
   #state { --hc: calc(var(--unit) * 76); }
   #color { --hc: calc(var(--unit) * 67); }
-  #route { --hc: calc(var(--unit) * 60); }
+  #route { --hc: calc(var(--unit) * 83); }
   #live { --hc: calc(var(--unit) * 80); }
   #layers { --hc: calc(var(--unit) * 48); }
-  #patterns { --hc: calc(var(--unit) * 72); }
+  #patterns { --hc: calc(var(--unit) * 79); }
   .ground {
     --hc: calc(var(--unit) * 43); --bend: 0.45;
     --drop: calc(var(--space-10) + max(var(--space-0), (100dvh - var(--pb) - var(--space-10) - var(--load-pad) - var(--space-2) - var(--hc)) * var(--bend)));

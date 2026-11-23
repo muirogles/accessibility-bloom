@@ -66,6 +66,7 @@
   --sys-button-face: buttonface;
   --sys-button-text: buttontext;
   --sys-highlight: highlight;
+  --sys-gray-text: graytext;
 
   /* --- The grid: one 8 px module --- */
   --unit: 0.5rem;
@@ -240,7 +241,13 @@
   --type-lead: var(--fs-24);      --type-lead-lh: var(--lh-32);      /* the one sentence each plate states */
   --type-subhead: var(--fs-20);   --type-subhead-lh: var(--lh-24);
   --type-body: var(--fs-16);      --type-body-lh: var(--lh-24);
-  --type-label: var(--fs-12);     --type-label-lh: var(--lh-16);     /* cartelas, code, mono notes */
+  /* What the room reads under the headline: each plate's invitation,
+     figure captions and live readouts. Never under body size: in a
+     projected room, 12 px is not read from the seats. */
+  --type-caption: var(--fs-16);   --type-caption-lh: var(--lh-24);
+  /* Reference details read up close: WCAG ids, frequencies, code tags,
+     the inspector's rows */
+  --type-label: var(--fs-12);     --type-label-lh: var(--lh-16);
 
   /* --- Gaps by role --- */
   --gap-2xs: var(--space-1);      /*  8: a thing and its label */
@@ -278,6 +285,7 @@
   --forced-control-bg: var(--sys-button-face);
   --forced-control-ink: var(--sys-button-text);
   --forced-focus: var(--sys-highlight);
+  --forced-unavailable: var(--sys-gray-text);   /* a control that cannot act now */
 
   /* --- Accessibility guarantees --- */
   --touch: var(--space-6);        /* 48 px: above the 44 of 2.5.5 */
