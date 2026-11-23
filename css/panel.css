@@ -38,7 +38,7 @@
   font-size: var(--type-subhead); line-height: var(--type-subhead-lh);
   margin: 0 0 var(--space-1); color: var(--ink);
 }
-.panel__close { flex: none; --control-pad: var(--space-2); }
+.panel__close { flex: none; }
 .panel__note {
   font-size: var(--type-label); line-height: var(--type-label-lh);
   color: var(--ink-soft); margin: 0 0 var(--space-1);
@@ -51,7 +51,7 @@
 }
 /* Two controls of the system, sharing the row */
 .panel__actions { display: flex; gap: var(--gap-2xs); margin: var(--space-1) 0; }
-.panel__action { flex: 1; --control-pad: var(--space-1); }
+.panel__action { flex: 1; }
 
 /* The tree: the ONLY scrolling area of the panel */
 .tree {

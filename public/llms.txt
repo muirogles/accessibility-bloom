@@ -61,7 +61,9 @@ En pantallas grandes (90 × 56 rem o más) cada estación ocupa exactamente una
 pantalla y el desplazamiento se asienta al principio de cada una, sin
 atrapar; con zoom o en pantallas pequeñas, la obra vuelve a su flujo normal.
 Cada escena es una lámina con una jerarquía fija: numeral de la estación,
-título, entradilla, cuerpo y detalle. El tronco la parte en dos: la
+título, entradilla, cuerpo y detalle. La invitación de cada lámina, los pies
+de figura y las cartelas en vivo van a tamaño de cuerpo, para leerse desde
+la sala; solo el detalle de consulta queda a 12 px. El tronco la parte en dos: la
 afirmación en una orilla y la evidencia en la otra. Tallo, tronco y raíz son
 un solo trazo que engorda hacia la tierra, y cada ramillete cuelga
 exactamente del nudo en que acaba su arco. Todo el diseño sale de una
@@ -116,7 +118,7 @@ inspector; lo oculto a la vista pero presente en el árbol se marca «solo en el
 
 I · El árbol
 
-- [1 · La estructura y sus lectores](index.html#structure): dos árboles del mismo HTML; un nodo y cuatro lecturas (lector, braille, voz, IA)
+- [1 · La estructura y sus lectores](index.html#structure): la cabecera de la página, del HTML a su Árbol de Accesibilidad, dibujada con el punto, la línea y el plano; un nodo y cuatro lecturas (lector, braille, voz, IA); lo que se lleva un agente, de encontrar la página a actuar (rel="ard", JSON-LD, llms.txt, el árbol, WebMCP)
 - [2 · La sinestesia de la obra](index.html#synesthesia): forma, color, timbre, texto y nodo dicen lo mismo; «Quita un canal»
 - [3 · La ruta: regiones, grupos y listas](index.html#route): landmarks y encabezados leídos en vivo
 
@@ -205,8 +207,8 @@ La flor se abre cuando es verdad que está abierta.
 - El inspector muestra los niveles reales del árbol y también los nodos de
   texto (StaticText) de los nodos sin nombre accesible, que es lo que lee la
   tecnología de apoyo.
-- El Árbol de Accesibilidad se puede descargar en JSON desde «Leer de
-  cerca», en la estación 1: rol, nombre, origen del nombre, estado e
+- El Árbol de Accesibilidad se ve y se descarga en JSON desde «Ver el árbol»,
+  en la estación 1: rol, nombre, origen del nombre, estado, acción e
   identificador de cada nodo, con la misma poda que aplica el navegador.
 - La ficha del inspector muestra también la acción que el árbol ofrece
   para cada nodo (press, jump, check, uncheck, activate, open).
