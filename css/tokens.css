@@ -1,60 +1,379 @@
 /* ============================================================
-   TOKENS — modo claro: lienzo de lino Kandinsky, tinta negra,
-   formas planas saturadas. Referencia cromática de su etapa
-   Bauhaus sobre soporte claro.
+   TOKENS — three tiers, and no value lives outside them:
+     1 · PRIMITIVE   what exists: measured colours, the 8 grid, the
+                     type scale, strokes, time. No intent.
+     2 · SEMANTIC    what it is for: body text, title, gap between
+                     pieces, the trunk's line… Only cites primitives.
+     3 · COMPONENT   lives inside each component (--note-*,
+                     --branch-*, --flower-*…) and only cites semantics.
+   THE 8 GRID. Every space is a multiple of 8 px, written in rem
+   (0.5rem = 8 px) so browser zoom scales everything together. Type
+   allows the 4 px half-step (12 · 20), and every line-height lands
+   on the grid: each line of text takes a whole number of modules and
+   nothing drifts out of alignment.
+   Fixed pixels exist only in strokes, as integers in powers of two
+   (1 · 2 · 4 · 8): a 3 px or 1.5 px stroke has no place here.
+   Kandinsky linen canvas, black ink, flat saturated shapes: the
+   colour reference of his Bauhaus period on a light ground.
    ============================================================ */
+/* Zero is written 0, once, here. Registered as a length so that it
+   stays a length inside calc(), min() and max(): an unregistered
+   bare 0 there is a number and voids the whole expression. */
+@property --space-0 { syntax: '<length>'; inherits: true; initial-value: 0; }
+
 :root {
-  /* --- Primitivos --- */
-  --k-linen: #f3ead6;      /* el lino del cuadro */
-  --k-linen-2: #eadfc6;    /* bandas y suelo */
-  --k-surface: #fbf5e7;  /* placas y panel */
-  --ink: #17150f;
-  --ink-soft: #453f33;
-  --line: #17150f;         /* la línea: tronco, ramas, contornos */
+  /* ==========================================================
+     1 · PRIMITIVE
+     ========================================================== */
+  /* --- Colour: each one measured against the linen (station 10) --- */
+  --k-linen: #f3ead6;      /* the canvas linen */
+  --k-linen-2: #eadfc6;    /* bands and soil */
+  --k-surface: #fbf5e7;    /* plates and panel */
+  --k-ink: #17150f;        /* 15.3:1 */
+  --k-ink-soft: #453f33;
   --k-yellow: #f2b705;
   --k-red: #d81e3f;
+  --k-red-deep: #b3132f;   /* red for small text: 5.8:1 */
   --k-blue: #0047ab;
   --k-green: #4e7c3a;
-  --k-ochre: #8a5a00;
+  --k-green-deep: #3d6129; /* green for text: 6.0:1 */
+  --k-ochre: #855600;
+  --k-ochre-deep: #5c3b00; /* ochre text on yellow */
   --k-cyan: #0f7f8c;
   --k-violet: #4b2e83;
   --k-grey: #8d857a;
   --k-grey-dark: #565048;
+  /* Five more, so each of the fourteen stations owns one colour (the
+     cover's petal and its plate): from Kandinsky's own palette */
+  --k-orange: #d2621a;     /* 3.1:1 */
+  --k-pink: #e3829f;       /* 2.2:1: like the yellow, never without an ink edge */
+  --k-magenta: #a3247a;    /* 5.7:1 */
+  --k-olive: #7c7a22;      /* 3.8:1 */
+  --k-earth: #6b4426;      /* 7.1:1 */
+  --k-white: #ffffff;
+  /* Two more from the approved 16-colour list (2026-11-22). Graphics
+     only, always with an ink edge: like pink and yellow, they are not
+     text colours. Sky is the rose prototype's flute blue; lavender is
+     violet withdrawn toward linen. Contrast against linen was not
+     re-measured in this pass. */
+  --k-sky: #5aa0d8;
+  --k-lavender: #cdbfe6;
 
-  /* --- Semánticos: una forma, un color, una etiqueta --- */
+  /* --- System colours (forced-colors mode): the user's own palette.
+     Keywords are case-insensitive; this codebase writes them lowercase. */
+  --sys-canvas: canvas;
+  --sys-text: canvastext;
+  --sys-button-face: buttonface;
+  --sys-button-text: buttontext;
+  --sys-highlight: highlight;
+
+  /* --- The grid: one 8 px module --- */
+  --unit: 0.5rem;
+  --space-0: 0;
+  --space-1: calc(var(--unit) * 1);    /*   8 */
+  --space-2: calc(var(--unit) * 2);    /*  16 */
+  --space-3: calc(var(--unit) * 3);    /*  24 */
+  --space-4: calc(var(--unit) * 4);    /*  32 */
+  --space-5: calc(var(--unit) * 5);    /*  40 */
+  --space-6: calc(var(--unit) * 6);    /*  48 */
+  --space-7: calc(var(--unit) * 7);    /*  56 */
+  --space-8: calc(var(--unit) * 8);    /*  64 */
+  --space-9: calc(var(--unit) * 9);    /*  72 */
+  --space-10: calc(var(--unit) * 10);  /*  80 */
+  --space-12: calc(var(--unit) * 12);  /*  96 */
+  --space-14: calc(var(--unit) * 14);  /* 112 */
+  --space-16: calc(var(--unit) * 16);  /* 128 */
+  --space-20: calc(var(--unit) * 20);  /* 160 */
+  --space-24: calc(var(--unit) * 24);  /* 192 */
+  --space-32: calc(var(--unit) * 32);  /* 256 */
+  --space-40: calc(var(--unit) * 40);  /* 320 */
+  --space-44: calc(var(--unit) * 44);  /* 352 */
+  --space-48: calc(var(--unit) * 48);  /* 384 */
+  --space-56: calc(var(--unit) * 56);  /* 448 */
+  --space-64: calc(var(--unit) * 64);  /* 512 */
+  --space-72: calc(var(--unit) * 72);  /* 576 */
+  --space-80: calc(var(--unit) * 80);  /* 640 */
+  --space-96: calc(var(--unit) * 96);  /* 768 */
+  --space-100: calc(var(--unit) * 100); /* 800 */
+  --space-120: calc(var(--unit) * 120); /* 960 */
+  --space-200: calc(var(--unit) * 200); /* 1600 */
+  /* --- The golden ratio: the cover's and the map's one proportion --- */
+  --phi: 1.6180340;
+
+  /* the half-step: type, line-height and offsets only, never gaps */
+  --half: calc(var(--unit) / 2);       /*   4 */
+
+  /* --- Type scale (8 with a 4 half-step) --- */
+  --fs-12: calc(var(--unit) * 1.5);
+  --fs-16: calc(var(--unit) * 2);
+  --fs-20: calc(var(--unit) * 2.5);
+  --fs-24: calc(var(--unit) * 3);
+  --fs-32: calc(var(--unit) * 4);
+  --fs-40: calc(var(--unit) * 5);
+  --fs-48: calc(var(--unit) * 6);
+  --fs-64: calc(var(--unit) * 8);
+  --fs-80: calc(var(--unit) * 10);
+  --fs-160: calc(var(--unit) * 20);
+  /* line-heights: always whole modules */
+  --lh-16: var(--space-2);
+  --lh-24: var(--space-3);
+  --lh-32: var(--space-4);
+  --lh-40: var(--space-5);
+  --lh-48: var(--space-6);
+  --lh-56: var(--space-7);
+  --lh-72: calc(var(--unit) * 9);
+  --lh-88: calc(var(--unit) * 11);
+  --lh-160: var(--space-20);
+
+  /* --- Families and weights --- */
+  --ff-display: 'Space Grotesk', sans-serif;
+  --ff-body: 'Archivo', system-ui, sans-serif;
+  --ff-mono: ui-monospace, 'Cascadia Mono', 'Courier New', monospace;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+  --tracking-tight: -0.03em;
+  --tracking-caps: 0.08em;
+  --underline-offset: 0.16em;          /* relative to the text it underlines */
+
+  /* --- Strokes: fractions of the unit, powers of two (1 · 2 · 4 · 8
+     at the default 16 px root). Relative like everything else: they
+     grow with the reader's font size and stay whole pixels at 100 %. --- */
+  --stroke-1: calc(var(--unit) / 8);
+  --stroke-2: calc(var(--unit) / 4);
+  --stroke-4: calc(var(--unit) / 2);
+  --stroke-8: var(--unit);
+
+  /* --- Radii --- */
+  --radius-1: var(--half);             /* 4: code and key corners */
+  --radius-2: var(--space-1);          /* 8 */
+  --radius-pill: var(--space-4);       /* 32: controls */
+  --radius-round: 50%;
+
+  /* --- Time: doubling steps, like the grid --- */
+  --dur-1: 120ms;
+  --dur-2: 240ms;
+  --dur-3: 480ms;
+  --dur-4: 960ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);   /* brakes on arrival, no bounce */
+  --ease-inout: cubic-bezier(0.37, 0, 0.63, 1); /* sinusoidal: the heartbeat */
+  --ease-compass: cubic-bezier(0.45, 0, 0.25, 1); /* a compass stroke: slow start, firm end */
+  --dur-breath: 10s;                             /* half a breath of the cover flower */
+
+  /* --- Layers --- */
+  --z-under: 0;
+  --z-base: 1;
+  --z-over: 2;
+  --z-top: 3;
+  --z-float: 50;
+  --z-skip: 60;
+
+  /* --- Ink washes (mix percentage with transparent) --- */
+  --wash-8: 8%;
+  --wash-16: 16%;
+  --wash-24: 24%;
+  --wash-48: 48%;
+
+  /* ==========================================================
+     2 · SEMANTIC
+     ========================================================== */
+  /* --- Surfaces and inks --- */
+  --surface-canvas: var(--k-linen);
+  --surface-band: var(--k-linen-2);
+  --surface-plate: var(--k-surface);
+  --ink: var(--k-ink);
+  --ink-soft: var(--k-ink-soft);
+  --line: var(--k-ink);                /* the line: trunk, branches, outlines */
+
+  /* --- The grammar: one shape, one colour, one tag --- */
   --shape-circle: var(--k-blue);       /* <button> */
-  --shape-triangle: var(--k-yellow); /* <a> */
-  --shape-square: var(--k-red);      /* <input type="checkbox"> */
-  --shape-rhombus: var(--k-violet);      /* <input type="radio"> */
-  --shape-bar: var(--k-cyan);         /* <input type="text|email"> */
-  /* Ocre = savia: SOLO tronco, ramas y notas al margen. Nunca en la flor. */
+  --shape-triangle: var(--k-yellow);   /* <a> */
+  --shape-square: var(--k-red);        /* <input type="checkbox"> */
+  --shape-rhombus: var(--k-violet);    /* <input type="radio"> */
+  --shape-bar: var(--k-cyan);          /* <input type="text|email"> */
+  /* Ochre = sap: ONLY flower stems, tendrils, manifesto rootlets and
+     margin notes. Never inside the flower. Trunk and branches are ink
+     (--line), and the cover flower has no sap stem: the trunk itself
+     carries it. */
   --sap: var(--k-ochre);
-  --sprout: var(--k-green);              /* hoja: grafismo (4,1:1) */
-  --sprout-text: #3d6129;               /* el mismo verde para texto (6,0:1) */
+  --sprout: var(--k-green);            /* leaf: graphics only (4.1:1) */
+  --sprout-text: var(--k-green-deep);
+  /* THE FOURTEEN STATIONS — one colour each, the same on the cover's petal
+     and on its plate (branch halo, numeral): the colour of what lives in
+     the station, or, where nothing there has colour, one of its own.
+     Station 2, Synesthesia, is white: light that holds every colour.
+     The cover keeps it whole; its plate refracts it into the five voices
+     (the rainbow numeral, drawn by its components). Ochre, the sap, never
+     enters the flower. Earth is the roots' alone. */
+  --station-structure: var(--k-ink);     /* the tree itself */
+  --station-synesthesia: var(--k-white); /* light: every colour at once */
+  --station-route: var(--k-sky);         /* the route of regions */
+  --station-role: var(--k-blue);         /* its buttons */
+  --station-name: var(--k-yellow);       /* its links */
+  --station-state: var(--k-red);         /* its checkboxes */
+  --station-relations: var(--k-violet);  /* its radios */
+  --station-focus: var(--k-pink);
+  --station-actions: var(--k-lavender);
+  --station-live: var(--k-cyan);         /* its text field, where change is told */
+  --station-layers: var(--k-grey-dark);  /* the plane underneath */
+  --station-color: var(--k-magenta);
+  --station-wilted: var(--k-grey);       /* its wilted flowers */
+  --station-patterns: var(--k-orange);   /* not green: green is the sprouts */
+  --station-ground: var(--sprout);       /* its sprouts */
+  --station-roots: var(--k-earth);       /* roots in the soil */
   --link: var(--k-blue);
-  /* El rojo de las formas da 4,2:1: vale para grafismo y texto grande,
-     no para texto pequeño. Para texto, un paso más oscuro (5,8:1). */
-  --red-text: #b3132f;
+  /* The shapes' red gives 4.2:1: fine for graphics and large text, not
+     for small text. Text uses one step darker. */
+  --red-text: var(--k-red-deep);
   --link-active: var(--red-text);
   --focus: var(--ink);
 
-  /* --- Geometría compartida: eje del tronco en la retícula --- */
-  --panel-col: clamp(16rem, 21vw, 20rem);
-  --canvas-pad: clamp(0.75rem, 2vw, 2rem);
-  --gap-canvas: clamp(1rem, 2vw, 2rem);
+  /* --- Type by role: size / line-height --- */
+  --font-display: var(--ff-display);
+  --font-body: var(--ff-body);
+  --font-mono: var(--ff-mono);
+  --type-numeral: var(--fs-160);  --type-numeral-lh: var(--lh-160);  /* the plate's station numeral */
+  --type-display: var(--fs-64);   --type-display-lh: var(--lh-72);   /* plate title: read from the back of the room */
+  --type-title: var(--fs-40);     --type-title-lh: var(--lh-48);
+  --type-heading: var(--fs-24);   --type-heading-lh: var(--lh-32);
+  --type-lead: var(--fs-24);      --type-lead-lh: var(--lh-32);      /* the one sentence each plate states */
+  --type-subhead: var(--fs-20);   --type-subhead-lh: var(--lh-24);
+  --type-body: var(--fs-16);      --type-body-lh: var(--lh-24);
+  --type-label: var(--fs-12);     --type-label-lh: var(--lh-16);     /* cartelas, code, mono notes */
+
+  /* --- Gaps by role --- */
+  --gap-2xs: var(--space-1);      /*  8: a thing and its label */
+  --gap-xs: var(--space-2);       /* 16: lines of one block */
+  --gap-s: var(--space-3);        /* 24: sibling blocks */
+  --gap-m: var(--space-4);        /* 32 */
+  --gap-l: var(--space-6);        /* 48: the two banks of the trunk */
+  --gap-xl: var(--space-8);       /* 64 */
+  --gap-2xl: var(--space-12);     /* 96 */
+
+  /* --- Strokes by role --- */
+  --stroke-hair: var(--stroke-1);
+  --stroke-fine: var(--stroke-2);
+  --stroke-bold: var(--stroke-4);
+  --stroke-heavy: var(--stroke-8);
+
+  /* --- Washes by role --- */
+  --tint-code: color-mix(in oklab, var(--ink) var(--wash-8), transparent);
+  --tint-code-strong: color-mix(in oklab, var(--ink) var(--wash-16), transparent);
+  --tint-shadow: color-mix(in oklab, var(--ink) var(--wash-24), transparent);
+  --tint-line: color-mix(in oklab, var(--ink) var(--wash-48), transparent);
+  --tint-backdrop: color-mix(in oklab, var(--ink) var(--wash-48), transparent);
+  --tint-highlight: color-mix(in oklab, var(--k-yellow) var(--wash-24), transparent);
+
+  /* --- Motion by role --- */
+  --motion-quick: var(--dur-1);   /* answer to a gesture */
+  --motion-settle: var(--dur-2);  /* a piece settling */
+  --motion-bloom: var(--dur-3);   /* a flower opening */
+
+  /* --- Forced colours by role: what each piece becomes when the user's
+     contrast theme is on --- */
+  --forced-structure: var(--sys-text);   /* stem, trunk, knots, twigs, soil, root */
+  --forced-surface: var(--sys-canvas);   /* the flower's linen */
+  --forced-text: var(--sys-text);
+  --forced-control-bg: var(--sys-button-face);
+  --forced-control-ink: var(--sys-button-text);
+  --forced-focus: var(--sys-highlight);
+
+  /* --- Accessibility guarantees --- */
+  --touch: var(--space-6);        /* 48 px: above the 44 of 2.5.5 */
+  --focus-width: var(--stroke-4);
+  --focus-offset: var(--half);
+
+  /* --- Shared geometry: the trunk's axis in the layout grid --- */
+  --panel-col: var(--space-40);
+  --canvas-pad: var(--space-2);
+  --gap-canvas: var(--space-3);
   --trunk-center: calc(var(--canvas-pad) + (100% - 2 * var(--canvas-pad) - var(--panel-col) - var(--gap-canvas)) / 2);
+}
 
-  /* --- Tipografía y ritmo (rem + clamp para reflow al 400 %) --- */
-  --font-display: 'Space Grotesk', sans-serif;
-  --font-body: 'Archivo', system-ui, sans-serif;
-  --font-mono: ui-monospace, 'Cascadia Mono', 'Courier New', monospace;
-  --step-0: clamp(0.95rem, 0.9rem + 0.3vw, 1.08rem);
-  --step-1: clamp(1.05rem, 1rem + 0.5vw, 1.3rem);
-  --step-2: clamp(1.2rem, 1.05rem + 0.9vw, 1.55rem);
-  --space-s: clamp(0.5rem, 0.4rem + 0.5vw, 0.8rem);
-  --space-m: clamp(1rem, 0.8rem + 1vw, 1.6rem);
-  --space-l: clamp(2rem, 1.5rem + 2.5vw, 3.4rem);
-
-  /* --- Garantías de accesibilidad --- */
-  --touch: 2.75rem; /* 44 px mínimos */
+/* --- Dichromacy (station 11, «Mirar como»): the same primitives as seen
+   with protanopia, deuteranopia and tritanopia. GENERATED by
+   tools/cvd-palette.mjs (Machado, Oliveira & Fernandes, 2009, severity
+   1.0, applied in linear RGB); do not edit by hand. Overriding the
+   primitives on :root recolours every semantic token at once. --- */
+:root[data-vision="protanopia"] {
+  --k-linen: #efe9d5;
+  --k-linen-2: #e5dec5;
+  --k-surface: #f9f4e6;
+  --k-ink: #16150f;
+  --k-ink-soft: #423f32;
+  --k-yellow: #d0b700;
+  --k-red: #5c563f;
+  --k-red-deep: #4b452e;
+  --k-blue: #0055ae;
+  --k-green: #807334;
+  --k-green-deep: #645a24;
+  --k-ochre: #665900;
+  --k-ochre-deep: #473d00;
+  --k-cyan: #737a8d;
+  --k-violet: #004086;
+  --k-grey: #888579;
+  --k-grey-dark: #525048;
+  --k-orange: #827308;
+  --k-pink: #9094a0;
+  --k-magenta: #344d7c;
+  --k-olive: #847513;
+  --k-earth: #504823;
+  --k-white: #ffffff;
+  --k-sky: #88a1db;
+  --k-lavender: #b8c5e8;
+}
+:root[data-vision="deuteranopia"] {
+  --k-linen: #f2ecd7;
+  --k-linen-2: #e8e1c7;
+  --k-surface: #faf6e7;
+  --k-ink: #17150f;
+  --k-ink-soft: #444033;
+  --k-yellow: #dec61c;
+  --k-red: #897d39;
+  --k-red-deep: #716629;
+  --k-blue: #0046a9;
+  --k-green: #796f3e;
+  --k-green-deep: #5f572d;
+  --k-ochre: #716404;
+  --k-ochre-deep: #4e4502;
+  --k-cyan: #636e8c;
+  --k-violet: #003e81;
+  --k-grey: #8a877a;
+  --k-grey-dark: #545148;
+  --k-orange: #9d8c15;
+  --k-pink: #a9a69d;
+  --k-magenta: #5b6377;
+  --k-olive: #867828;
+  --k-earth: #595026;
+  --k-white: #ffffff;
+  --k-sky: #7794d7;
+  --k-lavender: #bac5e5;
+}
+:root[data-vision="tritanopia"] {
+  --k-linen: #f8e6e4;
+  --k-linen-2: #f0dbd8;
+  --k-surface: #fff3f1;
+  --k-ink: #181413;
+  --k-ink-soft: #483d3c;
+  --k-yellow: #ffa49c;
+  --k-red: #ee002e;
+  --k-red-deep: #c50021;
+  --k-blue: #006172;
+  --k-green: #4c786d;
+  --k-green-deep: #3c5e54;
+  --k-ochre: #924a48;
+  --k-ochre-deep: #653231;
+  --k-cyan: #008583;
+  --k-violet: #3c4154;
+  --k-grey: #918382;
+  --k-grey-dark: #594e4e;
+  --k-orange: #e74855;
+  --k-pink: #f27b8c;
+  --k-magenta: #ae234c;
+  --k-olive: #857269;
+  --k-earth: #753c3d;
+  --k-white: #ffffff;
+  --k-sky: #00adb3;
+  --k-lavender: #c9c4cc;
 }
