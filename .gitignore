@@ -2,6 +2,9 @@ node_modules/
 dist/
 .vite/
 
+# Browser-testing artifacts (Playwright MCP screenshots and snapshots)
+.playwright-mcp/
+
 # Local environment and logs
 .env
 .env.*
@@ -15,3 +18,9 @@ pnpm-debug.log*
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+# Personal working files (the author's decisions log, the talk script,
+# the agent's summary, the cover prototypes): all live in .private/,
+# which never leaves this machine
+.private/
+.claude/

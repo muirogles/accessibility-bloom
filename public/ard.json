@@ -1,0 +1,18 @@
+{
+  "specVersion": "1.0",
+  "entries": [
+    {
+      "identifier": "urn:air:muirogles.github.io:accessibility-bloom:recorrido",
+      "displayName": "Accessibility Bloom · cómo recorrerla un agente",
+      "type": "text/markdown; profile=\"urn:air:agent-skills\"",
+      "url": "https://muirogles.github.io/accessibility-bloom/agent-skill.md",
+      "description": "Habilidad para agentes: leer el Árbol de Accesibilidad de la obra y usar sus herramientas WebMCP.",
+      "representativeQueries": [
+        "qué lee un agente del árbol de accesibilidad",
+        "explica rol, nombre, estado y acción de un botón",
+        "cómo se ve una web con protanopia",
+        "recorrer una lección interactiva de accesibilidad web"
+      ]
+    }
+  ]
+}

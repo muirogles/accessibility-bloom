@@ -1,1087 +1,1859 @@
 /* ============================================================
-   OBRA — cuadro Kandinsky mobile-first.
-   Base (<768px): tronco en el eje izquierdo, todo apilado y
-   conectado. min-width 48rem (768), 64rem (1024), 90rem (1440).
-   Nada flota: semilla→tallo→tronco→ramas→flores→tierra→raíces.
+   ARTWORK — a mobile-first Kandinsky painting.
+   Base (< 768 px): trunk on the left axis, everything stacked and
+   connected. Breakpoints 48rem (768), 64rem (1024), 90rem (1440),
+   and scenes from 90 × 56 rem (see SCENES at the end).
+   Nothing floats: seed → stem → trunk → branches → flowers → soil →
+   roots.
+   Every value cites a token. Component tokens (--artwork-*,
+   --branch-*, --note-*, …) are declared at the top of their
+   component and only cite semantic or grid tokens. Geometry that
+   must meet — knots, stems, joints — is written as a formula between
+   tokens, never as a number measured by eye.
    ============================================================ */
 .artwork {
+  --artwork-margin: var(--space-1);
+  --artwork-frame: var(--stroke-bold);
+  --side-pad: var(--space-4);                /* mobile: room left of the trunk */
+  --axis: var(--space-2);                    /* mobile trunk axis, from the side's edge */
+  --trunk-width: var(--space-1);             /* T: the trunk's width at the soil */
+  /* ONE STROKE THAT THICKENS TOWARDS THE SOIL, like any plant: the neck
+     from the calyx down, thickest at the ground, thinning into the root.
+     Each stretch ENDS with the width the next one starts with, so no
+     joint changes thickness:
+       neck 0.6 T (constant)        cover stem, from behind the calyx
+       neck 0.6 T (constant)        bridge elbow
+       neck 0.6 T → T               trunk, from the bridge to the soil
+       T → 0.24 T                   main root                        */
+  --w-neck: calc(var(--trunk-width) * 0.6);
+  /* THE AXIS, declared once: trunk, branches, roots and the cover's
+     bridge all read it. While they all read this variable there cannot
+     be two misaligned black lines. */
+  --axis-x: calc(var(--axis) - var(--side-pad));
+  --canvas-pad-m: var(--space-2);
+
   position: relative; overflow-x: clip;
-  margin: 0.35rem;
-  border: 0.25rem solid var(--line);
-  background: var(--k-linen);
+  margin: var(--artwork-margin);
+  border: var(--artwork-frame) solid var(--line);
+  background: var(--surface-canvas);
   min-height: 100vh;
-  --axis: 1.1rem;             /* eje del tronco (móvil: izquierda) */
-  --trunk-width: 0.7rem;
-  /* EL EJE, declarado una sola vez: lo usan el tronco, las ramas, las
-     raíces y el puente de la portada. Mientras todos lean esta
-     variable no puede haber dos líneas negras desalineadas. */
-  --axis-x: calc(var(--axis) - 2rem);
 }
-.canvas { position: relative; z-index: 1; padding: 0.9rem 0.9rem 0; }
-.artwork-side { position: relative; min-width: 0; padding-left: 2rem; }
+.canvas { position: relative; z-index: var(--z-base); padding: var(--canvas-pad-m) var(--canvas-pad-m) 0; }
+.artwork-side { position: relative; min-width: 0; padding-left: var(--side-pad); }
 
 /* ============================================================
-   PORTADA — el título vive DENTRO del círculo negro; el nav es
-   una roseta propia debajo, atravesada por el tronco
+   CONTROLS — one system for every button of the work, spoken in the
+   grammar's own terms. A <button> is the blue circle, so every button
+   is a pill (the circle drawn out to hold its words), outlined in
+   blue with its words in blue; the one that leads a scene is filled.
+   A toggle (<button aria-pressed>) carries the circle itself as its
+   mark, under the work's state contract: an empty ring while false,
+   a filled ring — and the flower's filled wash — while true. A
+   button whose words change ("Pausar latido" / "Reanudar latido")
+   says its state with them and does not also change its paint.
+   A link is never a pill: it stays underlined words (or its yellow
+   triangle), so what takes you somewhere never looks like what does
+   something. Focus is the same solid ring everywhere (base.css).
    ============================================================ */
-.cover { position: relative; padding: 1rem 0 3.6rem; display: flex; flex-direction: column; align-items: center; }
-/* ------------------------------------------------------------
-   PORTADA — manda un solo cuadrado: .core. Mandala, aro del
-   corazón, título, corona de enlaces y tallo se colocan todos en
-   cqw de ESE cuadrado, así el centro del círculo, el centro del
-   texto y el eje del tronco caen siempre en la misma vertical, a
-   cualquier ancho de pantalla.
-
-   Geometría del mandala — una sola ley, la lente (vesica piscis):
-   doce círculos generadores de radio r con el centro en R=35,2 cqw
-   y 30° de paso. Dos vecinos se cortan, y esa intersección ES el
-   pétalo: centrado en R·cos15° = 34 cqw, con semilargo
-   a = √(r² − g²) y semiancho b = r − g, donde g = R·sin15° = 9,11.
-     · corola mayor   r=13,20 → pétalo 8,18 × 19,10 · del 24,45 al 43,55
-     · corola menor   r=11,50 → pétalo 4,78 × 14,04 · del 26,98 al 41,02
-       (va a medio paso: entra exacta en el hueco de la mayor)
-     · nodos rojos    en la punta exterior de la mayor (43,55 cqw):
-       justo donde se cruzan de verdad dos círculos generadores
-     · rombos violeta en la punta interior de la menor (26,98 cqw)
-   El aro del corazón mide 24,45 cqw de radio exterior: la
-   circunferencia de la que nacen los pétalos. Nada está a ojo.
-   Sin ocre en la flor: el marrón es solo del tronco y las ramas.
-   ------------------------------------------------------------ */
-.hero { position: relative; width: min(100%, 46rem); margin-inline: auto; }
-.core { position: relative; container-type: inline-size; width: min(100%, 36rem); margin-inline: auto; }
-.seed { position: relative; width: 100%; aspect-ratio: 1; }
-
-/* El mandala se dibuja SIN girar ni una sola forma. Dos familias de
-   círculos del MISMO radio, r = 12,6:
-     · diez con el centro en R = 30,2 y paso de 36° (los generadores)
-     · diez más centradas justo EN LOS CRUCES EXTERNOS de las primeras
-   Con eso la malla se cierra sobre sí misma —la trama de la Flor de la
-   Vida— y todo lo demás sale de ella:
-     mid = R·cos18° = 28,72 · h = √(r² − (R·sin18°)²) = 8,47
-     · cruce interno  28,72 − 8,47 = 20,26 → radio del aro del corazón,
-       con una cuenta enhebrada en cada cruce
-     · cruce externo  28,72 + 8,47 = 37,19 → centro de la segunda familia
-     · el pétalo es la lente del solape de dos generadores vecinos
-     · las cinco formas de la gramática se clavan en los CENTROS de los
-       diez círculos generadores (R = 30,2), dos veces cada una
-     · la envolvente de todo es 37,19 + 12,6 = 49,79, y en ella se
-       enhebran las veinte piezas de la orla
-   Nada respira solo: al latir se mueven los centros, así que los
-   solapes crecen y decrecen y son los pétalos los que abren. */
-.mandala { position: absolute; inset: 0; }
-.mandala__piece {
-  position: absolute;
-  left: calc(50% + cos(var(--a)) * var(--radius) * var(--breath, 1));
-  top: calc(50% + sin(var(--a)) * var(--radius) * var(--breath, 1));
-  --breath: var(--open, 1);
-  translate: -50% -50%;
-}
-/* Los veinte círculos, trazo entero visible: diez generadores y diez
-   centrados en sus cruces externos */
-.circle {
-  --a: calc(var(--i) * 36deg - 90deg); --radius: 30.2cqw;
-  width: 25.2cqw; aspect-ratio: 1; border-radius: 50%;
-  border: clamp(0.1rem, 0.42cqw, 0.22rem) solid var(--line);
-  background: none;
-}
-.circle--crossing {
-  --a: calc(var(--i) * 36deg - 72deg); --radius: 37.19cqw; opacity: 0.62;
-  --breath: var(--open2, 1);
-}
-/* La envolvente: trazo fino de tinta, de la misma familia que los
-   círculos, no una línea gris ajena */
-.mandala__envelope {
-  position: absolute; left: 50%; top: 50%; translate: -50% -50%;
-  width: 99.58cqw; aspect-ratio: 1; border-radius: 50%;
-  border: 0.09rem solid var(--line); opacity: 0.55;
-}
-/* EL PÉTALO ES EL CRUCE, no una forma girada: cada uno ocupa todo el
-   cuadro y se recorta con las dos máscaras circulares de sus dos
-   círculos generadores vecinos, puestas en las coordenadas reales de
-   sus centros. La lente que queda es exactamente el solape. */
-.petal {
-  position: absolute; inset: 0;
-  --ring: 30.2cqw;
-  --a1: calc(var(--i) * 36deg - 90deg);
-  --a2: calc(var(--i) * 36deg - 54deg);
-  --breath: var(--open, 1);
-  --cx1: calc(50% + cos(var(--a1)) * var(--ring) * var(--breath));
-  --cy1: calc(50% + sin(var(--a1)) * var(--ring) * var(--breath));
-  --cx2: calc(50% + cos(var(--a2)) * var(--ring) * var(--breath));
-  --cy2: calc(50% + sin(var(--a2)) * var(--ring) * var(--breath));
-  background: var(--c, var(--k-blue));
-  /* Un brillo que recorre la flor: cada pétalo entra 0,6 s después que
-     el anterior, así la luz gira sin que la geometría se mueva */
-  animation: brillo 13s ease-in-out infinite;
-  animation-delay: calc(var(--i) * -1.3s);
-  -webkit-mask-image:
-    radial-gradient(circle 12.6cqw at var(--cx1) var(--cy1), #000 99.4%, transparent 99.6%),
-    radial-gradient(circle 12.6cqw at var(--cx2) var(--cy2), #000 99.4%, transparent 99.6%);
-  mask-image:
-    radial-gradient(circle 12.6cqw at var(--cx1) var(--cy1), #000 99.4%, transparent 99.6%),
-    radial-gradient(circle 12.6cqw at var(--cx2) var(--cy2), #000 99.4%, transparent 99.6%);
-  -webkit-mask-composite: source-in;
-  mask-composite: intersect;
-}
-/* SEGUNDO ORDEN DE PÉTALOS — la segunda familia de círculos también se
-   corta entre vecinos, y ese solape es otra lente: la que queda ENTRE dos
-   pétalos grandes, sobre la línea que une el centro del mandala con cada
-   forma de la gramática. Sus dos puntas caen en 30,2 —el centro de un
-   generador, justo donde está la forma— y en 40,54. Se rellena con el
-   color de esa forma rebajado con lino, para que sea el eco del pétalo
-   grande y no compita con él: dos órdenes de pétalos, como en una flor de
-   verdad. Ni una coordenada nueva: todo sale de los mismos círculos. */
-.petal--second {
-  --ring: 37.19cqw;
-  --breath: var(--open2, 1);
-  --a1: calc(var(--i) * 36deg - 72deg);
-  --a2: calc(var(--i) * 36deg - 36deg);
-  background: color-mix(in oklab, var(--c, var(--k-blue)) 58%, var(--k-linen));
-  animation-delay: calc(var(--i) * -1.3s - 0.65s);
-}
-
-/* Cada pétalo lleva el color de la forma que hay en el centro del
-   círculo que lo engendra: la gramática entera está en la flor */
-.petal--circle { --c: var(--k-blue); }
-.petal--triangle { --c: var(--k-yellow); }
-.petal--square { --c: var(--k-red); }
-.petal--rhombus { --c: var(--k-violet); }
-.petal--bar { --c: var(--k-cyan); }
-
-/* La orla: veinte piezas menudas cada 18° enhebradas EN la envolvente
-   (49,79). Alternan rombo y triángulo y recorren los cinco colores de
-   la gramática: la banda densa que convierte el mandala en guirnalda. */
-.garland {
-  /* La envolvente es tangente a la segunda familia: la orla respira con ella */
-  --a: calc(var(--i) * 18deg - 90deg); --radius: 49.79cqw;
-  --breath: var(--open2, 1);
-  width: 3.2cqw; height: 3.2cqw;
-  background: var(--c);
-  filter: drop-shadow(0 0 1.1px var(--line)) drop-shadow(0 0 1.1px var(--line));
-  animation: pulso 11s ease-in-out infinite alternate;
-  animation-delay: calc(var(--i) * -0.55s);
-}
-.garland--rhombus { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
-.garland--triangle { clip-path: polygon(50% 0, 100% 100%, 0 100%); }
-.garland--c0 { --c: var(--k-blue); }
-.garland--c1 { --c: var(--k-yellow); }
-.garland--c2 { --c: var(--k-red); }
-.garland--c3 { --c: var(--k-violet); }
-.garland--c4 { --c: var(--k-cyan); }
-
-/* Las cinco formas de la gramática, dos veces cada una, en el HUECO que
-   queda sobre la línea del centro de cada círculo generador: el tramo
-   vacío entre el aro del corazón (20,26) y la punta interior del pétalo
-   menor (30,2), que es también el centro del generador. La forma va en el
-   medio exacto de ese hueco, 25,23, así no pisa el color de ningún
-   pétalo. Y en su propia capa, por encima del tallo y del collar: el
-   color manda sobre el trazo. */
-.shapes { position: absolute; inset: 0; z-index: 3; }
-.shape {
-  --a: calc(var(--i) * 36deg - 90deg); --radius: 25.23cqw;
-  width: var(--fw, 4.4cqw); height: var(--fh, 4.4cqw);
-  filter: drop-shadow(0 0 1.3px var(--line)) drop-shadow(0 0 1.3px var(--line));
-}
-.shape--circle { background: var(--shape-circle); border-radius: 50%; }
-.shape--triangle { background: var(--shape-triangle); clip-path: polygon(50% 0, 100% 100%, 0 100%); }
-.shape--square { background: var(--shape-square); }
-.shape--rhombus { background: var(--shape-rhombus); clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); --fw: 5.6cqw; --fh: 5.6cqw; }
-.shape--bar { background: var(--shape-bar); --fw: 5.8cqw; --fh: 2.5cqw; border-bottom: 0.6cqw solid var(--line); box-sizing: border-box; }
-/* El collar: las diez cuentas van sobre el aro, enhebradas en él, así
-   se ve que el aro pasa exactamente por los cruces internos */
-.necklace { position: absolute; inset: 0; z-index: 1; }
-.bead {
-  --a: calc(var(--i) * 36deg - 72deg); --radius: 20.26cqw;
-  width: 2.6cqw; aspect-ratio: 1; border-radius: 50%;
-  background: var(--k-linen); border: 0.5cqw solid var(--line); box-sizing: border-box;
-}
-
-@property --open {
-  syntax: "<number>"; inherits: true; initial-value: 1;
-}
-@property --open2 {
-  syntax: "<number>"; inherits: true; initial-value: 1;
-}
-/* El latido mueve los centros, no las formas: los solapes se abren y se
-   cierran, y con ellos los pétalos */
-/* DOS RESPIRACIONES, UNA SOLA LEY. Cada familia de círculos respira con
-   su propio compás —el mismo periodo, un tercio de ciclo de diferencia—,
-   y cada pétalo sigue exactamente a los círculos que lo engendran. El
-   resultado es que un orden de pétalos parece salir del otro, sin que la
-   geometría deje de ser cierta en ningún fotograma. Catorce segundos y
-   una curva senoidal: nada de tirones. */
-.seed {
-  animation: breathe 14s cubic-bezier(0.37, 0, 0.63, 1) infinite alternate,
-             breathe-2 14s cubic-bezier(0.37, 0, 0.63, 1) -4.6s infinite alternate;
-}
-@keyframes breathe { from { --open: 0.982; } to { --open: 1.018; } }
-@keyframes breathe-2 { from { --open2: 0.982; } to { --open2: 1.018; } }
-/* El brillo apenas se nota de cerca: es la luz recorriendo la flor, no un
-   parpadeo. Trece segundos y medio paso entre pétalo y pétalo. */
-@keyframes brillo { 0%, 100% { opacity: 0.93; } 45% { opacity: 1; } }
-@keyframes pulso { from { scale: 0.94; } to { scale: 1.06; } }
-@media (prefers-reduced-motion: reduce) {
-  .seed, .petal, .garland { animation: none; }
-}
-/* Pausar, no cancelar: se congela en el fotograma en el que está y al
-   reanudar sigue desde ahí, sin salto */
-[data-heartbeat="off"] .seed,
-[data-heartbeat="off"] .petal,
-[data-heartbeat="off"] .garland { animation-play-state: paused; }
-
-/* El aro del corazón: pasa por los diez cruces internos (20,26) y de
-   su borde inferior nace el tallo */
-.heart-ring {
-  position: absolute; left: 50%; top: 50%; translate: -50% -50%;
-  width: 40.52cqw; aspect-ratio: 1; border-radius: 50%;
-  border: clamp(0.26rem, 1.3cqw, 0.8rem) solid var(--line);
-  background: var(--k-linen);
-}
-/* El tallo nace en el borde inferior del aro (50 % + 20,26 cqw) y baja
-   hasta el borde del núcleo, donde lo recoge el puente. Cuelga del
-   núcleo, no del cuadrado, para llegar abajo en todos los tamaños. */
-.seed__stem {
-  position: absolute; left: 50%; top: 70.26cqw; bottom: 0; z-index: 0;
-  width: var(--trunk-width); background: var(--line);
-  translate: -50% 0; clip-path: polygon(28% 0, 72% 0, 100% 100%, 0 100%);
-}
-
-/* --- EL PUENTE — el codo que ata la flor al tronco.
-   El tallo baja por el centro del mandala; aquí el trazo gira a la
-   izquierda y desciende ya sobre --axis-x, el mismo eje del tronco y de
-   las ramas. Un solo trazo continuo, sin muñones ni líneas paralelas.
-   La ayuda de teclado y los dos mandos viven dentro del puente, así el
-   trazo vertical los acompaña en vez de cruzarlos. --- */
-.bridge { position: relative; align-self: stretch; padding-top: 2.5rem; }
-.bridge__elbow {
-  position: absolute; z-index: 0;
-  left: calc(var(--axis-x) - var(--trunk-width) / 2);
-  right: calc(50% - var(--trunk-width) / 2);
-  top: 0; bottom: -4rem;
-  border-top: var(--trunk-width) solid var(--line);
-  border-left: var(--trunk-width) solid var(--line);
-  border-top-left-radius: 100% 100%;
-}
-.bridge > :not(.bridge__elbow) { position: relative; z-index: 1; }
-
-/* El texto, en el corazón. La caja no es el cuadrado inscrito, sino el
-   RECTÁNGULO más ancho que cabe dentro del borde interior del aro
-   (radio 20,26 menos su grosor ≈ 19): con media altura de 9 cqw, la media
-   anchura puede llegar a √(19² − 9²) = 16,7. Se toma 16, así que las
-   cuatro esquinas quedan dentro del trazo con holgura sobrada a cualquier
-   tamaño —incluso si fallan las fuentes y entra la del sistema—, y el
-   título gana casi un 20 % de cuerpo sin tocar el aro. */
-.hero__heart {
-  position: absolute; left: 50%; top: 50%; translate: -50% -50%;
-  width: 32cqw; height: 18cqw;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  text-align: center; gap: 0.15rem;
-}
-.hero__heart h1 {
-  /* «Accessibility» es una sola palabra irrompible de ~5,8 em: el cuerpo
-     máximo que cabe en 32 cqw es 32/5,8 ≈ 5,5 cqw. El título se agranda
-     agrandando el mandala, nunca forzando el texto contra el aro. */
-  margin: 0; font-size: clamp(0.95rem, 5.5cqw, 3.2rem);
-  font-weight: 700; line-height: 1.02; letter-spacing: -0.03em;
-  text-wrap: balance;
-}
-.cover__sub {
-  margin: 0; font-size: clamp(0.6rem, 2.7cqw, 1.4rem); font-weight: 600;
-  font-family: var(--font-display); color: var(--k-ochre); line-height: 1.15;
-  text-wrap: balance;
-}
-.cover__help {
-  margin: 1.4rem auto 0; max-width: 26rem; text-align: center;
-  font-size: 0.8rem; line-height: 1.5; color: var(--ink-soft);
-}
-
-/* --- La corona de enlaces: en móvil una banda compacta bajo el
-   mandala; desde 48rem, los trece triángulos rodean la flor sin
-   ocupar ni un píxel más de alto, sobre su propia circunferencia
-   (47,5 cqw) y con el hueco de abajo libre para el tallo: trece
-   pasos de 27,6923° dejan el 90° exacto sin ocupar. --- */
-.crown { position: relative; margin-top: 1.5rem; }
-/* Móvil: los trece cuelgan a un lado y otro de la calle central, y el
-   tallo baja limpio por ella. Nada se cruza. */
-.crown__list {
-  list-style: none; margin: 0; padding: 0;
-  display: grid; grid-template-columns: 1fr 1fr;
-  column-gap: calc(var(--trunk-width) + 1.4rem); row-gap: 0.1rem;
-}
-.crown__item:nth-child(odd) { justify-self: end; }
-.crown__item:nth-child(odd) a { flex-direction: row-reverse; }
-/* Los trece se reparten en un arco de 316° centrado en el vértice de
-   arriba (13 puestos, 12 pasos de 26,3333°): los 44° de abajo quedan
-   libres para que el tronco salga sin pisar a nadie. */
-.crown__item { --angle: calc((var(--i) - 6) * 26.3333deg - 90deg); }
-.crown__item a {
-  display: flex; align-items: center; gap: 0.4rem;
-  min-height: var(--touch); padding: 0.15rem 0.35rem; text-decoration: none;
-}
-.crown__label {
-  font-family: var(--font-display); font-weight: 600; font-size: 1.1rem;
-  color: var(--link); text-decoration: underline; text-underline-offset: 0.18em;
-  white-space: nowrap;
-}
-/* La flor del enlace, sin una sola rotación: cinco triángulos rectos
-   —la forma del <a> en la gramática— que en reposo están escondidos
-   detrás del capullo y al florecer salen a 38 % del radio, colocados
-   con cos()/sin(). El capullo NUNCA se encoge: la flor solo crece. */
-.crown__flower {
-  position: relative; display: block; flex: none;
-  width: clamp(2.9rem, 9.5cqw, 4rem); aspect-ratio: 1;
-  --r: 0%; --s: 0.25; --grow: 1;
-  scale: var(--grow);
-  transition: --r 0.42s cubic-bezier(0.34, 1.4, 0.64, 1), scale 0.25s ease;
-}
-.crown__bud {
-  position: absolute; inset: 26%;
-  background: var(--shape-triangle);
-  clip-path: polygon(50% 0, 100% 100%, 0 100%);
-  filter: drop-shadow(0 0 1.6px var(--line)) drop-shadow(0 0 1.6px var(--line));
-}
-.crown__petal {
-  position: absolute; width: 32%; height: 32%; opacity: 0;
-  background: var(--shape-triangle);
-  clip-path: polygon(50% 0, 100% 100%, 0 100%);
-  filter: drop-shadow(0 0 1.4px var(--line)) drop-shadow(0 0 1.4px var(--line));
-  left: calc(50% + cos(var(--i) * 72deg - 90deg) * var(--r) - 16%);
-  top: calc(50% + sin(var(--i) * 72deg - 90deg) * var(--r) - 16%);
-  scale: var(--s);
-  transition: opacity 0.28s ease calc(var(--i) * 45ms),
-              scale 0.34s cubic-bezier(0.34, 1.5, 0.64, 1) calc(var(--i) * 45ms);
-}
-/* EL CONTRATO DEL ENLACE — un enlace no guarda estado, así que su flor
-   no puede depender de un estado: florece PLENA en cuanto recibe
-   atención (puntero o foco) y crece un 6 %, nunca se encoge. Y como
-   sí hay un estado real —en qué sección estás—, la flor de la sección
-   actual se queda florecida mientras lees: por eso, al pulsar y
-   navegar, la floración se ve al llegar. Eso es aria-current. */
-.crown__item a:hover .crown__flower,
-.crown__item a:focus-visible .crown__flower,
-.crown__item a.blooming .crown__flower,
-.crown__item a[aria-current] .crown__flower { --r: 38%; --s: 1; }
-.crown__item a:hover .crown__petal,
-.crown__item a:focus-visible .crown__petal,
-.crown__item a.blooming .crown__petal,
-.crown__item a[aria-current] .crown__petal { opacity: 1; }
-.crown__item a:hover .crown__flower,
-.crown__item a:focus-visible .crown__flower { --grow: 1.06; }
-.crown__item a:hover .crown__label,
-.crown__item a:focus-visible .crown__label { color: var(--link-active); }
-/* Dónde estás: floración, color y grosor del subrayado a la vez */
-.crown__item a[aria-current] .crown__label {
-  color: var(--link-active); text-decoration-thickness: 0.17em;
-}
-
-/* Los dos mandos, en barra bajo el mandala */
-.hero__controls { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin: 0.9rem 0 0; }
 .control {
-  min-height: var(--touch); border-radius: 2rem;
-  font-family: var(--font-display); font-weight: 600; font-size: 0.8rem; line-height: 1.2;
-  background: var(--k-surface); color: var(--ink);
-  border: 3px solid var(--k-blue); cursor: pointer; padding: 0.4rem 1.1rem;
+  --control-c: var(--shape-circle);
+  --control-pad: var(--space-3);
+  --control-mark: var(--space-2);
+  /* washes of blue over white, not over the warm linen: mixed with the
+     linen the blue turns grey, and grey reads as disabled */
+  --control-wash: color-mix(in oklab, var(--control-c) var(--wash-16), var(--k-white));
+  --control-hover: color-mix(in oklab, var(--control-c) var(--wash-24), var(--k-white));
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--gap-2xs);
+  min-height: var(--touch); padding: 0 var(--control-pad);
+  font-family: var(--font-display); font-weight: var(--fw-semibold);
+  font-size: var(--type-body); line-height: var(--type-body-lh);
+  color: var(--control-c); background: var(--surface-canvas);
+  border: var(--stroke-fine) solid var(--control-c); border-radius: var(--radius-pill);
+  cursor: pointer; text-align: center;
 }
-.control--primary { background: var(--line); color: var(--k-linen); border-color: var(--line); }
-.control--secondary { background: none; color: var(--k-blue); border-color: var(--k-blue); }
-.control[aria-pressed="true"].control--primary { background: none; color: var(--ink); }
-.control[aria-pressed="true"].control--secondary { background: var(--k-blue); color: #ffffff; }
+.control--primary { background: var(--control-c); color: var(--k-white); }
+.control__mark {
+  flex: none; width: var(--control-mark); aspect-ratio: 1; border-radius: var(--radius-round);
+  border: var(--stroke-fine) solid var(--control-c); background: transparent;
+}
+.control[aria-pressed="true"] { background: var(--control-wash); }
+.control[aria-pressed="true"] .control__mark { background: var(--control-c); }
+.control:hover, .control[aria-pressed]:hover { background: var(--control-hover); }
+.control--primary:hover { background: color-mix(in oklab, var(--ink) var(--wash-24), var(--control-c)); }
 
 /* ============================================================
-   TRONCO — main: eje continuo (izquierda en móvil)
+   TRUNK — <main>: one continuous axis (left on mobile)
    ============================================================ */
-.trunk { position: relative; padding-top: 1.4rem; margin-top: 0.2rem; }
+.trunk { position: relative; padding-top: var(--space-3); }
 .trunk__axis {
   position: absolute; left: var(--axis-x); top: 0; bottom: 0;
   width: var(--trunk-width); background: var(--line);
   transform: translateX(-50%);
-  clip-path: polygon(32% 0, 68% 0, 100% 100%, 0 100%);
-  z-index: 0;
+  /* Starts at the neck's width (the elbow's) and reaches T at the soil */
+  clip-path: polygon(calc(50% - var(--w-neck) / 2) 0, calc(50% + var(--w-neck) / 2) 0, 100% 100%, 0 100%);
+  z-index: var(--z-under);
 }
 
 /* ============================================================
-   RAMAS — arcos de enredadera que caen del tronco
+   BRANCHES — vine arcs falling from the trunk.
+   THE LOAD HANGS FROM THE KNOT. The knot at the end of each arc is
+   "where the arc hands over its load", literally: on branches that
+   carry a bouquet or a cluster, the arc ends EXACTLY above the sap
+   stem, at the point where its curve already falls vertically, and
+   the stem continues that vertical down. Ink up to the knot, sap
+   from it: nothing starts in mid-air or pierces the arc.
+   All of it is one formula, valid at every breakpoint:
+     knot y  = --arc-top + --drop
+     load y  = --pb + --drop + --load-pad
+     --rise  = load y − knot y = --pb + --load-pad − --arc-top
+   The drop cancels out: change the drop and the stem stays sewn.
+   Horizontally (mobile): the arc starts at --axis-x and must end on
+   the stem, which hangs at --hang-x inside a load indented by
+   --load-indent. Its width is that distance, plus half a stem.
    ============================================================ */
 .branch {
-  position: relative; z-index: 1; display: block;
-  padding: 1.4rem 0;
-  --stroke: 0.32rem; --drop: 2.4rem; --tint: transparent;
-  --rise: calc(var(--drop) + 0.3rem);
-  background: radial-gradient(closest-side at 62% 38%, color-mix(in oklab, var(--tint) 11%, transparent), transparent 72%);
+  --pb: var(--space-3);                      /* the branch's own top padding */
+  --arc-top: var(--space-3);
+  --drop: var(--space-5);
+  --load-pad: var(--space-2);
+  --load-indent: var(--space-6);             /* mobile: load starts right of the knot */
+  --hang-x: var(--space-2);                  /* where a cluster's stem hangs, inside the load */
+  --stem: var(--stroke-bold);                /* sap stem width */
+  --pedicel: var(--stroke-fine);
+  --knot: var(--space-2);
+  --node: var(--space-2);
+  --stroke: var(--stroke-bold);              /* the arc's ink */
+  --stroke-echo: var(--stroke-fine);         /* the thin arc on the note's side */
+  --arc-w: var(--space-6);                   /* a branch that carries no hanging load */
+  --halo: var(--wash-8);
+  --tint: transparent;
+  --rise: calc(var(--pb) + var(--load-pad) - var(--arc-top));
+  position: relative; z-index: var(--z-base); display: block;
+  padding: var(--pb) 0;
+  background: radial-gradient(closest-side at 62% 38%, color-mix(in oklab, var(--tint) var(--halo), transparent), transparent 72%);
 }
 .branch--blue { --tint: var(--k-blue); }
 .branch--yellow { --tint: var(--k-yellow); }
 .branch--red { --tint: var(--k-red); }
-.branch--green { --tint: var(--k-green); }
+.branch--green { --tint: var(--sprout); }
 .branch--violet { --tint: var(--k-violet); }
-.branch--ochre { --tint: var(--k-ochre); }
+.branch--ochre { --tint: var(--sap); }
 .branch--grey { --tint: var(--k-grey); }
-.branch--thick { --stroke: 0.5rem; }
-.branch--thin { --stroke: 0.2rem; }
+/* the stations that own a colour of their own (see --station-* tokens) */
+.branch--ink { --tint: var(--station-structure); }
+.branch--pink { --tint: var(--station-focus); }
+.branch--cyan { --tint: var(--station-live); }
+.branch--white { --tint: var(--station-synesthesia); }
+.branch--sky { --tint: var(--station-route); }
+.branch--lavender { --tint: var(--station-actions); }
+.branch--slate { --tint: var(--station-layers); }
+.branch--magenta { --tint: var(--station-color); }
+.branch--orange { --tint: var(--station-patterns); }
+.branch--thick { --stroke: var(--stroke-heavy); }
+.branch--thin { --stroke: var(--stroke-fine); }
 .branch__arc {
-  position: absolute; left: calc(var(--axis) - 2rem); top: 2.2rem;
-  width: 3.4rem; height: var(--drop);
+  position: absolute; left: var(--axis-x); top: var(--arc-top);
+  width: var(--arc-w); height: var(--drop);
   border-top: var(--stroke) solid var(--line);
   border-top-right-radius: 100% 100%;
-  z-index: 0;
+  z-index: var(--z-under);
 }
-/* El nudo del extremo: donde el arco entrega su carga */
+/* Mobile: a branch with a cluster or bouquet ends its arc on the stem */
+.branch:has(> .branch__load > :is(.cluster, .bouquet, .lesson__bench)) {
+  --arc-w: calc(var(--load-indent) + var(--hang-x) - var(--axis-x) + var(--stem) / 2);
+}
+/* A bouquet (a <fieldset>) hangs inside its own border, in the middle
+   of the stretch of rule before the legend, never on its text */
+.branch:has(> .branch__load > .bouquet) {
+  --hang-x: calc(var(--space-1) + var(--stroke-fine));
+}
+/* The end knot: where the arc hands over its load */
 .branch__arc::after {
-  content: ""; position: absolute; right: -0.4rem; bottom: -0.4rem;
-  width: 0.8rem; height: 0.8rem; border-radius: 50%; background: var(--line);
+  content: ""; position: absolute;
+  right: calc(var(--knot) / -2); bottom: calc(var(--knot) / -2);
+  width: var(--knot); height: var(--knot); border-radius: var(--radius-round); background: var(--line);
 }
 .branch__node {
-  position: absolute; left: calc(var(--axis) - 2rem); top: 2.2rem;
-  width: 0.95rem; height: 0.95rem; border-radius: 50%;
-  background: var(--line); transform: translate(-50%, -50%); z-index: 0;
+  position: absolute; left: var(--axis-x); top: var(--arc-top);
+  width: var(--node); height: var(--node); border-radius: var(--radius-round);
+  background: var(--line); transform: translate(-50%, -50%); z-index: var(--z-under);
 }
+/* The leaf on the node */
 .branch__node::after {
-  content: ""; position: absolute; left: 0.95rem; top: -0.55rem;
-  width: 1.1rem; height: 0.68rem; background: var(--k-green);
+  content: ""; position: absolute; left: var(--node); top: calc(-1 * var(--space-1));
+  width: var(--space-2); height: var(--space-1); background: var(--sprout);
   border-radius: 100% 0 100% 0; transform: rotate(-28deg);
 }
 .branch__load {
-  position: relative; z-index: 1;
-  display: flex; flex-direction: column; gap: 1.3rem;
-  padding: calc(var(--drop) + 1.1rem) 0 0 3.4rem;
+  position: relative; z-index: var(--z-base);
+  display: flex; flex-direction: column; gap: var(--gap-s);
+  padding: calc(var(--drop) + var(--load-pad)) 0 0 var(--load-indent);
 }
 .branch__load--flowers { align-items: flex-start; }
+/* Every piece of a load may shrink to its bank: without min-width 0 a
+   flex or grid item grows to its longest unbreakable line (a <pre> of
+   JSON or code) and runs off a phone screen; with it, the code scrolls
+   inside its own box and the page never does. */
+.branch__load > *, .branch__visual > *, .ground__load > * { min-width: 0; max-width: 100%; }
 .branch__load--flowers > .note { order: 2; }
+/* A lesson needs no reordering: its DOM order — claim, bench, coda — is
+   already its reading order on every screen (1.3.2) */
+.lesson .branch__load--flowers > .note { order: 0; }
 .branch__load--flowers .cluster, .branch__load--flowers .bouquet, .branch__load--flowers .data-card { width: fit-content; max-width: 100%; }
-.satellite { position: absolute; z-index: 0; left: calc(var(--axis) + 0.4rem); top: 0.6rem; }
-.satellite--dot { width: 0.9rem; height: 0.9rem; border-radius: 50%; background: var(--tint); opacity: 0.85; }
-.satellite--arc { width: 2rem; height: 1rem; border: 0.3rem solid var(--tint); border-bottom: 0; border-radius: 3rem 3rem 0 0; opacity: 0.85; }
-.satellite--cradle { width: 1.4rem; height: 1.4rem; background: var(--tint); clip-path: polygon(0 0, 100% 50%, 0 100%); opacity: 0.85; }
-/* El zarcillo vive en la banda de la caída (entre el nudo y la carga),
-   nunca en el pasillo del texto */
+.satellite { position: absolute; z-index: var(--z-under); left: calc(var(--axis) + var(--space-1)); top: var(--space-1); opacity: 0.85; }
+.satellite--dot { width: var(--space-2); height: var(--space-2); border-radius: var(--radius-round); background: var(--tint); }
+.satellite--arc {
+  width: var(--space-4); height: var(--space-2);
+  border: var(--stroke-bold) solid var(--tint); border-bottom: 0; border-radius: var(--space-4) var(--space-4) 0 0;
+}
+.satellite--cradle { width: var(--space-3); height: var(--space-3); background: var(--tint); clip-path: polygon(0 0, 100% 50%, 0 100%); }
+/* The tendril lives in the drop's band (between knot and load), never
+   in the text's lane */
 .tendril {
-  position: absolute; left: calc(var(--axis) + 1.6rem); top: 0.2rem; z-index: 0;
-  width: 1.6rem; height: 1.6rem;
-  border: 2px solid var(--sap); border-left: 0; border-bottom: 0;
+  --tendril: var(--space-3);
+  position: absolute; left: calc(var(--axis) + var(--space-3)); top: 0; z-index: var(--z-under);
+  width: var(--tendril); height: var(--tendril);
+  border: var(--stroke-fine) solid var(--sap); border-left: 0; border-bottom: 0;
   border-radius: 0 100% 0 0;
 }
 .tendril::after {
-  content: ""; position: absolute; right: -0.5rem; top: -0.45rem;
-  width: 0.95rem; height: 0.6rem; background: var(--k-green);
+  content: ""; position: absolute; right: calc(-1 * var(--space-1)); top: calc(-1 * var(--space-1));
+  width: var(--space-2); height: var(--space-1); background: var(--sprout);
   border-radius: 100% 0 100% 0; transform: rotate(-28deg);
 }
 .tendril::before {
-  content: ""; position: absolute; right: 0.15rem; bottom: -0.2rem;
-  width: 0.75rem; height: 0.5rem; background: var(--k-green);
+  content: ""; position: absolute; right: 0; bottom: calc(-1 * var(--half));
+  width: var(--space-2); height: var(--space-1); background: var(--sprout);
   border-radius: 0 100% 0 100%; transform: rotate(24deg);
 }
 
-/* Notas: texto sobre el lienzo; su rama superior lleva el color del número */
+/* ============================================================
+   NOTES — the claim of each station. Text on the canvas; its
+   numeral carries the station's colour (--rim).
+   Hierarchy, top to bottom: numeral + title · lead (the first
+   paragraph, the one sentence each plate states) · body · the
+   "look" line in mono, which tells you what to try.
+   ============================================================ */
 .note {
-  position: relative; max-width: 34rem; margin-top: 1.2rem;
+  --note-measure: var(--space-64);
+  position: relative; max-width: var(--note-measure); margin-top: var(--space-2);
 }
 .note--sprout { --rim: var(--sprout); }
-.note--wide { max-width: 44rem; }
+.note--wide { --note-measure: var(--space-80); }
 .note--blue { --rim: var(--k-blue); }
 .note--yellow { --rim: var(--k-yellow); }
 .note--red { --rim: var(--k-red); }
-.note--green { --rim: var(--k-green); }
-.note--ochre { --rim: var(--k-ochre); }
+.note--green { --rim: var(--sprout); }
+.note--ochre { --rim: var(--sap); }
 .note--line { --rim: var(--line); }
 .note--grey { --rim: var(--k-grey); }
 .note--violet { --rim: var(--k-violet); }
+.note--ink { --rim: var(--station-structure); }
+.note--pink { --rim: var(--station-focus); }
+.note--cyan { --rim: var(--station-live); }
+.note--sky { --rim: var(--station-route); }
+.note--lavender { --rim: var(--station-actions); }
+.note--slate { --rim: var(--station-layers); }
+.note--magenta { --rim: var(--station-color); }
+.note--orange { --rim: var(--station-patterns); }
+/* Synesthesia's numeral: its ring is the five voices together, like its
+   petal (the outer arc stays ink) */
+.note--rainbow { --rim: var(--line); }
+.note--rainbow .note__num { border-color: transparent; }
+.note--rainbow .note__num::after {
+  content: ""; position: absolute; inset: calc(-1 * var(--num-stroke)); border-radius: var(--radius-round);
+  background: conic-gradient(var(--shape-circle), var(--shape-triangle), var(--shape-square), var(--shape-rhombus), var(--shape-bar), var(--shape-circle));
+  -webkit-mask-image: radial-gradient(closest-side, transparent calc(100% - var(--num-stroke)), #000 calc(100% - var(--num-stroke)));
+  mask-image: radial-gradient(closest-side, transparent calc(100% - var(--num-stroke)), #000 calc(100% - var(--num-stroke)));
+}
+/* the roots' numeral, in the soil's earth */
+.roots { --rim: var(--station-roots); }
 .note__title {
-  display: flex; align-items: center; gap: 0.55rem;
-  font-size: var(--step-1); margin: 0 0 0.5rem; color: var(--ink);
+  display: flex; align-items: center; gap: var(--gap-2xs);
+  font-size: var(--type-heading); line-height: var(--type-heading-lh);
+  margin: 0 0 var(--space-1); color: var(--ink);
 }
 .note__title--center { justify-content: center; text-align: center; }
-/* El punto del encabezado, dibujado sin span extra */
-/* El número del título: aro completo y un arco de corteza grueso en el
-   cuadrante de abajo a la derecha —el mismo cuadrante por el que cada
-   rama sale del tronco—. Sin media luna dentro y sin una sola rotación:
-   el arco se dibuja coloreando dos bordes de una caja redonda. */
-.note__num { position: relative; }
+/* The title's numeral: a full ring and a thick branch arc in the
+   lower-right quadrant — the same quadrant through which every branch
+   leaves the trunk. No rotation: the arc colours two borders of a
+   round box. */
+.note__num {
+  --num-size: var(--space-4);
+  --num-stroke: var(--stroke-fine);
+  --num-arc: var(--stroke-bold);
+  --num-arc-inset: calc(-1 * var(--half));
+  position: relative;
+  display: grid; place-items: center; flex: none;
+  width: var(--num-size); height: var(--num-size); border-radius: var(--radius-round);
+  font-size: var(--type-body); line-height: var(--type-body-lh); font-weight: var(--fw-bold); color: var(--ink);
+  border: var(--num-stroke) solid var(--rim, var(--line));
+}
 .note__num::before {
-  content: ""; position: absolute; inset: -0.32rem; border-radius: 50%;
-  border: 0.2rem solid transparent;
+  content: ""; position: absolute; inset: var(--num-arc-inset); border-radius: var(--radius-round);
+  border: var(--num-arc) solid transparent;
   border-right-color: var(--rim, var(--line));
   border-bottom-color: var(--rim, var(--line));
 }
-.note__num {
-  display: grid; place-items: center; flex: none;
-  width: 1.7rem; height: 1.7rem; border-radius: 50%;
-  font-size: 0.9rem; font-weight: 700; color: var(--ink);
-  border: 2px solid var(--rim, var(--line));
-}
 .note__title--plate {
-  width: fit-content; margin-inline: auto; background: var(--k-linen);
-  padding: 0.2rem 0.7rem; position: relative; z-index: 1;
+  width: fit-content; margin-inline: auto; background: var(--surface-canvas);
+  padding: 0 var(--space-1); position: relative; z-index: var(--z-base);
 }
-.note p { margin: 0 0 0.5rem; font-size: 0.94rem; line-height: 1.55; color: var(--ink-soft); }
+.note p { margin: 0 0 var(--space-1); font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink-soft); }
 .note p:last-child { margin-bottom: 0; }
 .note strong { color: var(--ink); }
-.note__look { font-family: var(--font-mono); font-size: 0.82rem !important; color: var(--k-ochre) !important; }
+.note .note__look {
+  font-family: var(--font-mono); font-size: var(--type-label); line-height: var(--type-label-lh);
+  color: var(--sap);
+}
 
-/* Ramilletes: flores colgando de una vara de savia común */
+/* ============================================================
+   LESSON — a plate as a masterclass, always in the same six beats,
+   so the mind knows where to look:
+     1 the scene     a person and a moment (the lead)
+     2 the tree      what the accessibility tree keeps, by name
+     3 the specimen  touch it: its node changes in the inspector
+     4 the voice     what the tree hands to that person, live
+     5 when it fails the antipattern and what it costs someone
+     6 take it       the rule, where to check it, «Para saber más»
+   It speaks of the web, never of this work: the flowers are specimens
+   on the lesson's table.
+   ============================================================ */
+.lesson__heading { display: flex; flex-direction: column; }
+.lesson__tag {
+  font-family: var(--font-mono); font-weight: var(--fw-semibold);
+  font-size: var(--type-body); line-height: var(--type-body-lh);
+  color: var(--ink-soft); text-transform: uppercase;
+}
+.lesson__label {
+  font-family: var(--font-mono); font-weight: var(--fw-semibold);
+  font-size: var(--type-label); line-height: var(--type-label-lh);
+  color: var(--ink-soft); text-transform: uppercase;
+}
+.lesson__label { margin: 0 0 var(--half); }
+.lesson__fail p { margin: 0; font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink-soft); }
+.lesson__fail strong { color: var(--ink); }
+/* 5 · when it fails: the wilted line (see THE WILTED LINE) */
+.lesson__fail {
+  margin: 0 0 var(--space-2); padding: var(--space-1) var(--space-2);
+  background: var(--surface-canvas);
+}
+/* 6 · take it with you */
+.lesson__take { padding-left: var(--space-2); border-left: var(--stroke-bold) solid var(--rim, var(--line)); }
+/* «Para saber más» and «Leer de cerca» are native disclosures: a
+   control of the system, with the state mark (an empty ring closed, a
+   filled one open). «Leer de cerca» folds the fine print (code, tree
+   fragments) that a room cannot read: it stays one press away for
+   whoever reads at a desk. */
+.lesson__more { margin-top: var(--space-1); }
+.closer { min-width: 0; }
+.closer[open] > summary { margin-bottom: var(--space-2); }
+:is(.lesson__more, .closer) summary {
+  display: inline-flex; align-items: center; gap: var(--gap-2xs);
+  min-height: var(--touch); padding: 0 var(--space-2); cursor: pointer; list-style: none;
+  font-family: var(--font-display); font-weight: var(--fw-semibold);
+  font-size: var(--type-body); line-height: var(--type-body-lh);
+  color: var(--shape-circle); border: var(--stroke-fine) solid var(--shape-circle); border-radius: var(--radius-pill);
+}
+:is(.lesson__more, .closer) summary::-webkit-details-marker { display: none; }
+:is(.lesson__more, .closer) summary::before {
+  content: ""; flex: none; width: var(--space-2); aspect-ratio: 1; border-radius: var(--radius-round);
+  border: var(--stroke-fine) solid var(--shape-circle);
+}
+:is(.lesson__more, .closer)[open] summary { background: color-mix(in oklab, var(--shape-circle) var(--wash-16), var(--k-white)); }
+:is(.lesson__more, .closer)[open] summary::before { background: var(--shape-circle); }
+.lesson__more ul { margin: var(--space-1) 0 0; padding-left: var(--space-3); }
+.lesson__more li { font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink-soft); }
+
+/* 3 · THE BENCH HANGS FROM THE BRANCH, as every flower of the work.
+   The sap stem leaves the branch's knot and runs down the bench; each
+   specimen hangs from it on its own pedicel, at the height of its flower
+   (--pedicel-y). One column on narrow screens (the stem on the left, every
+   specimen to its right); two in a plate, the stem in the middle lane and
+   the specimens on both sides of it, mirrored. The stem stops at the last
+   specimen's pedicel: nothing dangles. */
+.lesson__bench {
+  --bench-indent: var(--space-5);              /* one column: room for the stem and its pedicels */
+  --bench-row-gap: var(--space-4);
+  position: relative; display: grid; grid-template-columns: minmax(0, 1fr);
+  gap: var(--bench-row-gap) var(--space-6); justify-items: start; align-items: start;
+  padding-left: var(--bench-indent);
+}
+.lesson__pair, .lesson__row { display: contents; }
+/* one column: claim and coda share the bench's gutter, and the stem runs
+   down it from the knot, past the claim, to the last specimen */
+.lesson__claim, .lesson__coda { position: relative; padding-left: var(--space-5); }
+/* A LESSON'S BRANCH DOES NOT END: the arc bends and goes on down as the
+   stem the specimens hang from, with no knot. It is one border with one
+   width and one ink: the top border turns the corner into the side border
+   (both the branch's --stroke), so the curve becomes straight without a
+   seam, exactly over the stem's axis. Only the pedicels, the stalks of each
+   specimen, are sap. */
+.lesson { --stem-w: var(--stroke); }
+.lesson .branch__arc {
+  width: calc(var(--arc-w) + var(--stem-w) / 2);
+  height: calc(var(--drop) + var(--rise));
+  border-right: var(--stem-w) solid var(--line);
+  border-top-right-radius: 100% var(--drop);
+}
+.lesson .branch__arc::after { content: none; }
+/* one column: a chord's stem is the same branch going on, in ink */
+.lesson .cluster::before { top: 0; width: var(--stem-w); left: calc(var(--hang-x) + var(--stem) / 2 - var(--stem-w) / 2); background: var(--line); }
+/* one column: from the load's top, the stem runs down the gutter, past the claim */
+.lesson__claim::before {
+  content: ""; position: absolute; left: calc(var(--hang-x) - var(--stem-w) / 2); width: var(--stem-w); background: var(--line);
+  top: 0; bottom: calc(-1 * var(--gap-s));
+}
+.specimen {
+  --pedicel-y: calc(var(--space-12) / 2);      /* a flower's centre */
+  position: relative; margin: 0; display: grid; justify-items: start; gap: var(--space-1); width: min(var(--space-32), 100%);
+}
+/* each specimen carries its stretch of the stem, and its pedicel */
+.specimen::before, .specimen::after { content: ""; position: absolute; background: var(--sap); }
+.specimen::before {
+  background: var(--line);
+  left: calc(var(--hang-x) - var(--bench-indent) - var(--stem-w) / 2); width: var(--stem-w);
+  top: calc(-1 * var(--bench-row-gap)); bottom: calc(-1 * var(--bench-row-gap));
+}
+.specimen--last::before { bottom: auto; height: calc(var(--bench-row-gap) + var(--pedicel-y) + var(--stem) / 2); }
+/* a pedicel leaves the stem from its edge and reaches its flower's centre,
+   behind the bud, so it touches the flower closed or open */
+.specimen { isolation: isolate; }
+.specimen::after { z-index: -1; }
+figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
+.specimen::after { left: calc(var(--hang-x) - var(--bench-indent) + var(--stem-w) / 2); width: calc(var(--bench-indent) - var(--hang-x) - var(--stem-w) / 2 + var(--pedicel-reach, var(--space-0))); }
+.specimen::after {
+  left: calc(var(--hang-x) - var(--bench-indent)); width: calc(var(--bench-indent) - var(--hang-x));
+  top: calc(var(--pedicel-y) - var(--stem) / 2); height: var(--stem);
+}
+/* a fieldset's box starts under its legend: the pedicel is measured from there */
+.specimen--group { --pedicel-y: calc(var(--mini) / 2); }
+/* the group is a small branch: one twig carries its three checkboxes */
+.specimen--group .specimen__flowers { position: relative; }
+.specimen--group .specimen__flowers::before {
+  content: ""; position: absolute; z-index: -1; left: calc(var(--space-1) + var(--mini) / 2); right: 0;
+  top: calc(var(--mini) / 2 - var(--stem) / 2); height: var(--stem); background: var(--sap);
+}
+.specimen--slider { --pedicel-y: calc(var(--type-body-lh) + var(--space-1) + var(--touch) / 2); }
+/* The plate (two banks from 64 rem): claim above, coda below, on the
+   note's bank; the bench spans both rows on the other. One class more
+   specific than the plate's own .note rules, which come later */
+@media (min-width: 64rem) {
+  .lesson .branch__load--flowers { grid-template-rows: auto 1fr; }
+  .lesson.branch--left .branch__load--flowers > .lesson__claim { grid-column: 2; grid-row: 1; }
+  .lesson.branch--left .branch__load--flowers > .lesson__coda { grid-column: 2; grid-row: 2; justify-self: start; }
+  .lesson.branch--left .branch__load--flowers > :is(.lesson__bench, .cluster) { grid-column: 1; grid-row: 1 / span 2; }
+  .lesson.branch--right .branch__load--flowers > .lesson__claim { grid-column: 1; grid-row: 1; }
+  .lesson.branch--right .branch__load--flowers > .lesson__coda { grid-column: 1; grid-row: 2; justify-self: end; }
+  .lesson.branch--right .branch__load--flowers > :is(.lesson__bench, .cluster) { grid-column: 2; grid-row: 1 / span 2; }
+}
+/* two banks (the plate, from 64 rem): the bench in two columns, the stem
+   in the lane between them; no gutter beside the claim */
+@media (min-width: 64rem) {
+  .lesson__bench { --bench-gap: var(--space-6); grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--bench-gap); padding-left: 0; }
+  .lesson__claim, .lesson__coda { padding-left: 0; }
+  .lesson__claim::before { content: none; }
+  .lesson.branch--left .branch__arc {
+    border-right: 0; border-left: var(--stem-w) solid var(--line);
+    border-top-left-radius: 100% var(--drop);
+  }
+  /* the arc already reaches the load: a chord's rod hangs straight from it */
+  .lesson .cluster::before { content: none; }
+  .specimen--right::before { left: calc(-1 * var(--bench-gap) / 2 - var(--stem-w) / 2); }
+  .specimen--right::after { left: calc(-1 * var(--bench-gap) / 2 + var(--stem-w) / 2); width: calc(var(--bench-gap) / 2 - var(--stem-w) / 2 + var(--pedicel-reach, var(--space-0))); }
+  .specimen--left::before { display: none; }
+  .specimen--left::after { left: auto; right: calc(-1 * var(--bench-gap) / 2 + var(--stem-w) / 2); width: calc(var(--bench-gap) / 2 - var(--stem-w) / 2 + var(--pedicel-reach, var(--space-0))); }
+  /* the left bank mirrors the right: its flower against the stem */
+  .specimen--left { justify-self: end; justify-items: end; text-align: end; }
+  .specimen--left .specimen__flowers { justify-content: flex-end; }
+}
+@media (min-width: 90rem) {
+  .specimen { --mini: var(--space-8); }
+}
+.specimen__canvas {
+  --spec-size: var(--space-12);
+  position: relative; width: var(--spec-size); aspect-ratio: 1;
+  margin-bottom: calc(var(--type-body-lh) + var(--space-1));   /* room for the flower's name */
+}
+/* texts take the width the specimen gives them, never widen it */
+.specimen__caption { contain: inline-size; width: 100%; }
+.specimen__caption {
+  margin: 0; font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink-soft);
+}
+.specimen__caption code { color: var(--ink); font-weight: var(--fw-semibold); }
+.specimen__legend {
+  padding: 0; font-family: var(--font-display); font-weight: var(--fw-semibold);
+  font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink);
+}
+/* The disclosure: a button too (a blue circle), but its truth is that
+   what it controls is SHOWN. It does not open petals around itself —
+   that is the toggle's gesture —: a branch grows from it, carrying what
+   it controls, and its ring fills while the branch is out */
+.flower--disclosure[aria-expanded="true"]::before {
+  opacity: 1; border-color: var(--color);
+  background: color-mix(in oklab, var(--color) var(--flower-wash), transparent);
+}
+.flower--disclosure[aria-expanded="true"] .flower__corolla { opacity: 1; transform: none; }
+.specimen__branch {
+  position: absolute; left: calc(100% + var(--space-3)); top: 0;
+  list-style: none; margin: 0; padding: var(--space-1) 0 var(--space-1) var(--space-2);
+  border-left: var(--stem) solid var(--sap);
+}
+/* the twig from the flower to its branch */
+.specimen__branch::before {
+  content: ""; position: absolute; right: 100%; top: calc(var(--spec-size) / 2 - var(--stem) / 2);
+  width: var(--space-3); height: var(--stem); background: var(--sap);
+}
+.specimen__branch li {
+  position: relative; padding-left: var(--space-3);
+  font-size: var(--type-body); line-height: var(--type-lead-lh); color: var(--ink);
+}
+/* its entries are links, so they speak as links: the yellow triangle
+   with an ink edge, and the name underlined (APG disclosure navigation).
+   Two triangles, ink under yellow, anchored at their centroid (2/3 of
+   the height): the yellow one is inset by the edge on every side, so
+   its side is 2·√3·edge shorter and the band is even all round. */
+.specimen__branch li::before,
+.specimen__branch li::after {
+  --tri: var(--space-3);
+  content: ""; position: absolute; left: 0; top: 50%; translate: -50% calc(-200% / 3);
+  width: var(--tri); aspect-ratio: calc(2 / sqrt(3));
+  clip-path: polygon(50% 0, 100% 100%, 0 100%); background: var(--line);
+}
+.specimen__branch li::after {
+  --tri: calc(var(--space-3) - 2 * sqrt(3) * var(--stroke-fine));
+  background: var(--shape-triangle);
+}
+.specimen__branch a {
+  display: inline-block; padding-left: var(--space-1); min-height: var(--touch); line-height: var(--touch);
+  color: var(--ink); text-decoration: underline; text-underline-offset: var(--underline-offset);
+  font-family: var(--font-display); font-weight: var(--fw-semibold);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .specimen__branch:not([hidden]) { transform-origin: 0 0; animation: grow-down var(--motion-bloom) var(--ease-out); }
+}
+
+/* The group and its mixed parent */
+.specimen--group { border: 0; padding: 0; min-width: 0; }
+.specimen--group { width: auto; max-width: 100%; }
+.specimen__flowers { list-style: none; margin: 0; padding: 0 var(--space-1); display: flex; flex-wrap: wrap; gap: 0 var(--space-3); }
+/* small flowers whose names may take two lines, centred under them */
+/* (.specimen in front: flowers.css loads later and sets every .flower to 100 %) */
+.specimen { --mini: var(--space-6); }   /* 48: the touch target, and three fit in a phone's row */
+.specimen .flower--mini { width: var(--mini); height: var(--mini); margin-bottom: calc(2 * var(--type-body-lh) + var(--space-1)); }
+.specimen .flower--mini .flower__name { white-space: normal; width: var(--space-10); text-align: center; padding: 0; }
+/* checked="mixed": the bud half open — petals half way out, the ring
+   half washed. Neither closed nor in bloom: some of its group */
+.flower--square:has(:indeterminate) .flower__petals { --r: calc(var(--flower-open-r) * 0.6); --spin: 0deg; }
+.flower--square:has(:indeterminate) .flower__petal { opacity: 1; --s: 0.6; }
+.flower--square:has(:indeterminate)::before {
+  opacity: 1; border-color: var(--color);
+  background: color-mix(in oklab, var(--color) calc(var(--flower-wash) / 2), transparent);
+}
+
+/* The slider: Kandinsky's point on a line — a value inside a range */
+.specimen--slider { gap: var(--space-1); }
+.slider {
+  -webkit-appearance: none; appearance: none; width: min(var(--space-32), 100%); height: var(--touch);
+  margin: 0; background: transparent; cursor: pointer;
+}
+.slider::-webkit-slider-runnable-track { height: var(--stroke-bold); background: var(--line); }
+.slider::-moz-range-track { height: var(--stroke-bold); background: var(--line); }
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; width: var(--space-4); height: var(--space-4); border-radius: var(--radius-round);
+  background: var(--line); margin-top: calc((var(--stroke-bold) - var(--space-4)) / 2);
+}
+.slider::-moz-range-thumb { width: var(--space-4); height: var(--space-4); border: 0; border-radius: var(--radius-round); background: var(--line); }
+.slider__out {
+  font-family: var(--font-display); font-weight: var(--fw-semibold);
+  font-size: var(--type-subhead); line-height: var(--type-subhead-lh); color: var(--ink);
+}
+
+/* ============================================================
+   CLUSTERS — flowers hanging from one shared sap stem
+   ============================================================ */
 .cluster {
+  --slot-x: var(--space-0);                             /* each flower's drift from the stem */
   list-style: none; margin: 0; padding: 0; position: relative;
   display: flex; flex-direction: column; align-items: flex-start;
-  gap: clamp(1.1rem, 3vh, 1.8rem);
+  gap: clamp(var(--space-2), 3vh, var(--space-4));
 }
-/* El tallo del ramillete: sube desde las flores hasta cruzar el arco */
+/* The cluster's stem: from the knot down through the flowers */
 .cluster::before {
-  content: ""; position: absolute; left: 0.9rem; top: calc(-1 * var(--rise, 2.7rem)); bottom: 15%;
-  width: 3px; background: var(--sap);
+  content: ""; position: absolute; left: var(--hang-x); top: calc(-1 * var(--rise)); bottom: 15%;
+  width: var(--stem); background: var(--sap);
 }
-.cluster__slot { position: relative; }
-/* El pedúnculo: del tallo al capullo de cada flor */
+.cluster__slot { position: relative; margin-left: var(--slot-x); }
+/* The card is as wide as its widest piece: the canvas keeps its size
+   (and with it the pedicel's geometry) and the cartela may be wider,
+   never broken mid-word */
+.cluster .flower-card { display: grid; justify-items: start; width: auto; max-width: 100%; }
+.cluster .flower-card__canvas { width: var(--card-size); }
+.cluster .flower-card__caption { max-width: min(100%, var(--space-24)); }
+/* The pedicel: from the stem to each flower's bud */
 .flower-card__canvas { position: relative; }
 .flower-card__canvas::before {
-  content: ""; position: absolute; top: 49%; left: 0.9rem; right: 60%;
-  height: 2.5px; background: var(--sap);
+  content: ""; position: absolute; top: calc(50% - var(--pedicel) / 2);
+  left: calc(var(--hang-x) - var(--slot-x)); right: 60%;
+  height: var(--pedicel); background: var(--sap);
 }
 
-/* Ramo: fieldset con radios (el nodo group) */
-.bouquet { border: 2px solid var(--shape-rhombus); padding: 0.7rem 1.1rem 0.6rem; margin: 0; background: none; }
-.bouquet__legend { font-family: var(--font-display); font-size: 0.85rem; color: var(--ink); padding: 0 0.4rem; }
-.bouquet__flowers { display: flex; flex-wrap: wrap; gap: clamp(0.6rem, 2vw, 1.4rem); justify-content: center; }
-.bouquet__foot { margin: 0.6rem 0 0; font-family: var(--font-mono); font-size: 0.68rem; color: var(--ink-soft); text-align: center; }
-/* El ramo y el marco JSON también cuelgan de la rama por su tallo */
+/* ------------------------------------------------------------
+   THE CHORD — station 4's three buttons sound Do, Mi and Sol: a major
+   chord. They hang side by side from one sap rod, each on a string
+   whose length is inversely proportional to its pitch — the longer
+   the pipe, the lower the note, as in chimes or organ pipes:
+     string = root length × 262 Hz / the flower's Hz
+     Do 262 → 1 · Mi 330 → 0.79 · Sol 392 → 0.67
+   so their heights draw the chord you hear, and the lowest note is
+   also the biggest flower. Left to right is Do, Mi, Sol: the visual
+   order is the DOM's and the focus order.
+   The stem still comes down from the knot (at --hang-x) to the rod;
+   the rod runs from there to the last string.
+   ------------------------------------------------------------ */
+/* Phones: the flowers stay one per row and the string turns
+   horizontal — each flower's distance from the stem is its string, so
+   the same law still reads (Do furthest, Sol nearest) and every label
+   gets the full width */
+.cluster.cluster--chord { --chord-root: 262; --chord-len: var(--space-8); --chord-gap: var(--space-2); --chord-strings: 4; }
+.cluster--chord .cluster__slot {
+  --string: calc(var(--chord-len) * var(--chord-root) / var(--hz));
+  --slot-x: var(--string);
+  max-width: calc(100% - var(--slot-x));
+}
+.cluster--chord .flower-card__canvas { width: min(var(--card-size), 100%); }
+@media (min-width: 48rem) {
+  /* From 768 px the strings hang: a rod, three columns, three heights */
+  .cluster.cluster--chord {
+    --chord-len: var(--space-16);
+    display: grid; grid-template-columns: repeat(var(--chord-strings), minmax(0, 1fr));
+    column-gap: var(--chord-gap); align-items: start; width: 100%;
+  }
+  /* column centres sit at (width − (n − 1) gaps) / 2n from each edge */
+  .cluster--chord { --chord-edge: calc((100% - (var(--chord-strings) - 1) * var(--chord-gap)) / (2 * var(--chord-strings))); }
+  /* the stem: from the knot down to the rod */
+  .cluster--chord::before { bottom: auto; height: calc(var(--rise) + var(--stem)); }
+  /* the rod, from the stem (or the first string) to the last string */
+  .cluster--chord::after {
+    content: ""; position: absolute; top: 0; height: var(--stem);
+    left: min(var(--hang-x), calc(var(--chord-edge) - var(--pedicel) / 2));
+    right: calc(var(--chord-edge) - var(--pedicel) / 2);
+    background: var(--sap);
+  }
+  .cluster--chord .cluster__slot {
+    margin: 0; max-width: none; padding-top: var(--string);
+    display: grid; justify-items: center;
+  }
+  .cluster--chord .flower-card { justify-items: center; }
+  /* each string: from the rod down to the centre of its flower, which
+     covers its last stretch */
+  .cluster--chord .flower-card__canvas::before {
+    content: ""; position: absolute; top: calc(-1 * var(--string)); bottom: 50%;
+    left: calc(50% - var(--pedicel) / 2); right: auto; width: var(--pedicel); height: auto;
+    background: var(--sap);
+  }
+}
+
+/* ------------------------------------------------------------
+   THE NAME LADDER — station 5. The accessible name is computed by
+   going down five steps: aria-labelledby › aria-label › <label> or
+   <figcaption> › the element's own text › title. The first step that
+   yields a name wins. The cluster's stem is the ladder's pole and each
+   step is a rung: an ink rung is a step nobody uses here; a sap rung,
+   thicker, is the step that names a link, and that link hangs from it.
+   The colour is never alone: the lit rung is also thicker and carries
+   the name it gives, in text.
+   Top to bottom is the DOM and focus order: "Al suelo" (rung 2, Do5)
+   comes before "Ir al inspector" (rung 4, La4), the higher note above,
+   as on station 2's staff.
+   Phones: each rung runs from the stem to its label and the flower
+   hangs below it on its pedicel. ≥ 64rem: the flower sits on the
+   stem and its rung crosses through its bud to the label.
+   ------------------------------------------------------------ */
+.cluster.cluster--ladder {
+  --rung-bar: var(--stroke-fine);
+  --rung-reach: var(--space-3);              /* from the stem to the step's label */
+  --rung-lh: var(--type-body-lh);
+  --rung-y: calc(var(--rung-lh) / 2);        /* the rung's height inside its row */
+  --rung-card: clamp(var(--space-16), 15vw, var(--space-20));   /* 128–160 */
+  --rung-num: var(--space-3);
+  --slot-x: calc(var(--hang-x) + var(--stem) + var(--rung-reach));   /* phones: under its label */
+  counter-reset: rung; align-items: stretch;
+}
+/* the pole ends exactly on the last rung (title): the ladder's foot */
+.cluster--ladder::before { bottom: calc(var(--rung-y) - var(--rung-bar) / 2); }
+.ladder__rung {
+  counter-increment: rung; position: relative;
+  display: grid; justify-items: start; row-gap: var(--gap-2xs);
+}
+.ladder__rung--wins { --rung-bar: var(--stem); }
+.ladder__rung::before {
+  content: ""; position: absolute; top: calc(var(--rung-y) - var(--rung-bar) / 2);
+  left: calc(var(--hang-x) + var(--stem)); width: calc(var(--rung-reach) - var(--space-1));
+  height: var(--rung-bar); background: var(--line);
+}
+.ladder__rung--wins::before { background: var(--sap); }
+.ladder__step {
+  margin-left: var(--slot-x);
+  font-family: var(--font-mono); font-size: var(--type-body); line-height: var(--rung-lh);
+  color: var(--ink-soft);
+}
+.ladder__step::before {
+  content: counter(rung); content: counter(rung) / "";
+  display: inline-block; min-width: var(--rung-num); font-weight: var(--fw-bold); color: var(--ink);
+}
+.ladder__rung--wins .ladder__step { color: var(--ink); }
+.ladder__name { display: block; padding-left: var(--rung-num); color: var(--sap); }
+.cluster--ladder .ladder__rung .flower-card { --card-size: var(--rung-card); margin-left: var(--slot-x); }
+@media (min-width: 64rem) {
+  /* The stem is centred. A narrow column keeps each rung above its
+     flower, which sits on the stem. From 440 px (the flower plus a
+     label column on each side) the rung crosses the bud, with the
+     labels in cartela type; from 512 px, in body type. The row stays
+     24 px either way, so the pole's foot does not move. */
+  .cluster.cluster--ladder { --ladder-core: var(--rung-card); container-type: inline-size; }
+  .cluster--ladder .ladder__rung .flower-card { justify-self: center; margin-left: 0; }
+  @container (27.5rem <= width < 32rem) {
+    .ladder__step { font-size: var(--type-label); }
+  }
+  @container (min-width: 27.5rem) {
+    .ladder__rung { grid-template-columns: minmax(0, 1fr) var(--ladder-core) minmax(0, 1fr); align-items: start; }
+    .ladder__rung--wins { --rung-y: calc(var(--rung-card) / 2); }
+    /* from the stem's right edge to the label, through the bud */
+    .ladder__rung::before { width: calc(var(--ladder-core) / 2 - var(--stem) / 2); }
+    .ladder__step {
+      grid-column: 3; grid-row: 1; margin-left: var(--space-1);
+      padding-top: calc(var(--rung-y) - var(--rung-lh) / 2);
+    }
+    .cluster--ladder .ladder__rung .flower-card { grid-column: 2; grid-row: 1; }
+  }
+}
+
+/* ------------------------------------------------------------
+   QUITA UN CANAL — station 2. Kandinsky saw sounds and heard colours;
+   accessibility is that synesthesia built on purpose. One flower, the
+   Do4 button, hangs alone from the branch's knot, and five switches
+   take away, one by one, a way of perceiving it (js/channels.js writes
+   data-ch-* on the station). Only presentation changes: role, name and
+   state never do, and the button keeps working.
+     colour  → same lightness, no hue (grayscale keeps the luminance)
+     shape   → it blurs into a colour field: no edge, no silhouette
+     text    → its visible name fades; the tree still has it
+     pixels  → nothing is drawn but the node's frame, as in the X-ray
+   The focus ring never fades: it belongs to the user, not to a channel.
+   With reduced motion every change is instant.
+   Plate layout ≥ 64rem: the note and the flower share row 1, the
+   switches and the score share row 2 — each idea faces its picture.
+   ------------------------------------------------------------ */
+@property --ch-grey { syntax: '<number>'; inherits: true; initial-value: 0; }
+@property --ch-blur { syntax: '<length>'; inherits: true; initial-value: 0; }
+@property --ch-ink { syntax: '<number>'; inherits: true; initial-value: 1; }
+
+/* The lone flower: the cluster's stem, ending at the pedicel's joint
+   on phones and behind the bud from 64rem */
+.cluster.cluster--solo { --solo-card: clamp(var(--space-20), 22vw, var(--space-32)); }   /* 160–256 */
+.cluster--solo .cluster__slot .flower-card { --card-size: var(--solo-card); }
+.cluster--solo::before { bottom: auto; height: calc(var(--rise) + var(--solo-card) / 2 + var(--pedicel) / 2); }
+.cluster--solo { --slot-x: var(--space-3); }
+
+[data-channels-flower] {
+  --ch-grey: 0; --ch-blur: var(--space-0); --ch-ink: 1;
+  --ch-shape-off: var(--space-2);          /* the blur that dissolves the silhouette */
+}
+[data-channels-flower] .flower__petals,
+[data-channels-flower] .flower::before,
+[data-channels-flower] .flower::after { filter: grayscale(var(--ch-grey)) blur(var(--ch-blur)); }
+[data-channels-flower] .flower__petals { opacity: var(--ch-ink); }
+/* the ring and the wave keep their own rest state (hidden in the bud) */
+[data-ch-pixels="off"] [data-channels-flower] .flower::before,
+[data-ch-pixels="off"] [data-channels-flower] .flower::after { opacity: 0; animation: none; }
+[data-ch-color="off"] [data-channels-flower] { --ch-grey: 1; }
+[data-ch-shape="off"] [data-channels-flower] { --ch-blur: var(--ch-shape-off); }
+[data-ch-text="off"] [data-channels-flower] .flower__name { opacity: 0; }
+[data-ch-pixels="off"] [data-channels-flower] { --ch-ink: 0; }
+[data-ch-pixels="off"] [data-channels-flower] .flower__name { opacity: 0; }
+/* What is left without pixels: the node's frame, as in the X-ray */
+[data-channels-flower] .flower-card__canvas::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  border: var(--stroke-fine) solid var(--shape-circle); opacity: 0;
+}
+[data-ch-pixels="off"] [data-channels-flower] .flower-card__canvas::after { opacity: 1; }
+/* …and the node hangs from it: without a bud to hide behind, the stem
+   ends on the frame's top edge (from 64rem) or the pedicel on its left
+   edge (phones). Nothing floats, not even an absence. */
+[data-ch-pixels="off"] [data-channels-flower] .flower-card__canvas::before { right: 100%; }
+@media (min-width: 64rem) {
+  [data-ch-pixels="off"] .cluster--solo::before { height: var(--rise); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-channels-flower] { transition: --ch-grey var(--motion-bloom) ease, --ch-blur var(--motion-bloom) ease, --ch-ink var(--motion-bloom) ease; }
+  [data-channels-flower] .flower__name,
+  [data-channels-flower] .flower-card__canvas::after { transition: opacity var(--motion-bloom) ease; }
+}
+
+/* The switches: buttons, so circles — a filled mark while the channel
+   flows, an empty one once it is cut (shape, never colour alone) */
+.channels { display: grid; gap: var(--gap-xs); align-content: start; }
+.channels__title {
+  margin: 0; font-family: var(--font-display); font-size: var(--type-heading); line-height: var(--type-heading-lh); color: var(--ink);
+}
+.channels__remains { margin: 0; font-size: var(--type-body); line-height: var(--type-body-lh); }
+/* two lines reserved: the sentence changes, the plate does not jump */
+.channels__remains { color: var(--ink); min-height: calc(2 * var(--type-body-lh)); }
+.channels__list {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(var(--space-12), 1fr)); gap: var(--gap-2xs);
+}
+.channels__item { display: grid; justify-items: center; row-gap: var(--half); }
+/* Each channel is a toggle of the control system: filled ring while
+   the channel is on, empty once it is taken away */
+.channel { width: 100%; --control-pad: var(--space-1); }
+.channel__wcag { font-family: var(--font-mono); font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); }
+.channels__caption {
+  margin: 0; min-height: var(--type-label-lh);
+  font-family: var(--font-mono); font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft);
+}
+
+/* What a machine reads: the node, the same for a screen reader, voice
+   control or an AI agent. With every channel off it is all that is
+   left, and its frame turns to sap. */
+.machine {
+  border: var(--stroke-fine) solid var(--line); background: var(--surface-plate);
+  padding: var(--space-1) var(--space-2);
+}
+.machine__title { margin: 0; font-family: var(--font-mono); font-size: var(--type-label); line-height: var(--type-label-lh); font-weight: var(--fw-bold); color: var(--ink); }
+.machine__who { font-weight: var(--fw-regular); color: var(--ink-soft); }
+.machine__json {
+  margin: var(--space-1) 0; white-space: pre-wrap; overflow-wrap: anywhere;
+  font-family: var(--font-mono); font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink);
+}
+.machine__voice { margin: 0; font-size: var(--type-body); line-height: var(--type-body-lh); font-style: italic; color: var(--ink); }
+[data-ch-all="off"] .machine { border-color: var(--sap); border-width: var(--stroke-bold); padding: calc(var(--space-1) - var(--stroke-fine)) calc(var(--space-2) - var(--stroke-fine)); }
+@media (prefers-reduced-motion: no-preference) {
+  [data-ch-all="off"] .machine__json { animation: sap var(--dur-4) var(--ease-out); }
+}
+
+/* Phones: the plate keeps its reading order — flower, switches, note,
+   score */
+#synesthesia .branch__load--flowers > .score { order: 3; }
+#synesthesia .score figcaption { max-width: none; }
+@media (min-width: 64rem) {
+  #synesthesia .branch__load--flowers > .score { grid-column: 2; grid-row: 2; }
+  /* a lone flower has no drift: it hangs centred on its stem */
+  .cluster.cluster--solo { --slot-x: var(--space-0); }
+}
+
+/* Bouquet: a fieldset with radios (the group node) */
+.bouquet {
+  --legend-lh: var(--type-body-lh);
+  border: var(--stroke-fine) solid var(--shape-rhombus);
+  padding: var(--space-1) var(--space-3); margin: 0; background: none;
+}
+.bouquet__legend {
+  font-family: var(--font-display); font-size: var(--type-body); line-height: var(--legend-lh);
+  color: var(--ink); padding: 0 var(--space-1);
+}
+.bouquet__flowers { display: flex; flex-wrap: wrap; gap: clamp(var(--space-1), 2vw, var(--space-3)); justify-content: center; }
+.bouquet__foot {
+  margin: var(--space-1) 0 0; font-family: var(--font-mono);
+  font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); text-align: center;
+}
+/* Bouquet and JSON frame also hang from the branch by their stem */
 .branch__load--flowers > .bouquet, .branch__load--flowers > .data-card { position: relative; }
 .branch__load--flowers > .bouquet::before, .branch__load--flowers > .data-card::before {
-  content: ""; position: absolute; left: 1.4rem;
-  top: calc(-1 * var(--rise, 2.7rem)); height: var(--rise, 2.7rem);
-  width: 3px; background: var(--sap);
+  content: ""; position: absolute; left: var(--hang-x);
+  top: calc(-1 * var(--rise)); height: var(--rise);
+  width: var(--stem); background: var(--sap);
+}
+/* In a <fieldset> with a <legend>, the top border takes the legend's
+   WHOLE line-height and its rule runs through the middle: absolute
+   children are measured from below that height. The stem climbs that
+   whole line more to be born at the knot, and comes down only to the
+   rule. (--hang-x is measured from the padding edge, inside the 2 px
+   border: the arc's width already counts it.) */
+.branch__load--flowers > fieldset.bouquet::before {
+  left: calc(var(--hang-x) - var(--stroke-fine));
+  top: calc(-1 * (var(--rise) + var(--legend-lh)));
+  height: calc(var(--rise) + var(--legend-lh) / 2 + var(--stroke-1));
 }
 
-/* figure con figcaption: el marco con cartela (JSON-LD) */
-.data-card { margin: 0; max-width: 27rem; border: 2px solid var(--line); padding: 0.7rem; background: var(--k-surface); }
+/* figure + figcaption: the captioned frame (JSON-LD) */
+.data-card {
+  margin: 0; max-width: var(--space-56);
+  border: var(--stroke-fine) solid var(--line); padding: var(--space-2); background: var(--surface-plate);
+}
+/* On phones long code WRAPS (pre-wrap): reading one line of code never
+   asks for a sideways scroll. From 48rem it keeps its real layout. */
+.data-card__json, .pair__code, .anatomy__code { white-space: pre-wrap; overflow-wrap: anywhere; }
 .data-card__json {
-  font-family: var(--font-mono); font-size: 0.74rem; line-height: 1.5;
+  font-family: var(--font-mono); font-size: var(--type-label); line-height: var(--type-label-lh);
   color: var(--ink); margin: 0; overflow-x: auto;
-  background: var(--k-linen); border-left: 4px solid var(--k-green); padding: 0.6rem 0.7rem;
+  background: var(--surface-canvas); border-left: var(--stroke-bold) solid var(--sprout); padding: var(--space-1) var(--space-2);
 }
 .data-card figcaption {
-  margin-top: 0.5rem; padding-top: 0.45rem; font-size: 0.78rem; color: var(--ink-soft);
-  border-top: 1px solid rgba(23, 21, 15, 0.25);
+  margin-top: var(--space-1); padding-top: var(--space-1);
+  font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft);
+  border-top: var(--stroke-hair) solid var(--tint-shadow);
 }
 
-/* Clave/partitura */
+/* ------------------------------------------------------------
+   THE SCORE ON A STAFF — synesthesia made visible: every voice of the
+   grammar sits at the note it really sounds (the median of the distinct
+   notes its flowers declare), so shape, colour, timbre AND pitch
+   are read in one drawing. A treble staff: the bottom line is Mi4
+   (--step 0) and each diatonic step is half a line gap (tempered,
+   La4 = 440 Hz; js/score-check.js proves it in development):
+     button Do4 −2 (ledger line) · checkbox Re4 −1 · text field Mi4 0 ·
+     radio Re5 6 (the checkbox's octave) · link Fa♯5 8, the only sharp
+   The heading's branch arc is a rest, in the middle of the staff. The
+   div never reaches the tree, so it never reaches the score: its cell
+   has no staff and it lies fallen below.
+   Two scales of the same geometry: on phones each voice is a row with
+   its own piece of staff (8 px line gap); from 64rem the voices are the
+   staff's columns and the lines run continuously (16 px line gap).
+   Every vertical position is a whole number of half-steps:
+     staff height 19 · bottom line at 13 · a note at 13 − step
+   ------------------------------------------------------------ */
 .key {
-  list-style: none; margin: 0.8rem 0; padding: 0;
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr));
-  gap: clamp(0.8rem, 2vw, 1.4rem);
+  --line-gap: var(--space-1);
+  --half-step: calc(var(--line-gap) / 2);
+  --key-shape: var(--space-2);
+  --staff-h: calc(var(--half-step) * 19);
+  --base: calc(var(--half-step) * 13);           /* the bottom line, Mi4 */
+  --staff-ink: var(--tint-line);
+  list-style: none; margin: var(--space-2) 0; padding: 0;
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-1);
 }
 .key__row {
-  display: flex; flex-direction: column; align-items: center; gap: 0.3rem; text-align: center;
-  font-family: var(--font-mono); font-size: 0.74rem; color: var(--ink);
+  display: grid; grid-template-columns: var(--space-10) minmax(0, 1fr);
+  grid-template-rows: auto auto 1fr; column-gap: var(--space-2); align-items: start;
+  font-family: var(--font-mono); font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink);
 }
-.key__shape { width: 2rem; height: 2rem; flex: none; }
-.key__shape--circle { border-radius: 50%; background: var(--k-blue); }
-.key__shape--triangle { background: var(--k-yellow); clip-path: polygon(50% 0, 100% 100%, 0 100%); }
-.key__shape--square { background: var(--k-red); }
-.key__shape--rhombus { background: var(--shape-rhombus); transform: rotate(45deg); width: 1.55rem; height: 1.55rem; margin: 0.22rem; }
+/* The row's piece of staff: five lines, bottom one at --base */
+.key__staff {
+  position: relative; grid-row: 1 / -1; height: var(--staff-h);
+  background-image: repeating-linear-gradient(to bottom, var(--staff-ink) 0 var(--stroke-1), transparent var(--stroke-1) var(--line-gap));
+  background-size: 100% calc(4 * var(--line-gap) + var(--stroke-1));
+  background-position: 0 calc(var(--base) - 4 * var(--line-gap));
+  background-repeat: no-repeat;
+}
+/* The div's cell has no staff: it is out of the score */
+.key__row--fallen .key__staff { background: none; }
+.key__row--fallen > :not(.key__staff) { color: var(--k-grey-dark); }
+/* Do4 sits on a ledger line, one line gap under the staff */
+.key__row--ledger .key__staff::after {
+  content: ""; position: absolute; left: 50%; top: calc(var(--base) + var(--line-gap));
+  width: calc(var(--key-shape) + var(--line-gap)); height: var(--stroke-1);
+  translate: -50% 0; background: var(--line);
+}
+.key__note { color: var(--ink-soft); }
+.key__note b { color: var(--ink); font-family: var(--font-display); font-size: var(--type-body); line-height: var(--type-label-lh); }
+/* The octave index (scientific: Do4 is middle C). Re4 and Re5 share a
+   name and differ by it, as by their place on the staff */
+.key__oct { font-size: var(--type-label); line-height: 0; }
+.key__octave { display: block; color: var(--ink-soft); }
+/* The sharp, drawn: two thin stems and two bars, centred on the note's
+   line and one half-step to the left of the note head. Lines, not a
+   glyph: it does not depend on the font. Upright, like every shape. */
+.key__sharp {
+  --sharp-w: var(--line-gap);
+  --sharp-bar: var(--stroke-fine);
+  position: absolute; z-index: var(--z-base);
+  left: calc(50% - var(--key-shape) / 2 - var(--half-step) - var(--sharp-w));
+  top: calc(var(--base) - var(--step) * var(--half-step));
+  translate: 0 -50%;
+  width: var(--sharp-w); height: calc(var(--half-step) * 5);
+  background:
+    linear-gradient(var(--line), var(--line)) 25% 0 / var(--stroke-hair) 100% no-repeat,
+    linear-gradient(var(--line), var(--line)) 75% 0 / var(--stroke-hair) 100% no-repeat,
+    linear-gradient(var(--line), var(--line)) 0 35% / 100% var(--sharp-bar) no-repeat,
+    linear-gradient(var(--line), var(--line)) 0 65% / 100% var(--sharp-bar) no-repeat;
+}
+.key__timbre { color: var(--ink-soft); }
+.key__shape {
+  position: absolute; left: 50%; top: calc(var(--base) - var(--step) * var(--half-step));
+  translate: -50% -50%; z-index: var(--z-base);
+  width: var(--key-shape); height: var(--key-shape);
+}
+.key__shape--circle { border-radius: var(--radius-round); background: var(--shape-circle); }
+/* Yellow never travels alone: ink outside, yellow inside */
+.key__shape--triangle { background: var(--line); clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.key__shape--triangle::before { content: ""; position: absolute; inset: 0; background: var(--shape-triangle); clip-path: polygon(50% 14%, 90% 94%, 10% 94%); }
+.key__shape--square { background: var(--shape-square); }
+/* A real rhombus, as everywhere else: a clip, never a rotated square */
+.key__shape--rhombus { background: var(--shape-rhombus); clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+/* The heading's branch arc, drawn like a branch: the top border of a
+   box rounded on the right. As a rest, it sits in the middle of the
+   staff. No rotation. */
 .key__shape--arc {
-  background: none; width: 1.6rem; height: 1.6rem; margin: 0.2rem;
-  border: 0.3rem solid var(--line); border-radius: 50%;
-  border-bottom-color: transparent; border-left-color: transparent;
-  transform: rotate(-35deg);
+  background: none; height: calc(var(--key-shape) / 2);
+  border-top: var(--stroke-bold) solid var(--line); border-right: var(--stroke-bold) solid var(--line);
+  border-top-right-radius: 100% 100%;
 }
-.key__shape--bar { background: var(--shape-bar); height: 0.75rem; margin: 0.62rem 0; border-radius: 0.1rem; border-bottom: 0.18rem solid var(--line); box-sizing: border-box; }
-.key__shape--grey { background: var(--k-grey); border-radius: 50% 50% 50% 0; width: 1.4rem; height: 1.4rem; margin: 0.3rem; transform: rotate(45deg); opacity: 0.8; }
-.key__timbre { color: var(--ink-soft); font-size: 0.68rem; }
-.quote { position: relative; margin: 1.2rem 0 0; padding: 0.8rem 1rem 0.6rem; border-left: 3px solid var(--sap); background: rgba(138, 90, 0, 0.06); }
-.quote p { margin: 0 0 0.3rem; font-style: italic; color: var(--ink) !important; }
-.quote cite { display: block; font-size: 0.8rem; font-style: normal; color: var(--ink-soft); }
+.key__shape--bar {
+  background: var(--shape-bar); height: calc(var(--key-shape) / 2);
+  border-bottom: var(--stroke-fine) solid var(--line); box-sizing: border-box;
+}
+/* The wilted bud: the only rotated shape in the work, because its tilt
+   means exactly that it has wilted */
+.key__shape--grey {
+  background: var(--k-grey); border-radius: 50% 50% 50% 0;
+  transform: rotate(45deg); opacity: 0.8;
+}
+@media (min-width: 64rem) {
+  /* The voices become the staff's columns: one continuous staff */
+  .key {
+    --line-gap: var(--space-2);
+    --key-shape: var(--space-3);
+    grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0;
+  }
+  .key__row {
+    grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; row-gap: 0;
+    justify-items: center; text-align: center; padding-bottom: var(--space-1);
+    align-content: start;   /* every column starts its labels on the same line */
+  }
+  .key__staff { grid-row: auto; justify-self: stretch; margin-bottom: var(--space-1); }
+  /* the staff runs without gaps; only the labels keep apart */
+  .key__row > :not(.key__staff) { padding-inline: var(--space-1); }
+  /* the note's name on its own line, its frequency under it */
+  .key__note b { display: block; }
+}
+.quote {
+  position: relative; margin: var(--space-2) 0 0; padding: var(--space-2);
+  border-left: var(--stroke-bold) solid var(--sap);
+  background: color-mix(in oklab, var(--sap) var(--wash-8), transparent);
+}
+.quote p { margin: 0 0 var(--space-1); font-style: italic; color: var(--ink); }
+.quote cite { display: block; font-size: var(--type-label); line-height: var(--type-label-lh); font-style: normal; color: var(--ink-soft); }
 
 /* ============================================================
-   EL SUELO — una rama más que baja del tronco: título, brotes
-   colgando de un semillero y la banda de tierra que los sostiene
+   THE SOIL — one more branch down from the trunk: title, sprouts
+   hanging from a seedbed and the band of earth holding them.
+   The seedbed hangs from the arc's knot, like every other load.
    ============================================================ */
 .ground {
-  position: relative; z-index: 1; padding: 1.4rem 0 0;
-  --stroke: 0.32rem; --drop: 2.4rem; --tint: var(--sprout); --rim: var(--sprout);
-  --rise: calc(var(--drop) + 0.3rem);
+  --pb: var(--space-3);
+  --arc-top: var(--space-3);
+  --drop: var(--space-5);
+  --load-pad: var(--space-2);
+  --load-indent: var(--space-6);
+  --arc-w: var(--space-6);
+  --knot: var(--space-2);
+  --node: var(--space-2);
+  --stroke: var(--stroke-bold);
+  --stem: var(--stroke-bold);
+  --leaf-w: var(--space-2);
+  --leaf-h: var(--space-1);
+  --tint: var(--sprout); --rim: var(--sprout);
+  /* the seedbed line, in the sprout list's coordinates */
+  --seedbed-x: calc(var(--axis-x) + var(--arc-w) - var(--load-indent) - var(--stem) / 2);
+  position: relative; z-index: var(--z-base); padding: var(--pb) 0 0;
 }
 .ground__load {
-  position: relative; z-index: 1;
-  display: flex; flex-direction: column; gap: 1.3rem;
-  padding: calc(var(--drop) + 1.1rem) 0 0 3.4rem;
+  position: relative; z-index: var(--z-base);
+  display: flex; flex-direction: column; gap: var(--gap-s);
+  padding: calc(var(--drop) + var(--load-pad)) 0 0 var(--load-indent);
 }
-/* El tallo verde continúa el arco de la rama: arranca donde muere la
-   curva (mismo eje que el semillero de los brotes) y baja a la tierra */
+/* The green stem continues the branch's arc: it starts at the knot (on
+   the seedbed's axis) and goes down to the soil */
 .ground__load::before {
-  content: ""; position: absolute; left: 2.5rem; top: 2.8rem; bottom: 0;
-  width: 3px; background: var(--sprout); z-index: 0;
+  content: ""; position: absolute;
+  left: calc(var(--axis-x) + var(--arc-w) - var(--stem) / 2);
+  top: calc(var(--arc-top) + var(--drop) - var(--pb)); bottom: 0;
+  width: var(--stem); background: var(--sprout); z-index: var(--z-under);
 }
+/* 12 · SPROUTS. Each proposal is a seedling that grows FROM the soil:
+   its stem rises from the soil line to the card, and its height says
+   how close it is to being a branch, on the golden scale: a seed (1),
+   one on trial (φ), one nearly grown (φ²). Kandinsky's vertical is the
+   warm, rising line. The seedbed (::before) is the branch's own stem,
+   from the knot down to the soil. */
 .sprouts__list {
-  list-style: none; margin: 0; padding: 0 0 3.4rem; position: relative;
-  display: grid; grid-template-columns: 1fr; gap: 2rem;
+  --sprout-unit: var(--space-4);
+  list-style: none; margin: 0; padding: 0; position: relative;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(var(--space-24), 1fr)); align-items: end; gap: var(--gap-s);
 }
-/* El semillero: la línea de la que cuelgan los dos brotes y que se
-   clava en la tierra */
 .sprouts__list::before {
-  content: ""; position: absolute; left: -0.9rem; top: -1.5rem; bottom: 0;
-  width: 3px; background: var(--sprout);
+  content: ""; position: absolute; left: var(--seedbed-x); top: calc(-1 * var(--gap-s)); bottom: 0;
+  width: var(--stem); background: var(--sprout);
 }
-/* Las hojas del semillero, justo sobre la tierra */
-.sprouts__list::after {
-  content: ""; position: absolute; left: -1.45rem; bottom: 0.5rem;
-  width: 1.1rem; height: 0.7rem; background: var(--sprout);
-  border-radius: 100% 0 100% 0; transform: rotate(-24deg);
+.sprout {
+  --grow: var(--sprout-unit);
+  position: relative; display: flex; flex-direction: column; justify-content: flex-end;
+  padding-left: calc(var(--seedbed-x) + var(--stem) + var(--space-3));
 }
-.sprout__stem { display: none; }
-.sprout { position: relative; padding: 0 0 0 1.6rem; }
-/* La viñeta de cada brote es una hoja verde prendida del semillero */
+.sprout--rising { --grow: calc(var(--sprout-unit) * var(--phi)); }
+.sprout--grown { --grow: calc(var(--sprout-unit) * var(--phi) * var(--phi)); }
+/* the stem, from the card down to the soil */
+.sprout::after {
+  content: ""; display: block; width: var(--stem); height: var(--grow);
+  margin-left: var(--space-2); background: var(--sprout);
+}
+/* one leaf on each stem, half way down */
 .sprout::before {
-  content: ""; position: absolute; left: -1.05rem; right: auto; top: 0.35rem;
-  width: 1.15rem; height: 0.75rem; background: var(--sprout);
-  border-radius: 100% 0 100% 0; rotate: -14deg;
+  content: ""; position: absolute; bottom: calc(var(--grow) / 2);
+  left: calc(var(--seedbed-x) + var(--stem) + var(--space-3) + var(--space-2) + var(--stem));
+  width: var(--leaf-w); height: var(--leaf-h); background: var(--sprout);
+  border-radius: 100% 0 100% 0;
 }
-.sprout h3 { margin: 0 0 0.4rem; font-size: var(--step-0); color: var(--ink); }
-.sprout p { margin: 0 0 0.5rem; font-size: 0.88rem; line-height: 1.5; color: var(--ink-soft); }
+.sprout article { padding: var(--space-2); border-top: var(--stroke-bold) solid var(--sprout); background: var(--surface-plate); }
+.sprout h3 { margin: 0 0 var(--space-1); font-size: var(--type-subhead); line-height: var(--type-subhead-lh); color: var(--ink); }
+.sprout p { margin: 0 0 var(--space-1); font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink-soft); }
 .sprout p:last-child { margin-bottom: 0; }
-.sprout__note { font-family: var(--font-mono); font-size: 0.76rem !important; color: var(--sprout-text) !important; }
-/* El tallo baja del brote y se clava en la tierra */
-.sprout__stem {
-  position: absolute; bottom: -3.4rem; left: -0.7rem; width: 1.3rem; height: 3.4rem;
-  border-left: 3px solid var(--sprout); border-bottom-left-radius: 100%;
-}
-.sprout__stem::before, .sprout__stem::after { content: ""; position: absolute; background: var(--sprout); }
-.sprout__stem::before { top: 0.5rem; left: -0.9rem; width: 1.05rem; height: 0.65rem; border-radius: 100% 0 100% 0; transform: rotate(-18deg); }
-.sprout__stem::after { top: 1.2rem; left: 0.1rem; width: 0.9rem; height: 0.55rem; border-radius: 0 100% 0 100%; transform: rotate(18deg); }
+.sprout .sprout__status { font-family: var(--font-display); font-weight: var(--fw-semibold); color: var(--sprout-text); }
 .ground__soil {
-  position: relative; height: 0.5rem; background: var(--line);
-  margin: 0 -0.9rem 0 -3.6rem;
+  --soil: var(--space-1);
+  position: relative; height: var(--soil); background: var(--line);
+  /* bleeds to the canvas edges on mobile */
+  margin: 0 calc(-1 * var(--canvas-pad-m)) 0 calc(-1 * (var(--side-pad) + var(--canvas-pad-m)));
 }
 .ground__soil::after {
-  content: ""; position: absolute; left: 0; right: 0; top: 0.5rem; height: 0.7rem;
-  background: repeating-linear-gradient(90deg, rgba(23, 21, 15, 0.5) 0 0.7rem, transparent 0.7rem 1.4rem);
+  content: ""; position: absolute; left: 0; right: 0; top: var(--soil); height: var(--space-1);
+  background: repeating-linear-gradient(90deg, var(--tint-line) 0 var(--space-1), transparent var(--space-1) var(--space-2));
 }
 
 /* ============================================================
-   RAÍCES — la raíz principal desciende del tronco, cruza la
-   tierra y se bifurca: cada raicilla ES la viñeta del manifiesto
+   ROOTS — the main root comes down from the trunk, crosses the
+   soil and forks: every rootlet IS a manifesto bullet
    ============================================================ */
 .roots {
-  position: relative; z-index: 1;
-  background: var(--k-linen-2);
-  --roots-pad: 0.9rem;
-  padding: 0 var(--roots-pad) 1.6rem;
-  /* El eje de la raíz, declarado una vez: lo usan la raíz principal y el
-     arranque de cada raicilla, así ninguna curva nace despegada. La raíz
-     se posiciona contra la caja de relleno del pie y las raicillas contra
-     su caja de contenido, de ahí que estas descuenten el relleno. */
-  --root-x: 2rem;
+  --roots-pad: var(--canvas-pad-m);
+  --rootlet: var(--stroke-bold);
+  --collar: var(--stroke-heavy);
+  --load-indent: var(--space-6);
+  /* The root's axis, declared once: the main root and every rootlet's
+     start read it, so no curve is born detached. The root is placed
+     against the footer's padding box and the rootlets against its
+     content box, hence they subtract the padding. It equals the trunk's
+     own position: canvas padding + the trunk's axis. */
+  --root-x: calc(var(--canvas-pad-m) + var(--axis));
+  position: relative; z-index: var(--z-base);
+  /* One-column grid: row 1 is the manifesto, row 2 the signature. The
+     main root is measured against the manifesto row and ends at the
+     last rootlet, never crossing the work's name. */
+  display: grid; grid-template-columns: minmax(0, 1fr);
+  background: var(--surface-band);
+  padding: 0 var(--roots-pad) var(--space-3);
 }
-/* La raíz principal: el MISMO trazo del tronco, prolongado hasta el
-   fondo del manifiesto — de él nace cada raicilla-viñeta */
+/* The main root: the SAME stroke as the trunk, carried down to the
+   bottom of the manifesto — every rootlet-bullet grows from it */
 .roots__main {
-  position: absolute; top: -1.6rem; bottom: 3.4rem; left: var(--root-x);
+  /* grid-row 1 / 2 (in an absolute box "auto" would be the footer's
+     edge) and no column: vertically the manifesto row rules;
+     horizontally, the footer's padding box */
+  position: absolute; grid-row: 1 / 2; top: calc(-1 * var(--space-3)); bottom: var(--space-1); left: var(--root-x);
   width: var(--trunk-width);
   background: var(--line); transform: translateX(-50%);
-  clip-path: polygon(22% 0, 78% 0, 62% 100%, 38% 100%);
-  z-index: 0;
+  /* Starts at the trunk's full width at the soil and thins */
+  clip-path: polygon(0 0, 100% 0, 62% 100%, 38% 100%);
+  z-index: var(--z-under);
 }
-/* El collar: dos filetes curvos donde el tronco se hace raíz */
+/* The collar: two curved fillets where the trunk becomes root */
 .roots__main::before, .roots__main::after {
-  content: ""; position: absolute; top: 1.1rem;
-  width: 1.4rem; height: 1.1rem;
-  border-top: 0.5rem solid var(--line);
+  content: ""; position: absolute; top: var(--space-2);
+  width: var(--space-3); height: var(--space-2);
+  border-top: var(--collar) solid var(--line);
 }
 .roots__main::before { right: 100%; border-top-right-radius: 100% 100%; }
 .roots__main::after { left: 100%; border-top-left-radius: 100% 100%; }
-.roots__box { padding-top: 2.6rem; max-width: 62rem; margin: 0 auto; position: relative; z-index: 1; }
-.roots__title { padding-left: 3.4rem; }
+.roots__box { grid-row: 1; padding-top: var(--space-5); max-width: var(--space-120); margin: 0 auto; position: relative; z-index: var(--z-base); }
+.roots__title { padding-left: var(--load-indent); }
+/* The roots are the footer, not a station: their title has no numeral, so
+   it does not take the plates' two-column title grid (numeral · text),
+   which squeezed it into the numeral's column, one word per line */
+.note__title.roots__title { display: block; }
+.roots__lead {
+  margin: var(--space-1) 0 0; padding-left: var(--load-indent); max-width: var(--space-80);
+  font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink);
+}
 .manifesto {
-  list-style: none; margin: 0; padding: 0.9rem 0 0;
-  color: var(--ink-soft); font-size: 0.88rem;
+  list-style: none; margin: 0; padding: var(--space-2) 0 0;
+  color: var(--ink-soft); font-size: var(--type-body); line-height: var(--type-body-lh);
   position: relative;
 }
-.manifesto li { position: relative; padding-left: 3.4rem; margin-bottom: 0.55rem; }
-/* La raicilla-viñeta: curva que ARRANCA en el eje de la raíz principal,
-   no cerca de él */
+.manifesto li { position: relative; padding-left: var(--load-indent); margin-bottom: var(--space-1); }
+/* The rising sap: each promise names the branch that keeps it. On its
+   own line and in ochre, like the margin notes; the links are plain
+   underlined text links, like any other in the prose. */
+.manifesto__sap {
+  display: block; font-family: var(--font-mono);
+  font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--sap);
+}
+/* The rootlet-bullet: a curve that STARTS on the main root's axis and
+   ends at the middle of the promise's first line */
 .manifesto li::before {
-  content: ""; position: absolute; top: -0.35em;
+  content: ""; position: absolute; top: calc(-1 * var(--space-1));
   left: calc(var(--root-x) - var(--roots-pad));
-  width: 1.4rem; height: 0.9em;
-  border-left: 3px solid var(--sap); border-bottom: 3px solid var(--sap);
+  width: var(--space-3); height: calc(var(--type-body-lh) / 2 + var(--space-1));
+  border-left: var(--rootlet) solid var(--sap); border-bottom: var(--rootlet) solid var(--sap);
   border-bottom-left-radius: 100% 100%;
 }
 .score { margin: 0; }
-.score figcaption { margin-top: 0.6rem; font-size: 0.78rem; color: var(--ink-soft); max-width: 24rem; }
-.gloss { margin: 0.7rem 0 0; font-size: 0.78rem; line-height: 1.4; }
-.gloss dt { font-family: var(--font-mono); color: var(--k-ochre); }
-.gloss dd { margin: 0 0 0.45rem; color: var(--ink-soft); }
+.score figcaption { margin-top: var(--space-1); font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); max-width: var(--space-48); }
+.gloss { margin: var(--space-1) 0 0; font-size: var(--type-label); line-height: var(--type-label-lh); }
+.gloss dt { font-family: var(--font-mono); color: var(--sap); }
+.gloss dd { margin: 0 0 var(--space-1); color: var(--ink-soft); }
 .roots__artwork {
-  display: block; font-family: var(--font-display); font-weight: 700;
-  font-size: 1rem; color: var(--ink); letter-spacing: -0.01em;
+  display: block; font-family: var(--font-display); font-weight: var(--fw-bold);
+  font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink);
 }
-.roots__sign { display: block; margin-top: 0.2rem; }
-.roots__credit { margin: 1.6rem auto 0; text-align: center; font-size: 0.85rem; color: var(--ink-soft); }
+.roots__sign { display: block; }
+/* The licence is not split at its hyphens: "BY-" at the end of a line
+   and "NC-SA" at the start of the next do not read as one name */
+.roots__license { white-space: nowrap; }
+.roots__credit {
+  grid-row: 2; margin: var(--space-3) auto 0; text-align: center;
+  font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft);
+}
 
 .flower--disabled { cursor: not-allowed; }
 .flower--disabled .flower__bud { opacity: 0.45; }
 .flower--disabled .flower__name { color: var(--k-grey-dark); }
 
-/* Aparición al hacer scroll (solo con JS; reduced-motion lo anula) */
-body[data-animate="true"] .sprouted { opacity: 0; transform: translateY(1rem); transition: opacity 0.6s ease, transform 0.6s ease; }
-body[data-animate="true"] .sprouted.in-view { opacity: 1; transform: none; }
-
 /* ------------------------------------------------------------
-   DOS ÁRBOLES — un solo DOM (cuadrado negro) del que nacen dos
-   copas: la de píxeles (retícula) y la del significado (azul).
-   Dibujado solo con las formas de la gramática.
+   TWO TREES — one single DOM (black square, the root) growing two
+   crowns: the pixels' one (a grid) and the meaning's one (blue).
+   A tree reads from the root up, and each crown wears its name above
+   it, like a title: the name in ink, its gloss softer underneath.
+   Drawn only with the grammar's shapes; the fork is one continuous U
+   from crown to crown, so no seam can show.
    ------------------------------------------------------------ */
-.branch__visual { display: flex; flex-direction: column; gap: 1.4rem; order: 3; }
+.branch__visual { display: flex; flex-direction: column; gap: var(--gap-m); order: 3; }
 .two-trees {
+  --tt-stroke: var(--stroke-bold);
+  --tt-crown: clamp(var(--space-7), 22cqw, var(--space-12));
+  --tt-col-gap: var(--space-2);
   margin: 0; padding: 0;
-  display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto auto auto;
-  justify-items: center; align-items: start;
-  row-gap: 0.5rem; column-gap: 1rem;
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: repeat(5, auto);
+  justify-items: center; align-items: end;
+  row-gap: 0; column-gap: var(--tt-col-gap);
 }
-/* Colocación explícita: nada de auto-placement (crearía columnas
-   implícitas y soltaría las etiquetas fuera del dibujo) */
-.two-trees__crown { grid-row: 1; width: clamp(3.4rem, 22cqw, 5.6rem); aspect-ratio: 1; border-radius: 50%; }
+/* Explicit placement: no auto-placement (it would create implicit
+   columns and drop the labels outside the drawing) */
+.two-trees__tag {
+  grid-row: 1; margin: 0 0 var(--space-1); text-align: center; max-width: 100%; hyphens: auto;
+  font-family: var(--font-display); font-weight: var(--fw-semibold);
+  font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink);
+}
+.two-trees__tag:nth-of-type(1) { grid-column: 1; }
+.two-trees__tag:nth-of-type(2) { grid-column: 2; }
+.two-trees__tag em {
+  font-family: var(--font-body); font-style: normal; font-weight: var(--fw-regular);
+  font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft);
+}
+.two-trees__crown { grid-row: 2; width: var(--tt-crown); aspect-ratio: 1; border-radius: var(--radius-round); }
 .two-trees__crown--pixels {
   grid-column: 1;
-  border: 0.3rem solid var(--line);
-  background-image: linear-gradient(var(--k-grey-dark) 1px, transparent 1px),
-                    linear-gradient(90deg, var(--k-grey-dark) 1px, transparent 1px);
-  background-size: 0.55rem 0.55rem;
+  border: var(--tt-stroke) solid var(--line);
+  background-image: linear-gradient(var(--k-grey-dark) var(--stroke-1), transparent var(--stroke-1)),
+                    linear-gradient(90deg, var(--k-grey-dark) var(--stroke-1), transparent var(--stroke-1));
+  background-size: var(--space-1) var(--space-1);
 }
 .two-trees__crown--meaning {
   grid-column: 2;
   background: var(--k-blue);
-  box-shadow: inset 0 0 0 0.5rem var(--k-linen), inset 0 0 0 0.78rem var(--k-yellow);
+  box-shadow: inset 0 0 0 var(--space-1) var(--surface-canvas),
+              inset 0 0 0 calc(var(--space-1) + var(--stroke-bold)) var(--k-yellow);
 }
-/* La horquilla: dos arcos que suben del DOM al borde inferior de cada copa */
+/* The fork: ONE U whose arms rise to the centre of each crown. Crown
+   centres sit at 25 % − gap/4 and 75 % + gap/4, so the U is half the
+   figure plus half the gap, plus one stroke so both arms are centred. */
 .two-trees__fork {
-  grid-row: 2; grid-column: 1 / 3; position: relative;
-  width: 100%; height: 2.6rem; margin-top: -0.3rem;
+  grid-row: 3; grid-column: 1 / 3; align-self: start;
+  width: calc(50% + var(--tt-col-gap) / 2 + var(--tt-stroke)); height: var(--space-5);
+  border: var(--tt-stroke) solid var(--line); border-top: 0;
+  border-radius: 0 0 50% 50% / 0 0 100% 100%;
 }
-.two-trees__fork::before, .two-trees__fork::after {
-  content: ""; position: absolute; top: 0; bottom: 0;
-  border-bottom: 0.3rem solid var(--line);
-}
-.two-trees__fork::before {
-  left: calc(25% - 0.25rem); right: 50%;
-  border-left: 0.3rem solid var(--line); border-bottom-left-radius: 100% 100%;
-}
-.two-trees__fork::after {
-  left: 50%; right: calc(25% - 0.25rem);
-  border-right: 0.3rem solid var(--line); border-bottom-right-radius: 100% 100%;
-}
-/* El tallo: del fondo de la horquilla al cuadrado del DOM, por el
-   pasillo entre las dos etiquetas (misma celda, sin desplazarlas) */
+/* The stem: from the bottom of the U down to the DOM square */
 .two-trees__stem {
-  grid-row: 3; grid-column: 1 / 3; justify-self: center; align-self: stretch;
-  width: 0.3rem; background: var(--line); margin: -0.5rem 0;
+  grid-row: 4; grid-column: 1 / 3;
+  width: var(--tt-stroke); height: var(--space-3); background: var(--line);
 }
-.two-trees__tag {
-  grid-row: 3; margin: 0; max-width: 90%;
-  font-size: 0.78rem; line-height: 1.3; color: var(--ink-soft);
-}
-.two-trees__tag:nth-of-type(1) { grid-column: 1; justify-self: start; text-align: left; }
-.two-trees__tag:nth-of-type(2) { grid-column: 2; justify-self: end; text-align: right; }
-.two-trees__tag em { font-style: normal; font-weight: 600; color: var(--ink); }
 .two-trees__foot {
-  grid-row: 4; grid-column: 1 / 3; margin-top: 0.2rem;
+  grid-row: 5; grid-column: 1 / 3; max-width: 100%;
   display: flex; flex-direction: column; align-items: center;
-  gap: 0.4rem; font-size: 0.78rem; color: var(--ink-soft); text-align: center;
+  gap: var(--space-1); font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); text-align: center;
 }
-.two-trees__dom { flex: none; width: 1.5rem; height: 1.5rem; background: var(--line); }
-.two-trees__foot span:last-child { max-width: 18rem; }
+.two-trees__dom { flex: none; width: var(--space-3); height: var(--space-3); background: var(--line); }
+.two-trees__foot span:last-child { max-width: min(100%, var(--space-40)); }
+
+/* ------------------------------------------------------------
+   THE ANATOMY OF A NODE — one tag, read the way the tree reads it:
+   role, name and state, each with where it comes from. It is the
+   same card the inspector shows live, so it teaches how to read it.
+   Role wears the element's grammar colour (a <button>: blue circle);
+   state wears sap, the colour of what is alive and changes.
+   ------------------------------------------------------------ */
+.anatomy {
+  --anatomy-key: var(--space-10);
+  margin: 0; padding: var(--space-2);
+  border: var(--stroke-fine) solid var(--line); background: var(--surface-plate);
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gap-xs);
+}
+.anatomy__title {
+  font-family: var(--font-display); font-weight: var(--fw-bold);
+  font-size: var(--type-label); line-height: var(--type-label-lh);
+  text-transform: uppercase; letter-spacing: var(--tracking-caps);
+}
+.anatomy__code {
+  margin: 0; padding: var(--space-1) var(--space-2); overflow-x: auto;
+  font-family: var(--font-mono); font-size: var(--type-body); line-height: var(--type-body-lh);
+  background: var(--surface-canvas); border-left: var(--stroke-bold) solid var(--shape-circle);
+}
+.anatomy__parts { margin: 0; display: grid; gap: var(--space-1); }
+.anatomy__part {
+  display: grid; grid-template-columns: var(--anatomy-key) minmax(0, 1fr); align-items: baseline; gap: var(--space-2);
+  padding-left: var(--space-2); border-left: var(--stroke-bold) solid var(--part, var(--line));
+}
+.anatomy__part--role { --part: var(--shape-circle); }
+.anatomy__part--name { --part: var(--line); }
+.anatomy__part--state { --part: var(--sap); }
+.anatomy__part dt {
+  font-family: var(--font-mono); font-weight: var(--fw-semibold);
+  font-size: var(--type-label); line-height: var(--type-body-lh); color: var(--ink);
+}
+.anatomy__part dd {
+  margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; column-gap: var(--space-2);
+  font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink);
+}
+.anatomy__part dd > span { font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); }
+.anatomy__foot { margin: 0; font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); }
 
 /* ============================================================
-   PAR PATRÓN / ANTIPATRÓN — dos especímenes uno al lado del otro.
-   La diferencia nunca es solo el color: cambian la etiqueta, la
-   marca de forma y el trazo (continuo frente a discontinuo).
+   THE NEW STATIONS — read from the back of the room: every word on
+   their specimens is at least the subhead (20) and the shapes carry
+   the meaning before the words do.
    ============================================================ */
-.pair { display: grid; gap: 0.9rem; max-width: 32rem; margin-bottom: 0.4rem; }
-.pair__case { border: 2px solid var(--line); background: var(--k-surface); padding: 0.7rem 0.8rem; }
-.pair__case--anti { border-style: dashed; border-color: var(--k-grey-dark); background: none; }
-.pair__tag {
-  display: flex; align-items: center; gap: 0.45rem; margin: 0 0 0.45rem;
-  font-family: var(--font-display); font-weight: 700; font-size: 0.76rem;
-  text-transform: uppercase; letter-spacing: 0.08em;
+
+/* 4 · The map: this very work's regions and heading levels, read from
+   the tree on load (js/stations.js). A region is drawn with the bold
+   stroke the X-ray gives structure; the main band holds one petal per
+   station, in its colour and in order, as on the cover. Heading levels
+   are ink bars shortening by φ: h1 · h2 · h3. */
+.atlas {
+  --atlas-gap: var(--gap-2xs);
+  --atlas-petal: var(--space-3);
+  margin: 0; display: grid; gap: var(--gap-xs); max-width: var(--space-64);
 }
-.pair__mark { width: 0.85rem; height: 0.85rem; flex: none; }
-.pair__mark--pattern { border-radius: 50%; background: var(--k-blue); }
+.atlas__title, .readers__title, .focus-order__title, .strata__title {
+  font-family: var(--font-display); font-weight: var(--fw-bold);
+  font-size: var(--type-heading); line-height: var(--type-heading-lh); color: var(--ink);
+}
+.atlas__regions, .atlas__levels { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--atlas-gap); }
+.atlas__region {
+  display: grid; grid-template-columns: auto 1fr; align-items: baseline; column-gap: var(--gap-2xs);
+  padding: var(--half) var(--space-2);
+  border: var(--stroke-bold) solid var(--line); background: var(--surface-canvas);
+  font-size: var(--type-subhead); line-height: var(--type-subhead-lh);
+}
+.atlas__region--main { padding-block: var(--space-1); }
+/* a landmark inside another one hangs one module in */
+.atlas__region--nested { margin-left: var(--space-4); }
+.atlas__role { font-family: var(--font-mono); font-weight: var(--fw-bold); color: var(--ink); }
+.atlas__name { font-family: var(--font-display); color: var(--ink-soft); }
+.atlas__petals { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: var(--half); margin-top: var(--space-1); }
+/* a petal: a circle with two opposite corners pulled square — the
+   cover's leaf, upright, never rotated */
+.atlas__petal {
+  width: var(--atlas-petal); aspect-ratio: 1;
+  border-radius: 0 var(--radius-round);
+  background: var(--tone); box-shadow: 0 0 0 var(--stroke-fine) var(--line);
+}
+.atlas__level {
+  --level-w: 100%;
+  display: grid; grid-template-columns: var(--space-12) minmax(0, 1fr); align-items: center; column-gap: var(--gap-2xs);
+  font-family: var(--font-mono); font-size: var(--type-subhead); line-height: var(--type-subhead-lh); color: var(--ink);
+}
+.atlas__level--2 { --level-w: calc(100% / var(--phi)); }
+.atlas__level--3 { --level-w: calc(100% / (var(--phi) * var(--phi))); }
+.atlas__bar { width: var(--level-w); height: var(--space-2); background: var(--line); border-radius: var(--radius-1); }
+
+/* 3 · What a list says before its first item, written for the room */
+.atlas__say {
+  margin: 0; display: grid; gap: var(--half);
+  font-family: var(--font-display); font-size: var(--type-subhead); line-height: var(--type-subhead-lh); color: var(--ink);
+}
+.atlas__say-label { font-family: var(--font-mono); color: var(--ink-soft); }
+
+/* 1 · One node, four readings: the same <button> as heard, felt,
+   called and parsed. Each reading is a band with the trunk's ink edge;
+   the braille cells are the real Unicode Braille Patterns of «Do»
+   (capital sign, d, o), hidden from assistive tech, which reads «Do». */
+.readers { margin: 0; display: grid; gap: var(--gap-xs); max-width: var(--space-64); }
+.readers__node { margin: 0; font-size: var(--type-subhead); line-height: var(--type-subhead-lh); }
+.readers__list { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gap-2xs); }
+.readers__item {
+  display: grid; align-content: start; gap: var(--half);
+  padding: var(--half) var(--space-2); border-left: var(--stroke-heavy) solid var(--line); background: var(--surface-plate);
+}
+.readers__item dt { font-family: var(--font-mono); font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink-soft); }
+.readers__item dd { margin: 0; font-family: var(--font-display); font-size: var(--type-subhead); line-height: var(--type-subhead-lh); color: var(--ink); }
+.readers__cells { font-size: var(--type-title); line-height: var(--type-title-lh); letter-spacing: var(--tracking-caps); }
+.readers__plain { color: var(--ink-soft); }
+/* the agent reads the node and, with WebMCP, can also act: said under its JSON */
+.readers__item--agent code { font-size: var(--type-body); line-height: var(--type-body-lh); }
+.readers__acts { display: block; margin-top: var(--half); font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink-soft); }
+
+/* 7 · The focus order: four real buttons, each wearing its place in
+   the HTML as a big numeral. «Mover con CSS» only changes `order`:
+   the numerals stay, so the room sees Tab jump. */
+.focus-order { margin: 0; display: grid; justify-items: start; gap: var(--gap-s); }
+.focus-order__stops {
+  list-style: none; margin: 0; padding: 0; counter-reset: stop;
+  display: flex; flex-wrap: wrap; gap: var(--gap-s);
+}
+.focus-order__stop {
+  counter-increment: stop;
+  display: grid; justify-items: center; gap: var(--gap-2xs);
+}
+.focus-order__stop::before {
+  content: counter(stop);
+  font-family: var(--font-display); font-weight: var(--fw-bold);
+  font-size: var(--type-display); line-height: var(--type-display-lh); color: var(--station-focus);
+  -webkit-text-stroke: var(--stroke-fine) var(--line);
+}
+.focus-order[data-shuffled] .focus-order__stop:nth-child(1) { order: 3; }
+.focus-order[data-shuffled] .focus-order__stop:nth-child(2) { order: 1; }
+.focus-order[data-shuffled] .focus-order__stop:nth-child(3) { order: 4; }
+.focus-order[data-shuffled] .focus-order__stop:nth-child(4) { order: 2; }
+.focus-order__foot { margin: 0; }
+
+/* WebMCP: while an AI agent fills the watering form, the browser sets
+   :tool-form-active on it and :tool-submit-active on its submit button.
+   The work draws them with its own solid ring (Chrome's default is
+   dashed). Inside @supports, so browsers without WebMCP skip it. */
+@supports selector(:tool-form-active) {
+  form:tool-form-active { outline: var(--focus-width) solid var(--focus); outline-offset: var(--focus-offset); }
+  :tool-submit-active { outline: var(--focus-width) solid var(--focus); outline-offset: var(--focus-offset); }
+}
+
+/* 11 · Change: the polite live region, written for the room */
+.echo {
+  margin: 0; display: grid; gap: var(--half);
+  padding: var(--space-2) var(--space-3);
+  border-left: var(--stroke-heavy) solid var(--station-live); background: var(--surface-plate);
+}
+.echo__label { font-family: var(--font-mono); font-size: var(--type-subhead); line-height: var(--type-subhead-lh); color: var(--ink-soft); }
+.echo__text { font-family: var(--font-display); font-size: var(--type-heading); line-height: var(--type-heading-lh); color: var(--ink); }
+
+/* 12 · Layers: two planes, one over the other. While the real dialog is
+   open, the plane underneath goes grey — inert — on the plate too. */
+.strata { margin: 0; display: grid; justify-items: start; gap: var(--gap-s); }
+.strata__planes {
+  --plane: clamp(var(--space-20), 16vw, var(--space-24));
+  /* the upper plane is offset by plane / φ: they overlap by a golden part */
+  position: relative; width: calc(var(--plane) * (1 + 1 / var(--phi))); aspect-ratio: 1;
+}
+.strata__plane {
+  position: absolute; width: var(--plane); aspect-ratio: 1; padding: var(--space-1) var(--space-2);
+  display: flex; align-items: flex-end;
+  border: var(--stroke-bold) solid var(--line);
+  font-family: var(--font-display); font-weight: var(--fw-semibold);
+  font-size: var(--type-subhead); line-height: var(--type-subhead-lh); color: var(--ink);
+}
+.strata__plane--under { left: 0; top: 0; background: var(--surface-plate); }
+.strata__plane--over {
+  right: 0; bottom: 0; z-index: var(--z-base);
+  background: color-mix(in oklab, var(--station-layers) var(--wash-24), var(--surface-canvas));
+}
+:root:has(.layer[open]) .strata__plane--under { background: var(--k-grey); color: var(--ink-soft); }
+.layer {
+  max-width: min(calc(100% - var(--space-4)), var(--space-64));
+  padding: var(--space-4); border: var(--stroke-bold) solid var(--line);
+  background: var(--surface-canvas); color: var(--ink);
+}
+.layer::backdrop { background: color-mix(in oklab, var(--station-layers) var(--wash-48), transparent); }
+.layer__title {
+  margin: 0 0 var(--space-2); font-family: var(--font-display);
+  font-size: var(--type-title); line-height: var(--type-title-lh);
+}
+.layer__text { margin: 0 0 var(--space-3); font-size: var(--type-lead); line-height: var(--type-lead-lh); }
+.layer__foot { margin: 0; }
+
+@media (forced-colors: active) {
+  .atlas__petal, .atlas__bar { forced-color-adjust: none; }
+  .atlas__bar { background: CanvasText; }
+}
+
+/* ============================================================
+   PATTERN / ANTIPATTERN PAIR — two specimens next to each other.
+   The difference is never colour alone: the label, the shape mark
+   and the stroke change too (a closed frame against the wilted line,
+   which does not close).
+   ============================================================ */
+.pair { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gap-xs); max-width: var(--space-64); }
+.pair__case { border: var(--stroke-fine) solid var(--line); background: var(--surface-plate); padding: var(--space-2); }
+.pair__case--anti { border-color: transparent; background: none; }
+.pair__tag {
+  display: flex; align-items: center; gap: var(--space-1); margin: 0 0 var(--space-1);
+  font-family: var(--font-display); font-weight: var(--fw-bold);
+  font-size: var(--type-label); line-height: var(--type-label-lh);
+  text-transform: uppercase; letter-spacing: var(--tracking-caps);
+}
+.pair__mark { width: var(--space-2); height: var(--space-2); flex: none; }
+.pair__mark--pattern { border-radius: var(--radius-round); background: var(--k-blue); }
+/* the antipattern's mark is the wilted bud: its tilt means it */
 .pair__mark--anti { background: var(--k-grey); border-radius: 50% 50% 50% 0; rotate: 45deg; }
 .pair__code {
-  font-family: var(--font-mono); font-size: 0.71rem; line-height: 1.5;
-  margin: 0 0 0.5rem; padding: 0.5rem 0.6rem; background: var(--k-linen);
-  border-left: 4px solid var(--k-blue); overflow-x: auto;
+  font-family: var(--font-mono); font-size: var(--type-label); line-height: var(--type-label-lh);
+  margin: 0 0 var(--space-1); padding: var(--space-1) var(--space-2); background: var(--surface-canvas);
+  border-left: var(--stroke-bold) solid var(--k-blue); overflow-x: auto;
 }
 .pair__case--anti .pair__code { border-left-color: var(--k-grey); }
-.pair__why { margin: 0; font-size: 0.8rem; line-height: 1.5; color: var(--ink-soft); }
-.pair__foot { margin: 0.5rem 0 0; font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink-soft); max-width: 32rem; }
+.pair__why { margin: 0; font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); }
+.pair__foot {
+  margin: var(--space-1) 0 0; font-family: var(--font-mono);
+  font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); max-width: var(--space-64);
+}
 
 /* ============================================================
-   EL FRAGMENTO DE ÁRBOL — la prueba visual del par patrón /
-   antipatrón: al lado de cada código, el trozo de Árbol de
-   Accesibilidad que ese código genera de verdad. La diferencia deja
-   de ser una opinión: en un lado hay nodos con rol, nombre y estado;
-   en el otro hay huecos. Mismo dibujo que el inspector de la obra.
+   THE TREE FRAGMENT — the visual proof of each pattern pair: next
+   to each piece of code, the piece of Accessibility Tree that code
+   really produces. The difference stops being an opinion: one side
+   has nodes with role, name and state; the other has holes. Same
+   drawing as the work's inspector.
    ============================================================ */
-.ax-frag { margin-top: 0.7rem; border-top: 1.5px solid var(--line); padding-top: 0.55rem; }
+.ax-frag { margin-top: var(--space-2); border-top: var(--stroke-fine) solid var(--line); padding-top: var(--space-1); }
 .ax-frag__title {
-  margin: 0 0 0.45rem; font-family: var(--font-display); font-weight: 700;
-  font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.07em;
+  margin: 0 0 var(--space-1); font-family: var(--font-display); font-weight: var(--fw-bold);
+  font-size: var(--type-label); line-height: var(--type-label-lh);
+  text-transform: uppercase; letter-spacing: var(--tracking-caps);
 }
-.ax-frag__nodes { list-style: none; margin: 0; padding-left: 0.75rem; border-left: 2px dotted var(--line); display: grid; gap: 0.4rem; }
+.ax-frag__nodes {
+  list-style: none; margin: 0; padding-left: var(--space-2);
+  border-left: var(--stroke-fine) solid var(--line); display: grid; gap: var(--space-1);
+}
 .ax-frag--broken .ax-frag__nodes { border-left-color: var(--k-grey-dark); }
-.ax-frag__node { position: relative; font-family: var(--font-mono); font-size: 0.72rem; line-height: 1.45; }
+.ax-frag__node { position: relative; font-family: var(--font-mono); font-size: var(--type-label); line-height: var(--type-label-lh); }
+/* the connector from the tree's line to the node */
 .ax-frag__node::before {
-  content: ""; position: absolute; left: -0.78rem; top: 0.42rem;
-  width: 0.5rem; border-top: 2px dotted var(--line);
+  content: ""; position: absolute; left: calc(-1 * var(--space-2)); top: calc(var(--type-label-lh) / 2);
+  width: var(--space-1); border-top: var(--stroke-fine) solid var(--line);
 }
 .ax-frag--broken .ax-frag__node::before { border-top-color: var(--k-grey-dark); }
 .ax-frag__role {
-  display: inline-block; background: var(--k-blue); color: #ffffff;
-  padding: 0 0.32rem; border-radius: 0.15rem; font-weight: 700;
+  display: inline-block; background: var(--k-blue); color: var(--k-white);
+  padding: 0 var(--half); border-radius: var(--radius-1); font-weight: var(--fw-bold);
 }
-.ax-frag--broken .ax-frag__role { background: none; color: var(--k-grey-dark); border: 1.5px dashed var(--k-grey-dark); }
-.ax-frag__missing { color: var(--link-active); font-weight: 700; }
+.ax-frag--broken .ax-frag__role { --wilt-gap: var(--space-1); background: none; color: var(--k-grey-dark); border: var(--stroke-fine) solid transparent; }
+.ax-frag__missing { color: var(--link-active); font-weight: var(--fw-bold); }
 .ax-frag__meta { display: block; color: var(--ink-soft); }
 .ax-frag__gap {
-  display: flex; align-items: center; gap: 0.4rem;
-  font-family: var(--font-mono); font-size: 0.72rem; color: var(--link-active);
+  display: flex; align-items: center; gap: var(--space-1);
+  font-family: var(--font-mono); font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--link-active);
 }
 .ax-frag__gap::before {
-  content: ""; width: 0.85rem; height: 0.85rem; flex: none;
+  content: ""; width: var(--space-2); height: var(--space-2); flex: none;
   background:
     linear-gradient(45deg, transparent 42%, currentColor 42% 58%, transparent 58%),
     linear-gradient(-45deg, transparent 42%, currentColor 42% 58%, transparent 58%);
 }
 
 /* ============================================================
-   EL RIEGO — el campo de texto de la gramática: barra cian.
-   Error en tres canales: texto que empieza por «Error», aspa de
-   tinta roja y el borde inferior que pasa a doble.
+   THE WATERING — the grammar's text field: a cyan bar. An error
+   in three channels: text starting with "Error", a red ink cross
+   and the bottom border turning double.
    ============================================================ */
 .watering {
-  border: 2px solid var(--line); background: var(--k-surface);
-  padding: 0.9rem 1rem; max-width: 32rem; display: grid; gap: 0.8rem;
-  margin-bottom: 1.2rem;
+  border: var(--stroke-fine) solid var(--line); background: var(--surface-plate);
+  padding: var(--space-2); max-width: var(--space-64); display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gap-xs);
 }
-.watering__title { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 0.92rem; }
-.watering__title span { font-weight: 400; font-size: 0.78rem; color: var(--ink-soft); }
-.field { display: grid; gap: 0.35rem; }
-.field__label { font-family: var(--font-display); font-weight: 600; font-size: 0.86rem; }
-.field__req { font-weight: 400; font-size: 0.76rem; color: var(--ink-soft); }
+.watering__title {
+  margin: 0; font-family: var(--font-display); font-weight: var(--fw-bold);
+  font-size: var(--type-body); line-height: var(--type-body-lh);
+}
+.watering__title span { font-weight: var(--fw-regular); font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); }
+.field { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-1); }
+.field__label { font-family: var(--font-display); font-weight: var(--fw-semibold); font-size: var(--type-body); line-height: var(--type-body-lh); }
+.field__req { font-weight: var(--fw-regular); font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); }
 .field__input {
-  font-family: var(--font-body); font-size: 1rem; min-height: var(--touch);
-  padding: 0.4rem 0.6rem; color: var(--ink); background: var(--k-linen);
-  border: 2px solid var(--line); border-bottom: 0.35rem solid var(--shape-bar);
+  font-family: var(--font-body); font-size: var(--type-body); line-height: var(--type-body-lh); min-height: var(--touch);
+  padding: var(--space-1) var(--space-2); color: var(--ink); background: var(--surface-canvas);
+  border: var(--stroke-fine) solid var(--line); border-bottom: var(--space-1) solid var(--shape-bar);
 }
-.field__input:focus-visible { outline: 3px dashed var(--focus); outline-offset: 3px; }
-.field__input[aria-invalid="true"] { border-bottom: 0.4rem double var(--k-red); }
-.field__help { margin: 0; font-size: 0.78rem; line-height: 1.5; color: var(--ink-soft); }
+.field__input:focus-visible { outline: var(--focus-width) solid var(--focus); outline-offset: var(--focus-offset); }
+.field__input[aria-invalid="true"] { border-bottom: var(--space-1) double var(--k-red); }
+.field__help { margin: 0; font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); }
 .field__error[hidden], .field__ok[hidden] { display: none; }
 .field__error {
-  display: flex; gap: 0.45rem; align-items: flex-start; margin: 0;
-  font-size: 0.84rem; font-weight: 600; line-height: 1.45; color: var(--link-active);
+  display: flex; gap: var(--space-1); align-items: flex-start; margin: 0;
+  font-size: var(--type-body); line-height: var(--type-body-lh); font-weight: var(--fw-semibold); color: var(--link-active);
 }
 .field__error-mark {
-  width: 0.9rem; height: 0.9rem; flex: none; margin-top: 0.2rem;
+  width: var(--space-2); height: var(--space-2); flex: none; margin-top: var(--half);
   background:
     linear-gradient(45deg, transparent 40%, var(--link-active) 40% 60%, transparent 60%),
     linear-gradient(-45deg, transparent 40%, var(--link-active) 40% 60%, transparent 60%);
 }
-.field__ok { display: flex; gap: 0.5rem; align-items: center; margin: 0; font-size: 0.84rem; font-weight: 600; color: var(--sprout-text); }
-.field__ok-mark { width: 0.9rem; height: 0.7rem; flex: none; background: var(--sprout); border-radius: 100% 0 100% 0; rotate: -14deg; }
-.watering__foot { display: flex; flex-wrap: wrap; gap: 0.9rem; align-items: center; }
-
-/* ============================================================
-   LA PALETA MEDIDA — muestra, nombre, razón de contraste y uso
-   ============================================================ */
-.palette { margin: 0; max-width: 32rem; }
-.palette__list { list-style: none; margin: 0 0 0.6rem; padding: 0; display: grid; gap: 0.2rem; }
-.palette__row {
-  display: grid; grid-template-columns: 1.4rem minmax(5rem, 1fr) auto; gap: 0.2rem 0.6rem;
-  align-items: center; font-size: 0.82rem; padding: 0.35rem 0;
-  border-bottom: 1px solid rgba(23, 21, 15, 0.16);
+.field__ok {
+  display: flex; gap: var(--space-1); align-items: center; margin: 0;
+  font-size: var(--type-body); line-height: var(--type-body-lh); font-weight: var(--fw-semibold); color: var(--sprout-text);
 }
-.palette__swatch { width: 1.4rem; height: 1.4rem; background: var(--m); border: 1.5px solid var(--line); grid-row: span 2; }
-.palette__name { font-family: var(--font-display); font-weight: 600; }
-.palette__ratio { font-family: var(--font-mono); font-size: 0.8rem; }
-.palette__use { grid-column: 2 / -1; font-size: 0.76rem; line-height: 1.4; color: var(--ink-soft); }
-.palette figcaption { font-size: 0.78rem; line-height: 1.55; color: var(--ink-soft); }
+.field__ok-mark { width: var(--space-2); height: var(--space-1); flex: none; background: var(--sprout); border-radius: 100% 0 100% 0; rotate: -14deg; }
+.watering__foot { display: flex; flex-wrap: wrap; gap: var(--gap-xs); align-items: center; }
 
 /* ============================================================
-   EL OFICIO — cuaderno de decisiones: patrón, razón, experiencia
+   THE MEASURED PALETTE — swatch, name, contrast ratio and use
    ============================================================ */
-.practice { margin: 0 0 1.1rem; max-width: 32rem; display: grid; gap: 0.75rem; }
-.practice__case { border-left: 4px solid var(--sap); padding: 0 0 0 0.75rem; }
-.practice dt { font-family: var(--font-display); font-weight: 700; font-size: 0.88rem; margin-bottom: 0.15rem; }
-.practice dd { margin: 0; font-size: 0.82rem; line-height: 1.55; color: var(--ink-soft); }
+.palette { --swatch: var(--space-3); margin: 0; max-width: var(--space-64); }
+.palette__list { list-style: none; margin: 0 0 var(--space-1); padding: 0; display: grid; gap: 0; }
+.palette__row {
+  display: grid; grid-template-columns: var(--swatch) minmax(var(--space-10), 1fr) auto; gap: 0 var(--space-2);
+  align-items: center; font-size: var(--type-label); line-height: var(--type-label-lh); padding: var(--space-1) 0;
+  border-bottom: var(--stroke-hair) solid var(--tint-code-strong);
+}
+/* Each swatch wears the silhouette of what it paints: in greyscale the
+   palette still reads by shape. Ink and ochre are not grammar shapes
+   but strokes: the trunk, narrowing upwards, and the sap stem curving
+   towards its flower. */
+.palette__swatch {
+  position: relative; place-self: center;
+  width: var(--swatch); height: var(--swatch); background: var(--swatch-c); border: var(--stroke-fine) solid var(--line);
+  grid-row: span 2; box-sizing: border-box;
+}
+.palette__swatch--circle { --swatch-c: var(--k-blue); border-radius: var(--radius-round); }
+.palette__swatch--square { --swatch-c: var(--k-red); }
+/* A real rhombus: ink outside, colour inside, both clipped */
+.palette__swatch--rhombus { --swatch-c: var(--k-violet); border: 0; background: var(--line); clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+.palette__swatch--rhombus::before {
+  content: ""; position: absolute; inset: var(--stroke-fine); background: var(--swatch-c);
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+}
+.palette__swatch--bar { --swatch-c: var(--k-cyan); height: var(--space-1); border-width: 0 0 var(--stroke-fine); }
+.palette__swatch--trunk { --swatch-c: var(--ink); width: var(--space-1); border: 0; clip-path: polygon(32% 0, 68% 0, 100% 100%, 0 100%); }
+.palette__swatch--sap { --swatch-c: var(--k-ochre);
+  width: var(--space-2); background: none; border: 0;
+  border-top: var(--stroke-bold) solid var(--swatch-c); border-right: var(--stroke-bold) solid var(--swatch-c);
+  border-radius: 0 100% 0 0;
+}
+.palette__swatch--triangle { --swatch-c: var(--k-yellow); border: 0; background: var(--line); clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.palette__swatch--triangle::before {
+  content: ""; position: absolute; inset: 0; background: var(--swatch-c);
+  clip-path: polygon(50% 15%, 89% 93%, 11% 93%);
+}
+.palette__name { font-family: var(--font-display); font-weight: var(--fw-semibold); }
+.palette__ratio { font-family: var(--font-mono); }
+.palette__use { grid-column: 2 / -1; color: var(--ink-soft); }
+.palette figcaption { font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); }
+
+/* ============================================================
+   THE CRAFT — a notebook of decisions: pattern, reason, experience
+   ============================================================ */
+.practice { margin: 0 0 var(--space-3); max-width: var(--space-64); display: grid; gap: var(--gap-xs); }
+.practice__case { border-left: var(--stroke-bold) solid var(--sap); padding: 0 0 0 var(--space-2); }
+/* Arriving from a manifesto root, the pattern is tinted with sap */
+.practice__case, .practice__anti-title, .note p { scroll-margin-block: var(--space-4); }
+.practice__case:target, .practice__anti-title:target, .note p:target { background: color-mix(in oklab, var(--sap) var(--wash-16), transparent); }
+.practice dt { font-family: var(--font-display); font-weight: var(--fw-bold); font-size: var(--type-body); line-height: var(--type-body-lh); }
+.practice dd { margin: 0; font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); }
 .practice b { color: var(--ink); }
-.practice__anti { border: 2px dashed var(--k-grey-dark); padding: 0.8rem 0.95rem; max-width: 32rem; }
-.practice__anti-title { margin: 0 0 0.5rem; font-size: 0.88rem; font-family: var(--font-display); }
-.practice__anti ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.35rem; }
-.practice__anti li { font-size: 0.82rem; line-height: 1.5; color: var(--ink-soft); }
+.practice__anti { border: var(--stroke-fine) solid transparent; padding: var(--space-2); max-width: var(--space-64); }
+
+/* ============================================================
+   THE WILTED LINE — what fails, breaks or is an antipattern.
+   One continuous grey stroke that does not close: its top-right
+   corner stays open. A dashed line breaks up into noise at a
+   distance and on a projector; one clear gap reads across a room,
+   and the label and the shape say it as well (never colour alone).
+   The frame is drawn on ::before and only the frame is cut: the
+   content is never clipped. The wilted flower's ring says the same
+   with an open arc (flowers.css).
+   ============================================================ */
+:is(.lesson__fail, .pair__case--anti, .practice__anti, .ax-frag--broken .ax-frag__role) {
+  --wilt-gap: var(--space-2);
+  position: relative;
+}
+:is(.lesson__fail, .pair__case--anti, .practice__anti, .ax-frag--broken .ax-frag__role)::before {
+  content: ""; position: absolute; inset: calc(-1 * var(--stroke-fine)); pointer-events: none;
+  border: var(--stroke-fine) solid var(--k-grey-dark);
+  clip-path: polygon(0 0, calc(100% - var(--wilt-gap)) 0, calc(100% - var(--wilt-gap)) var(--wilt-gap),
+                     100% var(--wilt-gap), 100% 100%, 0 100%);
+}
+.lesson__fail { border: var(--stroke-fine) solid transparent; }
+.practice__anti-title { margin: 0 0 var(--space-1); font-size: var(--type-body); line-height: var(--type-body-lh); font-family: var(--font-display); }
+.practice__anti ul { margin: 0; padding-left: var(--space-3); display: grid; gap: var(--space-1); }
+.practice__anti li { font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); }
 .practice__anti b { color: var(--ink); }
 
 /* ============================================================
-   LO QUE SE LLEVAN LAS MÁQUINAS — resumen legible por agentes
+   WHAT MACHINES TAKE AWAY — a summary readable by agents
    ============================================================ */
-.agents { border: 2px solid var(--k-green); background: var(--k-surface); padding: 0.8rem 0.95rem; max-width: 32rem; margin-top: 1rem; }
-.agents__title { margin: 0 0 0.4rem; font-size: 0.88rem; font-family: var(--font-display); }
-.agents p { margin: 0 0 0.5rem; font-size: 0.82rem; line-height: 1.5; color: var(--ink-soft); }
-.agents ul { margin: 0 0 0.6rem; padding-left: 1.1rem; display: grid; gap: 0.3rem; }
-.agents li { font-size: 0.82rem; line-height: 1.45; color: var(--ink-soft); }
-.agents__actions { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+.agents { border: var(--stroke-fine) solid var(--sprout); background: var(--surface-plate); padding: var(--space-2); max-width: var(--space-64); }
+.agents__title { margin: 0 0 var(--space-1); font-size: var(--type-body); line-height: var(--type-body-lh); font-family: var(--font-display); }
+.agents p { margin: 0 0 var(--space-1); font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); }
+.agents ul { margin: 0 0 var(--space-1); padding-left: var(--space-3); display: grid; gap: var(--space-1); }
+.agents li { font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); }
+.agents__actions { display: flex; flex-wrap: wrap; gap: var(--gap-xs); align-items: center; }
 
 /* ============================================================
-   ≥ 48rem (768px): más aire, ramilletes escalonados
+   ≥ 48rem (768 px): more air, staggered clusters
    ============================================================ */
 @media (min-width: 48rem) {
-  .artwork { margin: clamp(0.4rem, 1vw, 0.9rem); border-width: 0.4rem; }
-  .canvas { padding: 1.4rem 1.4rem 0; }
-  .roots { --root-x: 2.5rem; }
-  .cluster__slot { margin-left: calc(1.2rem + var(--dz, 0) * 1.1rem); }
-  .flower-card__canvas::before { left: calc(-0.3rem - var(--dz, 0) * 1.1rem); }
-  .branch { padding: 1.8rem 0; }
+  .artwork {
+    --artwork-margin: clamp(var(--space-1), 1vw, var(--space-2));
+    --artwork-frame: var(--stroke-heavy);
+    --canvas-pad-m: var(--space-3);
+  }
+  .cluster { --slot-x: calc(var(--space-3) + var(--dz, 0) * var(--space-2)); }
+  .branch { --pb: var(--space-4); }
+  .data-card__json, .pair__code, .anatomy__code { white-space: pre; overflow-wrap: normal; }
 }
 
 /* ============================================================
-   ≥ 64rem (1024px): dos columnas, tronco central, ramas alternas
+   ≥ 64rem (1024 px): two columns, centred trunk, alternating
+   branches
    ============================================================ */
 @media (min-width: 64rem) {
-  /* El tronco al centro exacto: --axis-x pasa a 50 %, el mismo eje que el
-     centro del mandala, el del título y el del tallo. Un solo eje. */
-  /* Estas cuatro faltaban, y sin ellas la retícula del cuerpo, el hueco
-     del inspector y el eje de la raíz caían en valores inválidos: por eso
-     la raíz del pie no bajaba por el mismo eje que el tronco. */
+  /* The trunk at the exact centre: --axis-x becomes 50 %, the same axis
+     as the mandala's centre, the title's and the stem's. One axis. */
   .artwork {
-    --axis: 50%; --axis-x: 50%; --trunk-width: clamp(0.85rem, 1.4vw, 1.25rem);
-    --canvas-pad: 1.4rem;
-    --gap-canvas: clamp(1.4rem, 2.2vw, 2.4rem);
-    --panel-col: 20rem;
-    /* El eje del tronco medido desde el borde del pie, que no reserva la
-       columna del inspector en su caja de posicionamiento */
+    --axis: 50%; --axis-x: 50%; --side-pad: var(--space-0);
+    --trunk-width: clamp(var(--space-2), 1.4vw, var(--space-3));
+    --canvas-pad: var(--space-3);
+    --gap-canvas: clamp(var(--space-3), 2.2vw, var(--space-5));
+    --panel-col: var(--space-40);
+    /* The trunk's axis measured from the footer's edge, which does not
+       reserve the inspector's column in its positioning box */
     --trunk-center: calc((100% - var(--panel-col) - var(--gap-canvas)) / 2);
   }
-  /* Sin codo: el trazo cae recto por el centro y el texto lo flanquea */
-  .bridge {
-    padding-top: 1.6rem;
-    display: grid; grid-template-columns: 1fr 1fr;
-    column-gap: calc(var(--trunk-width) + 2.6rem); align-items: start;
-  }
-  .bridge__elbow {
-    left: calc(50% - var(--trunk-width) / 2); right: auto;
-    width: var(--trunk-width); border-top: 0; border-radius: 0;
-  }
-  .cover__help { margin: 0; text-align: right; justify-self: end; max-width: 21rem; }
-  .hero__controls { margin: 0.1rem 0 0; justify-content: flex-start; }
   .canvas {
-    max-width: 100rem; margin: 0 auto;
+    max-width: var(--space-200); margin: 0 auto;
     padding: var(--canvas-pad);
     display: grid; grid-template-columns: minmax(0, 1fr) var(--panel-col);
     gap: var(--gap-canvas); align-items: start;
   }
-  .artwork-side { padding-left: 0; }
-
-  .cover { padding-bottom: 0.6rem; }
 
   .trunk__axis { left: 50%; }
   .branch {
+    --pb: clamp(var(--space-4), 5vh, var(--space-7));
+    --arc-top: var(--space-5);
+    --drop: var(--space-10);
+    --col-gap: clamp(var(--space-5), 5vw, var(--space-8));
+    /* The load never rises closer than 16 px to the knot: when the
+       branch padding shrinks (short screens), the load's grows */
+    --load-pad: max(var(--space-1), var(--space-7) - var(--pb));
+    --node: var(--space-3);
+    --arc-w: 38%;
+    --halo-x: 72%;
     display: grid; grid-template-columns: 1fr 1fr;
-    padding: clamp(2rem, 5vh, 3.6rem) 0;
-    --drop: 5rem;
-    --rise: calc(var(--drop) + clamp(2rem, 5vh, 3.6rem) - 2.2rem);
   }
-  .branch--thick { --drop: 6rem; }
-  .branch--thin { --drop: 4rem; }
-  .branch--right { background: radial-gradient(closest-side at 72% 42%, color-mix(in oklab, var(--tint) 11%, transparent), transparent 72%); }
-  .branch--left { background: radial-gradient(closest-side at 28% 42%, color-mix(in oklab, var(--tint) 11%, transparent), transparent 72%); }
-  .branch__arc {
-    left: 50%; top: 2.6rem; width: 38%; height: var(--drop);
-    border-top-right-radius: 100% 100%;
-  }
+  .branch--thick { --drop: var(--space-12); }
+  .branch--thin { --drop: var(--space-8); --arc-w: 30%; }
+  .branch--right { background: radial-gradient(closest-side at var(--halo-x) 42%, color-mix(in oklab, var(--tint) var(--halo), transparent), transparent 72%); }
+  .branch--left { --halo-x: 28%; background: radial-gradient(closest-side at var(--halo-x) 42%, color-mix(in oklab, var(--tint) var(--halo), transparent), transparent 72%); }
+  .branch__arc { left: 50%; border-top-right-radius: 100% 100%; }
   .branch--left .branch__arc { left: auto; right: 50%; border-top-right-radius: 0; border-top-left-radius: 100% 100%; }
-  .branch--left .branch__arc::after { right: auto; left: -0.4rem; }
-  .branch--thin .branch__arc { width: 30%; }
-  /* Arco fino hacia el lado del texto: la rama también sostiene la nota */
+  .branch--left .branch__arc::after { right: auto; left: calc(var(--knot) / -2); }
+  /* The thin arc towards the text's side: the branch holds the note too */
   .branch__arc::before {
     content: ""; position: absolute; top: calc(-1 * var(--stroke)); right: 100%;
     width: 128%; height: calc(var(--drop) * 0.8);
-    border-top: 3px solid var(--tint); border-top-left-radius: 100% 100%;
+    border-top: var(--stroke-echo) solid var(--tint); border-top-left-radius: 100% 100%;
   }
   .branch--left .branch__arc::before {
     right: auto; left: 100%;
     border-top-left-radius: 0; border-top-right-radius: 100% 100%;
   }
-  .branch__node { left: 50%; top: 2.6rem; }
-  .branch--left .branch__node::after { left: auto; right: 0.95rem; transform: rotate(28deg) scaleX(-1); }
-  .branch__load { grid-column: 1 / -1; padding: calc(var(--drop) + 0.4rem) 0 0; gap: clamp(1.4rem, 3vh, 2.4rem); }
-  /* Zigzag: la nota a un lado del tronco, las flores al otro */
+  .branch__node { left: 50%; }
+  .branch--left .branch__node::after { left: auto; right: var(--node); transform: rotate(28deg) scaleX(-1); }
+  .branch__load { grid-column: 1 / -1; padding: calc(var(--drop) + var(--load-pad)) 0 0; gap: clamp(var(--space-3), 3vh, var(--space-5)); }
+  /* Zigzag: the note on one side of the trunk, the flowers on the other */
   .branch__load--flowers {
     display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    column-gap: clamp(2.4rem, 5vw, 4.5rem); row-gap: clamp(1.4rem, 3vh, 2.4rem);
+    column-gap: var(--col-gap); row-gap: clamp(var(--space-3), 3vh, var(--space-5));
     align-items: start;
   }
-  .branch__load--flowers > .note { grid-column: 1; grid-row: 1; order: 0; margin-top: 1rem; }
+  /* The knot over the centre of the load's column: from the trunk there
+     is half a lane plus half a column, (width − lane) / 4 + lane / 2 */
+  .branch:has(> .branch__load > :is(.cluster, .bouquet, .lesson__bench)) { --arc-w: calc(25% + var(--col-gap) / 4); --hang-x: calc(50% - var(--stem) / 2); }
+  /* the bench fills its bank: its centre, the stem, is under the knot */
+  .branch__load--flowers > .lesson__bench { justify-self: stretch; }
+  .branch__load--flowers > .bouquet { justify-self: center; }
+  /* centred: 50 % of the padding box is already the border box's centre */
+  .branch__load--flowers > fieldset.bouquet::before { left: var(--hang-x); }
+  .branch__load--flowers > .note { grid-column: 1; grid-row: 1; order: 0; margin-top: var(--space-2); }
   .branch__load--flowers > * { grid-column: 2; }
   .branch--left .branch__load--flowers > * { grid-column: 1; }
   .branch--left .branch__load--flowers > .note { grid-column: 2; grid-row: 1; }
   .branch--right .branch__load--flowers > .note { justify-self: end; }
   .branch--left .branch__load--flowers > .note { justify-self: start; }
-  /* Ramillete centrado sobre su tallo, con deriva pictórica */
+  /* Cluster centred on its stem, with a painterly drift */
   .branch__load--flowers > .cluster { width: 100%; }
-  .cluster { align-items: center; }
-  .cluster::before { left: 50%; }
+  .cluster { align-items: center; --slot-x: calc((var(--dz, 0) - 1) * var(--space-2)); }
   .flower-card__canvas::before { content: none; }
-  .cluster__slot { margin-left: calc(var(--dz, 0) * 0.8rem - 0.8rem); }
-  .satellite { left: calc(50% + 3rem); top: 1rem; }
-  .branch--left .satellite { left: auto; right: calc(50% + 3rem); }
-  .tendril { left: calc(50% + 4rem); top: 4.6rem; }
-  .tendril--left { left: auto; right: calc(50% + 4rem); transform: scaleX(-1); }
-  .note { max-width: 27rem; }
-  .note--wide { max-width: 44rem; }
+  /* centred on the stem */
+  .cluster .flower-card { justify-items: center; }
+  .satellite { left: calc(50% + var(--space-6)); top: var(--space-2); }
+  .branch--left .satellite { left: auto; right: calc(50% + var(--space-6)); }
+  .tendril { left: calc(50% + var(--space-8)); top: calc(var(--arc-top) + var(--space-4)); }
+  .tendril--left { left: auto; right: calc(50% + var(--space-8)); transform: scaleX(-1); }
+  .note { --note-measure: var(--space-56); }
+  .note--wide { --note-measure: var(--space-80); }
 
-  .ground { padding: clamp(2rem, 5vh, 3.5rem) 0 0; --drop: 5rem; --rise: calc(var(--drop) + 0.3rem); }
-  .ground .branch__arc { left: 50%; top: 2.6rem; width: 38%; height: var(--drop); }
-  .ground .branch__node { left: 50%; top: 2.6rem; }
+  /* The soil hangs its seedbed from the knot too: the arc ends over
+     the seedbed line, half a lane plus the list's indent away */
+  .ground {
+    --pb: clamp(var(--space-4), 5vh, var(--space-7));
+    --arc-top: var(--space-5);
+    --drop: var(--space-10);
+    --col-gap: clamp(var(--space-5), 5vw, var(--space-8));
+    --load-pad: max(var(--space-1), var(--space-7) - var(--pb));
+    --node: var(--space-3);
+    --seedbed-x: var(--space-2);
+    /* absolute children are placed from the list's padding edge: the
+       seedbed line sits at col-gap / 2 + --seedbed-x from the trunk */
+    --arc-w: calc(var(--col-gap) / 2 + var(--seedbed-x) + var(--stem) / 2);
+    --rise: calc(var(--pb) + var(--load-pad) - var(--arc-top));
+  }
+  .ground .branch__arc { left: 50%; }
+  .ground .branch__node { left: 50%; }
   .ground__load {
     display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    column-gap: clamp(2.4rem, 5vw, 4.5rem); align-items: start;
-    padding: calc(var(--drop) + 0.4rem) 0 0;
+    column-gap: var(--col-gap); align-items: start;
+    padding: calc(var(--drop) + var(--load-pad)) 0 0;
   }
   .ground__load::before { content: none; }
-  .ground__load > .note { grid-column: 1; justify-self: end; margin-top: 1rem; }
-  /* En escritorio la lista recupera su sangría corta: la hoja-viñeta
-     sigue prendida del tallo del semillero */
-  .ground__load > .sprouts__list { grid-column: 2; padding-left: 0.6rem; }
-  .sprouts__list::before { left: 0.9rem; }
-  .sprouts__list::after { left: 0.35rem; }
-  .sprout::before { left: 0.75rem; }
-  .sprouts__list { grid-template-columns: 1fr; gap: 2rem; }
+  .ground__load > .note { grid-column: 1; justify-self: end; margin-top: var(--space-2); }
+  /* The leaf-bullet stays pinned to the seedbed's stem, which starts
+     at the knot */
+  /* the seedlings stand on the soil: the list fills its bank down to it */
+  .ground__load > .sprouts__list { grid-column: 2; grid-template-columns: repeat(3, minmax(0, 1fr)); padding-left: calc(var(--seedbed-x) + var(--stem) + var(--space-3)); align-self: stretch; }
+  .sprouts__list::before { top: calc(-1 * var(--rise)); }
+  .sprout { padding-left: 0; }
+  .sprout::before { left: calc(var(--space-2) + var(--stem)); }
   .ground__soil { margin: 0; }
-  /* El pie reserva la columna del inspector: así su centro es el eje
-     del tronco y la raíz baja recta desde él */
-  .roots { padding: 0 calc(var(--canvas-pad) + var(--panel-col) + var(--gap-canvas)) 2rem var(--canvas-pad); }
-  /* El manifiesto se abre en dos columnas y la raíz principal baja por
-     el pasillo central: cada raicilla sale hacia su lado */
-  .roots { max-width: 100rem; margin-inline: auto; background: none; }
-  /* La banda de tierra sigue llegando a los bordes del lienzo */
+  /* The footer reserves the inspector's column: its centre is then the
+     trunk's axis and the root falls straight from it */
+  .roots { padding: 0 calc(var(--canvas-pad) + var(--panel-col) + var(--gap-canvas)) var(--space-4) var(--canvas-pad); }
+  /* The manifesto opens in two columns and the main root runs down the
+     central lane: each rootlet leaves towards its side */
+  .roots { max-width: var(--space-200); margin-inline: auto; background: none; }
+  /* The band of earth still reaches the canvas edges */
   .roots::before {
     content: ""; position: absolute; top: 0; bottom: 0; left: 50%;
-    translate: -50% 0; width: 100vw; background: var(--k-linen-2); z-index: -1;
+    translate: -50% 0; width: 100vw; background: var(--surface-band); z-index: -1;
   }
-  .roots { --root-x: var(--trunk-center); --gap-manifesto: 5.4rem; }
-  .roots__box { margin-inline: auto; }
-  .roots__box { max-width: 64rem; }
-  .roots__title { padding: 0 3.4rem 0 0; text-align: right; max-width: 50%; }
+  .roots { --root-x: var(--trunk-center); --gap-manifesto: var(--space-10); }
+  .roots__box { margin-inline: auto; max-width: var(--space-120); }
+  /* Title and lead face each other across the root, on the same row and
+     on the same two banks as the rootlets below: the title ends where
+     the odd rootlets end, the lead starts where the even ones start */
+  .roots__box { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: var(--gap-manifesto); align-items: start; }
+  .roots__title { grid-column: 1; padding: 0 var(--space-1) 0 0; text-align: right; }
+  .roots__lead { grid-column: 2; margin: 0; padding-left: var(--space-1); }
+  .roots__box > .manifesto { grid-column: 1 / -1; }
   .manifesto {
     display: grid; grid-template-columns: 1fr 1fr;
     column-gap: var(--gap-manifesto); align-items: start;
   }
-  .manifesto li { margin-bottom: 0.8rem; }
-  .manifesto li:nth-child(odd) { text-align: right; padding: 0 0.4rem 0 0; }
-  /* Media calle exacta: la raicilla acaba justo en el eje de la raíz */
+  .manifesto li { margin-bottom: var(--space-2); }
+  .manifesto li:nth-child(odd) { text-align: right; padding: 0 var(--space-1) 0 0; }
+  /* Exactly half the lane: the rootlet ends on the root's axis */
   .manifesto li:nth-child(odd)::before {
     left: auto; right: calc(-1 * var(--gap-manifesto) / 2);
     width: calc(var(--gap-manifesto) / 2); scale: -1 1;
   }
-  .manifesto li:nth-child(even) { padding-left: 0.4rem; }
+  .manifesto li:nth-child(even) { padding-left: var(--space-1); }
   .manifesto li:nth-child(even)::before {
     left: calc(-1 * var(--gap-manifesto) / 2);
     width: calc(var(--gap-manifesto) / 2);
@@ -1089,52 +1861,166 @@ body[data-animate="true"] .sprouted.in-view { opacity: 1; transform: none; }
 }
 
 @media (min-width: 90rem) {
-  .branch { padding: clamp(2.6rem, 6vh, 4.5rem) 0; --rise: calc(var(--drop) + clamp(2.6rem, 6vh, 4.5rem) - 2.2rem); }
-  /* Aquí ya sobra sitio para que la corona rodee la flor: los trece
-     enlaces se colocan en su propia circunferencia (58 cqw, fuera de la
-     envolvente del mandala, que es 49,6) y no cuestan ni un píxel de
-     alto. El rótulo cuelga sobre la prolongación del mismo radio. */
-  .core { width: min(68%, 33rem); }
-  /* La corona necesita aire por arriba y por abajo: con radio 76 cqw, la
-     estación de las doce sale por encima del cuadrado del mandala y las
-     de abajo caen por debajo. Se reserva ese hueco alargando el tallo y
-     bajando el puente EXACTAMENTE lo mismo, así el trazo sigue siendo
-     uno solo y ninguna estación pisa la ayuda ni los mandos. */
-  .cover { padding-top: 9.5rem; }
-  .seed__stem { bottom: -11.5rem; }
-  .bridge { margin-top: 11.5rem; }
-  .crown { position: absolute; inset: 0; margin: 0; pointer-events: none; }
-  /* El aro de la corona no es un círculo mudo: arranca denso en la
-     estación 1 y se aclara hasta la 13, así se ve por dónde empieza y
-     hacia dónde va. Cubre solo los 316° ocupados; los 44° del tronco
-     quedan en blanco. */
-  .crown::before {
-    content: ""; position: absolute; left: 50%; top: 50%; translate: -50% -50%;
-    width: 152cqw; aspect-ratio: 1; border-radius: 50%;
-    background: conic-gradient(from 202deg,
-      color-mix(in oklab, var(--line) 55%, transparent) 0deg,
-      color-mix(in oklab, var(--line) 12%, transparent) 316deg,
-      transparent 316deg);
-    -webkit-mask-image: radial-gradient(circle closest-side, transparent calc(100% - 1.7px), #000 calc(100% - 1.7px));
-    mask-image: radial-gradient(circle closest-side, transparent calc(100% - 1.7px), #000 calc(100% - 1.7px));
+  .branch, .ground { --pb: clamp(var(--space-5), 6vh, var(--space-8)); }
+  .artwork { --panel-col: var(--space-44); }
+}
+
+/* ============================================================
+   SCENES — one station, one screen: the LÁMINA KANDINSKY.
+   When the screen is large (≥ 90 × 56 rem: a laptop maximised or in
+   fullscreen, a 4K or 8K TV, a room) the work is walked the way it
+   is presented: every branch takes exactly one screen and nothing is
+   cut at the bottom. Scrolling settles gently at each station's
+   start (proximity: never traps, you can stop between two; Page
+   Down lands on the next one).
+   Each scene is a composed plate, read from the back of the room:
+     · the station's NUMERAL, large: the same ring-and-branch-arc as
+       everywhere, in the station's colour — the plate's anchor
+     · the TITLE at 40/48
+     · the LEAD, the first paragraph, at 24/32: the one sentence it
+       states
+     · body at 16/24 and details (code, cartelas, tree fragments) at
+       12/16, on the evidence bank
+   The trunk splits each plate in two: the CLAIM on one bank (the
+   note), the EVIDENCE on the other (flowers, code, tree). Where the
+   evidence is too long for one bank, its first piece — the thing you
+   try — moves under the claim, so the plate reads claim → try it →
+   proof.
+   With zoom the viewport shrinks — 200 % on a 1707 px laptop leaves
+   853 × 533 — and the query stops matching: the work goes back to
+   its usual reflowing flow (1.4.10). A scene never overrides someone
+   who zooms in. With reduced motion there is no snapping.
+   ============================================================ */
+@media (min-width: 90rem) and (min-height: 56rem) {
+  html { scroll-snap-type: y proximity; }
+  /* Opening «Leer de cerca» makes its scene taller: with snapping on,
+     the browser re-snaps and the page jumps. While one is open, the
+     scenes stop snapping. (Interim: batch 2 redesigns these folds so
+     everything is on screen.) */
+  html:has(.closer[open]) { scroll-snap-type: none; }
+  .branch, .ground, .roots { scroll-snap-align: start; min-height: 100dvh; }
+  /* The canvas uses the whole screen width: wider banks, fewer lines */
+  .canvas { max-width: none; }
+  .branch, .ground {
+    --pb: var(--space-4);
+    --arc-top: var(--space-3);
+    --load-pad: var(--space-2);
   }
-  .crown__list { display: block; }
-  .crown__item:nth-child(odd) { justify-self: auto; }
-  .crown__item:nth-child(odd) a { flex-direction: column; }
-  .crown__item {
-    position: absolute; left: 50%; top: 50%; --radius: 76cqw;
-    transform: translate(-50%, -50%)
-      translate(calc(cos(var(--angle)) * var(--radius)), calc(sin(var(--angle)) * var(--radius)));
+  /* The minimum height already fills the screen: bottom padding would
+     only take room from the load */
+  .branch { padding-bottom: var(--space-2); }
+
+  /* --- THE PLATE --- */
+  .branch__load--flowers > .note, .ground__load > .note { --note-measure: none; margin-top: 0; }
+  .note__title {
+    --plate-num: var(--space-14);
+    display: grid; grid-template-columns: var(--plate-num) minmax(0, 1fr);
+    align-items: center; column-gap: var(--gap-s);
+    font-size: var(--type-title); line-height: var(--type-title-lh);
+    margin-bottom: var(--space-3);
   }
-  .crown__item a {
-    pointer-events: auto; flex-direction: column; gap: 0.15rem;
-    justify-content: center; min-width: var(--touch);
+  .note__num {
+    --num-size: var(--plate-num);
+    --num-stroke: var(--stroke-bold);
+    --num-arc: var(--stroke-heavy);
+    --num-arc-inset: calc(-1 * var(--space-1));
   }
-  /* El rótulo va debajo de su flor, sobre el mismo radio: así nunca
-     tapa al triángulo ni al de al lado */
-  .crown__label {
-    background: var(--k-linen); padding: 0.05rem 0.3rem; border-radius: 0.2rem;
+  .note__num { font-size: var(--type-display); line-height: var(--type-display-lh); letter-spacing: var(--tracking-tight); }
+  .note__title + p {
+    font-size: var(--type-lead); line-height: var(--type-lead-lh); color: var(--ink);
+    margin-bottom: var(--space-2);
   }
-  .artwork { --panel-col: 22rem; }
-  .note { max-width: 29rem; }
+  .note .note__look { margin-top: var(--space-2); }
+
+  /* --- The two banks, named: the claim and the proof swap sides with
+     the branch, so a station's layout never depends on which side it
+     grows on --- */
+  .branch--right { --bank-claim: 1; --bank-proof: 2; }
+  .branch--left { --bank-claim: 2; --bank-proof: 1; }
+  :is(#color) .branch__load--flowers { grid-template-rows: auto 1fr; }
+  #live .branch__visual { display: contents; }
+  /* 8 · Change: the claim alone on its bank; the proof reads try it (the
+     watering) → what is heard (the echo, large) → the pair, folded */
+  #live .branch__load--flowers { grid-template-rows: auto auto 1fr; }
+  #live .branch__load--flowers > .note { grid-column: var(--bank-claim); grid-row: 1 / span 3; }
+  #live .watering { grid-column: var(--bank-proof); grid-row: 1; max-width: none; }
+  #live .echo { grid-column: var(--bank-proof); grid-row: 2; }
+  #live .closer { grid-column: var(--bank-proof); grid-row: 3; align-self: start; }
+  #live .pair { max-width: none; }
+  /* 1 · Structure: the two trees and, under them, the four readings on
+     the proof bank; the close reading under the claim */
+  :is(#structure, #route, #patterns) .branch__visual { display: contents; }
+  :is(#structure, #route, #patterns) .branch__load--flowers > .note { grid-column: var(--bank-claim); grid-row: 1; }
+  /* The free height goes to the last row only: shared between two auto
+     rows, it pushed «Leer de cerca» down while closed and the summary
+     slid up under the pointer when it opened */
+  :is(#structure, #patterns) .branch__load--flowers { grid-template-rows: auto 1fr; }
+  #structure .two-trees { grid-column: var(--bank-proof); grid-row: 1; }
+  #structure .readers { grid-column: var(--bank-proof); grid-row: 2; }
+  #structure .closer { grid-column: var(--bank-claim); grid-row: 2; align-self: start; }
+  /* 3 · The map on the proof bank; the group (the bouquet) under the claim */
+  #route .atlas { grid-column: var(--bank-proof); grid-row: 1 / span 2; }
+  #route .bouquet { grid-column: var(--bank-claim); grid-row: 2; align-self: start; }
+  /* 10 · The three flowers on the proof bank; the close reading under the claim */
+  #patterns .cluster { grid-column: var(--bank-proof); grid-row: 1 / span 2; }
+  #patterns .closer { grid-column: var(--bank-claim); grid-row: 2; align-self: start; }
+  /* 10 · Colour: the palette in two columns, under the flower that turns
+     it grey; the claim spans both rows */
+  #color .branch__load--flowers > .note { grid-row: 1 / span 2; }
+  #color .palette { max-width: none; }
+  #color .palette__list { grid-template-columns: 1fr 1fr; column-gap: var(--gap-s); }
+  /* The pattern pair and the long boxes fill their bank */
+  #focus .pair, .practice__anti, .data-card { max-width: none; }
+
+  /* Clusters measured by height too: three flowers and their cartelas
+     fit one screen. Never under the 48 px touch target. (.cluster in
+     front: flowers.css loads later and would win at equal specificity.) */
+  .cluster .flower-card { --card-size: max(var(--touch), min(clamp(var(--space-16), 15vw, var(--space-20)), 12dvh)); }
+  .cluster .flower-card--xl { --card-size: max(var(--touch), min(clamp(var(--space-20), 22vw, var(--space-32)), 17dvh)); }
+  .cluster .flower-card--l { --card-size: max(var(--touch), min(clamp(var(--space-16), 18vw, var(--space-24)), 15dvh)); }
+  .cluster .flower-card--s { --card-size: max(var(--touch), min(clamp(var(--space-10), 11vw, var(--space-12)), 9dvh)); }
+  /* The ladder holds two flowers, not three: its own height law, kept
+     in --rung-card so the lit rung and the bud share one number */
+  .cluster.cluster--ladder { --rung-card: max(var(--touch), min(clamp(var(--space-16), 15vw, var(--space-20)), 16dvh)); }
+
+  /* THE BRANCH BENDS UNDER ITS LOAD. In a scene with little load, the
+     load neither stays at the top over half an empty screen nor drops
+     alone away from its branch: the branch bends more (a deeper drop)
+     and carries it down. Each station declares how tall its load is
+     (--hc, measured at the presenter's window) and the drop grows by
+     45 % of the room left. Cluster stems do not depend on the drop:
+     they still start at the knot. In full scenes the room is zero and
+     nothing changes. */
+  .branch {
+    --drop0: var(--space-10); --hc: 100dvh; --bend: 0.45;
+    --drop: calc(var(--drop0) + max(var(--space-0), (100dvh - var(--pb) - var(--drop0) - var(--load-pad) - var(--space-2) - var(--hc)) * var(--bend)));
+  }
+  .branch--thick { --drop0: var(--space-12); }
+  /* measured load heights, in grid modules (1707 × 917) */
+  #synesthesia { --hc: calc(var(--unit) * 93); }
+  #role { --hc: calc(var(--unit) * 72); }   /* claim + coda, the taller bank */
+  #name { --hc: calc(var(--unit) * 85); }
+  #state { --hc: calc(var(--unit) * 76); }
+  #color { --hc: calc(var(--unit) * 67); }
+  #route { --hc: calc(var(--unit) * 60); }
+  #live { --hc: calc(var(--unit) * 80); }
+  #layers { --hc: calc(var(--unit) * 48); }
+  #patterns { --hc: calc(var(--unit) * 72); }
+  .ground {
+    --hc: calc(var(--unit) * 43); --bend: 0.45;
+    --drop: calc(var(--space-10) + max(var(--space-0), (100dvh - var(--pb) - var(--space-10) - var(--load-pad) - var(--space-2) - var(--hc)) * var(--bend)));
+  }
+
+  /* The soil is the bottom edge of its screen: the earth goes to the
+     bottom and the trunk ends on it, as always */
+  .ground { display: flex; flex-direction: column; }
+  .ground__load { flex: 1 1 auto; }
+  .ground__soil { margin-top: auto; }
+  /* The roots: manifesto at the top, rows not stretched */
+  .roots { align-content: start; }
+  .roots__box { padding-top: var(--space-4); }
+  .manifesto li { margin-bottom: var(--space-1); }
+}
+@media (min-width: 90rem) and (min-height: 56rem) and (prefers-reduced-motion: reduce) {
+  html { scroll-snap-type: none; }
 }

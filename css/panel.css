@@ -1,117 +1,153 @@
 /* ============================================================
-   PANEL — inspector tipo DevTools.
-   Mobile-first: vive en un <dialog> modal que abre el botón
-   flotante «Ver árbol». Desde 64rem el dialog se disuelve
-   (display: contents) y el aside queda sticky en su columna.
-   Solo el árbol tiene scroll; la Ficha del nodo queda SIEMPRE
-   visible debajo.
+   PANEL — a DevTools-like inspector.
+   Mobile first: it lives in a modal <dialog> opened by the floating
+   "Ver árbol" button. From 64rem the dialog dissolves
+   (display: contents) and the aside sticks in its column.
+   Only the tree scrolls; the node card stays ALWAYS visible below.
    ============================================================ */
-
-/* Botón flotante (solo móvil/tablet) */
-.open-panel {
-  position: fixed; right: 1rem; bottom: 1rem; z-index: 55;
-  min-height: var(--touch); min-width: var(--touch);
-  padding: 0.7rem 1.1rem;
-  font-family: var(--font-display); font-weight: 600; font-size: 0.9rem;
-  background: var(--k-blue); color: #ffffff;
-  border: 2px solid var(--line); border-radius: 2rem;
-  cursor: pointer; box-shadow: 0.25rem 0.25rem 0 rgba(23, 21, 15, 0.35);
+.panel {
+  --panel-pad: var(--space-2);
+  --panel-radius: var(--space-3);           /* the arch of an <aside> */
+  --panel-row: var(--space-4);              /* one tree row: 32 */
+  --panel-indent: var(--space-3);
 }
-.open-panel:hover { background: var(--k-violet); }
 
-/* El dialog modal (móvil) */
+/* Floating button (mobile/tablet only) */
+.open-panel {
+  position: fixed; right: var(--space-2); bottom: var(--space-2); z-index: var(--z-float);
+  box-shadow: var(--half) var(--half) 0 var(--tint-shadow);   /* a primary control (artwork.css) that floats */
+}
+
+/* The modal dialog (mobile) */
 .panel-box {
-  width: min(94vw, 30rem); max-height: 88dvh;
+  width: min(94vw, var(--space-64)); max-height: 88dvh;
   margin: auto; padding: 0; border: 0; background: none;
 }
-.panel-box::backdrop { background: rgba(23, 21, 15, 0.55); }
+.panel-box::backdrop { background: var(--tint-backdrop); }
 
 .panel {
   display: flex; flex-direction: column;
   max-height: 88dvh;
-  background: var(--k-surface); border: 2px solid var(--line);
-  border-radius: 1.6rem 1.6rem 0 0; /* el arco: aside */
-  padding: 1rem 0.9rem 0.9rem;
-  box-shadow: 0.4rem 0.4rem 0 rgba(23, 21, 15, 0.12);
+  background: var(--surface-plate); border: var(--stroke-fine) solid var(--line);
+  border-radius: var(--panel-radius) var(--panel-radius) 0 0;
+  padding: var(--panel-pad);
+  box-shadow: var(--space-1) var(--space-1) 0 var(--tint-code);
 }
-.panel__header { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; }
-.panel__title { font-size: 1.02rem; margin: 0 0 0.35rem; color: var(--ink); }
-.panel__close {
-  flex: none; min-height: var(--touch); min-width: var(--touch);
-  font-family: var(--font-body); font-size: 0.8rem; font-weight: 600;
-  border: 2px solid var(--line); background: var(--k-linen); color: var(--ink);
-  padding: 0.3rem 0.7rem; cursor: pointer;
+.panel__header { display: flex; align-items: center; justify-content: space-between; gap: var(--gap-2xs); }
+.panel__title {
+  font-size: var(--type-subhead); line-height: var(--type-subhead-lh);
+  margin: 0 0 var(--space-1); color: var(--ink);
 }
-.panel__close:hover { background: var(--k-yellow); }
-.panel__note { font-size: 0.78rem; color: var(--ink-soft); margin: 0 0 0.55rem; line-height: 1.45; }
+.panel__close { flex: none; --control-pad: var(--space-2); }
+.panel__note {
+  font-size: var(--type-label); line-height: var(--type-label-lh);
+  color: var(--ink-soft); margin: 0 0 var(--space-1);
+}
 .panel__focus {
-  font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.4;
+  font-family: var(--font-mono); font-size: var(--type-label); line-height: var(--type-label-lh);
   color: var(--ink);
-  background: var(--k-linen); border: 1px solid var(--line);
-  padding: 0.5rem 0.6rem; margin: 0 0 0.55rem;
+  background: var(--surface-canvas); border: var(--stroke-hair) solid var(--line);
+  padding: var(--space-1); margin: 0 0 var(--space-1);
 }
-.panel__actions { display: flex; gap: 0.5rem; margin: 0.55rem 0; }
-.panel__action {
-  font-family: var(--font-body); font-size: 0.78rem;
-  border: 1.5px solid var(--line); background: var(--k-linen);
-  color: var(--ink); padding: 0.35rem 0.6rem; cursor: pointer; min-height: 2rem;
-}
-.panel__action:hover { background: var(--k-yellow); }
+/* Two controls of the system, sharing the row */
+.panel__actions { display: flex; gap: var(--gap-2xs); margin: var(--space-1) 0; }
+.panel__action { flex: 1; --control-pad: var(--space-1); }
 
-/* Árbol: la ÚNICA zona con scroll del panel */
+/* The tree: the ONLY scrolling area of the panel */
 .tree {
-  flex: 1 1 auto; min-height: 4rem; overflow: auto;
-  border-block: 1px solid rgba(23, 21, 15, 0.25); padding: 0.35rem 0;
+  flex: 1 1 auto; min-height: var(--space-8); overflow: auto;
+  border-block: var(--stroke-hair) solid var(--tint-shadow); padding: var(--space-1) 0;
   overscroll-behavior: contain;
 }
-.tree ul { list-style: none; margin: 0; padding-left: 0.9rem; border-left: 1px dotted rgba(23, 21, 15, 0.35); }
+/* The page highlight of the selected node, like DevTools': the
+   button's blue wash and a solid edge, over the element's real box */
+.inspect-highlight {
+  position: absolute; z-index: var(--z-float); pointer-events: none;
+  left: var(--hx); top: var(--hy); width: var(--hw); height: var(--hh);
+  background: color-mix(in oklab, var(--shape-circle) var(--wash-24), transparent);
+  outline: var(--stroke-bold) solid var(--shape-circle);
+}
+.inspect-highlight[hidden] { display: none; }
+@media (forced-colors: active) {
+  .inspect-highlight { background: none; outline-color: Highlight; }
+}
+
+.tree ul {
+  list-style: none; margin: 0; padding-left: var(--space-2);
+  border-left: var(--stroke-hair) solid var(--tint-line);
+}
 .tree > ul { padding-left: 0; border-left: 0; }
-.node__row { display: flex; align-items: center; gap: 0.15rem; margin-bottom: 2px; }
+.node__row { display: flex; align-items: center; gap: 0; }
 .node__toggle {
-  flex: none; width: 24px; height: 28px;
-  background: none; border: 0; cursor: pointer;
-  font-size: 0.7rem; line-height: 1; color: var(--ink);
+  flex: none; width: var(--panel-indent); height: var(--panel-row);
+  background: none; border: 0; cursor: pointer; font: inherit;
+  font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink);
 }
-.node__indent { flex: none; width: 24px; }
+.node__indent { flex: none; width: var(--panel-indent); }
+/* The row wraps instead of clipping: when role, name and state do not
+   fit on one line, the state drops to the next one. Before, the state
+   (flex: none) pushed the row out of the panel and squashed the name to
+   0 px in the deepest nodes. */
 .node__sel {
-  display: flex; align-items: center; gap: 0.4rem; flex: 1; min-width: 0; min-height: 28px;
+  display: flex; flex-wrap: wrap; align-items: baseline; column-gap: var(--gap-2xs); row-gap: 0;
+  flex: 1; min-width: 0; min-height: var(--panel-row);
   text-align: left; background: none; border: 0; font: inherit;
-  font-size: 0.75rem; line-height: 1.35; padding: 0.25rem 0.35rem;
-  cursor: pointer; border-radius: 0.25rem; color: var(--ink);
+  font-size: var(--type-label); line-height: var(--type-label-lh); padding: var(--space-1);
+  cursor: pointer; border-radius: var(--radius-1); color: var(--ink);
 }
-.node__sel:hover { background: rgba(242, 183, 5, 0.28); }
+.node__sel:hover { background: var(--tint-highlight); }
 .node__sel[aria-current="true"] { background: var(--k-yellow); }
-.node__role { font-family: var(--font-mono); font-weight: 600; color: var(--k-blue); flex: none; }
-/* El nodo de texto no es un elemento: se pinta en gris y sin negrita para
-   que se distinga de un nodo con rol propio */
-.node--text > .node__row > .node__sel > .node__role { font-weight: 400; color: var(--ink-soft); }
+.node__role { font-family: var(--font-mono); font-weight: var(--fw-semibold); color: var(--k-blue); flex: none; }
+/* A text node is not an element: it is painted grey and not bold so it
+   reads apart from a node with its own role */
+.node--text > .node__row > .node__sel > .node__role { font-weight: var(--fw-regular); color: var(--ink-soft); }
 .node--text > .node__row > .node__sel > .node__name { color: var(--ink); font-style: italic; }
-.node__name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.node__state { font-family: var(--font-mono); color: var(--k-ochre); flex: none; margin-left: auto; padding-left: 0.4rem; }
-.node__sel[aria-current="true"] .node__state { color: #5c3b00; }
+/* The accessible name is what the tree shows: up to two lines, the rest
+   lives in the node card (the button reads it in full). */
+.node__name {
+  flex: 1 1 var(--space-12); min-width: 0; overflow-wrap: anywhere;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden;
+}
+.node__state {
+  font-family: var(--font-mono); color: var(--sap);
+  flex: 0 1 auto; max-width: 100%; margin-left: auto; overflow-wrap: anywhere;
+}
+.node__sel[aria-current="true"] .node__state { color: var(--k-ochre-deep); }
+/* The sap reaches the tree: the state that just changed flips to ink
+   and returns within a second, tying the opening flower to its node.
+   With reduced motion it does not flash: the state's text has already
+   changed, which is what matters. */
+@media (prefers-reduced-motion: no-preference) {
+  .node__state--changed { animation: sap var(--dur-4) var(--ease-out); border-radius: var(--radius-1); }
+}
+@keyframes sap {
+  from, 35% { background: var(--ink); color: var(--surface-canvas); }
+}
 
-/* Ficha del nodo: fija bajo el árbol, nunca dentro del scroll */
-.card { flex: none; border-top: 2px solid var(--line); margin-top: 0.6rem; padding-top: 0.5rem; }
+/* Node card: fixed under the tree, never inside the scroll */
+.card { flex: none; border-top: var(--stroke-fine) solid var(--line); margin-top: var(--space-1); padding-top: var(--space-1); }
 
-/* Pantallas bajas: compactar lo fijo para que la ficha SIEMPRE quepa,
-   con scroll de rescate en el propio panel como última red */
+/* Short screens: compact what is fixed so the card ALWAYS fits, with a
+   rescue scroll on the panel itself as the last net */
 @media (max-height: 40rem) {
   .panel__note { display: none; }
-  .panel__focus { margin-bottom: 0.35rem; }
   .panel { overflow: auto; }
-  .card__dl { font-size: 0.72rem; }
 }
-.card__title { font-size: 0.92rem; margin: 0 0 0.3rem; color: var(--ink); font-family: var(--font-display); }
+.card__title {
+  font-size: var(--type-body); line-height: var(--type-body-lh);
+  margin: 0; color: var(--ink); font-family: var(--font-display);
+}
 .card__dl {
   display: grid; grid-template-columns: minmax(0, auto) minmax(0, 1fr);
-  align-items: baseline; gap: 0.3rem 0.6rem;
-  font-size: 0.76rem; line-height: 1.35; margin: 0.3rem 0 0; color: var(--ink-soft);
+  align-items: baseline; gap: 0 var(--gap-xs);
+  font-size: var(--type-label); line-height: var(--type-label-lh);
+  margin: var(--space-1) 0 0; color: var(--ink-soft);
 }
-.card__dl dt { font-family: var(--font-mono); font-weight: 600; color: var(--ink); }
+.card__dl dt { font-family: var(--font-mono); font-weight: var(--fw-semibold); color: var(--ink); }
 .card__dl dd { margin: 0; overflow-wrap: anywhere; }
 
 /* ============================================================
-   ≥ 64rem: el dialog se disuelve y el aside queda sticky
+   ≥ 64rem: the dialog dissolves and the aside sticks
    ============================================================ */
 @media (min-width: 64rem) {
   .open-panel { display: none; }
@@ -119,9 +155,9 @@
   .panel-box::backdrop { display: none; }
   .panel__close { display: none; }
   .panel {
-    position: sticky; top: 1rem;
-    max-height: min(92vh, 54rem);
-    border-radius: 2.8rem 2.8rem 0 0;
-    padding: 1.4rem 1rem 1rem;
+    --panel-pad: var(--space-3);
+    --panel-radius: var(--space-6);
+    position: sticky; top: var(--space-2);
+    max-height: calc(100dvh - var(--space-4));
   }
 }

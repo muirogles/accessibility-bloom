@@ -1,0 +1,78 @@
+/* ============================================================
+   X-RAY — the Accessibility Tree laid over the work.
+   What is seen (the pixels) is veiled; what is understood (the
+   nodes) appears on top, each in the colour of its shape in the
+   grammar: blue for a button, yellow for a link, red for a checkbox,
+   violet for a radio, cyan for a text field, ink for a heading.
+   Landmarks and regions — the structure — get the trunk's bold
+   stroke; controls get a fine one. Both are solid: dashes break up
+   at a distance, and the work is shown in a room. Every chip sits INSIDE its own frame —
+   top corner, or bottom corner for figures and groups, which hold
+   controls near their top — so two chips never meet across the gap
+   between two elements.
+   The state, the living part of a node, is written in sap.
+   Every chip is aria-hidden and takes no pointer: the work stays
+   fully operable under it, and the real tree is the inspector's.
+   ============================================================ */
+
+/* --- The toggle, in the inspector: a toggle of the control system
+   (artwork.css), an empty ring at rest, filled while the x-ray is on --- */
+.panel__xray { display: flex; width: 100%; justify-content: flex-start; margin: 0 0 var(--space-1); --control-pad: var(--space-2); }
+.panel__xray-hint { font-weight: var(--fw-regular); font-size: var(--type-label); line-height: var(--type-label-lh); }
+
+/* --- The layer: one per host, over the host's whole box --- */
+.xray {
+  --xray-veil: 72%;
+  --xray-frame: var(--stroke-fine);
+  --xray-structure: var(--stroke-bold);
+  position: absolute; inset: 0; z-index: var(--z-float);
+  pointer-events: none;
+  background: color-mix(in oklab, var(--surface-canvas) var(--xray-veil), transparent);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .xray { animation: xray-in var(--motion-settle) var(--ease-out); }
+}
+@keyframes xray-in { from { opacity: 0; } }
+
+/* --- A node: a frame on the element's real box --- */
+.xray__node {
+  --node: var(--k-grey-dark);
+  position: absolute; left: var(--x); top: var(--y); width: var(--w); height: var(--h);
+  border: var(--xray-frame) solid var(--node);
+}
+.xray__node--frame { border-width: var(--xray-structure); }
+.xray__node--button { --node: var(--shape-circle); }
+.xray__node--link { --node: var(--line); }
+.xray__node--checkbox { --node: var(--shape-square); }
+.xray__node--radio { --node: var(--shape-rhombus); }
+.xray__node--textbox, .xray__node--slider, .xray__node--combobox { --node: var(--shape-bar); }
+.xray__node--heading { --node: var(--line); }
+
+/* --- Its chip: role «name» state, the inspector's own line --- */
+.xray__chip {
+  position: absolute; left: 0; top: 0;
+  width: max-content; max-width: min(var(--space-64), var(--room, 100%));
+  padding: 0 var(--space-1);
+  font-family: var(--font-mono); font-size: var(--type-label); line-height: var(--type-label-lh);
+  color: var(--ink); background: var(--surface-plate);
+  border: 0 solid var(--node); border-width: 0 var(--stroke-hair) var(--stroke-hair) 0;
+  overflow-wrap: anywhere;
+}
+/* figures and groups hold controls near their top: their chip goes to
+   the bottom corner, so it never lands on the chip of what they hold */
+.xray__node--figure > .xray__chip, .xray__node--group > .xray__chip {
+  top: auto; bottom: 0; border-width: var(--stroke-hair) var(--stroke-hair) 0 0;
+}
+.xray__role { font-weight: var(--fw-bold); color: var(--node); }
+.xray__node--link .xray__chip { background: var(--shape-triangle); }
+.xray__node--link .xray__role { color: var(--ink); }
+.xray__state { color: var(--sap); }
+/* Hidden from sight, present in the tree: no frame (there is nothing
+   to frame) and a note that only assistive technology reaches it */
+.xray__node--tree-only { border-color: transparent; }
+.xray__only { font-style: italic; color: var(--ink-soft); }
+
+@media (forced-colors: active) {
+  .xray__node { border-color: var(--forced-structure); }
+  .xray__chip { border-color: var(--forced-structure); }
+}
