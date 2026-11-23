@@ -22,77 +22,162 @@ patrones explicados, con su razón y su impacto en la experiencia.
 - Cuadrado rojo #d81e3f = <input type="checkbox"> · onda cuadrada
 - Rombo violeta #4b2e83 = <input type="radio"> · seno agudo
 - Barra cian #0f7f8c = campo de texto · onda de sierra
-- Arco de corteza ocre #8a5a00 = encabezados, tronco y ramas · silencio
+- Arco de rama, en tinta o en el color de su estación = encabezados h1–h3 · silencio
 - Gris marchito #8d857a = <div> sin semántica · mudo
 
 Las tres primeras correspondencias son de Kandinsky; el rombo, la barra y el
-arco son extensión de esta obra. El ocre no entra nunca en la flor: es el
-color de la savia.
+arco son extensión de esta obra. El tronco y las ramas se trazan en tinta,
+y la flor de la portada no tiene tallo de savia: la sostiene el propio
+tronco, que sube hasta su cáliz. El ocre #855600 no entra nunca en la flor: es la savia, la de los tallos de
+las flores, las raicillas del manifiesto y las notas de lectura.
 
-## La geometría del mandala (sin una sola rotación)
+## La portada: flor y enredadera
 
-Veinte círculos del mismo radio, 12,6: diez generadores con el centro en el
-radio 30,2 y paso de 36°, y diez más centrados justo en los cruces externos
-de los primeros (37,19), con lo que la malla se cierra sobre sí misma —la
-trama de la Flor de la Vida—. Todos se dibujan enteros y a la vista. Cada
-pétalo es la intersección real de dos generadores vecinos, recortada con las
-dos máscaras circulares de sus centros. Dos vecinos se cortan en 20,26
-(cruce interno: es el radio del aro del corazón, con una cuenta enhebrada en
-cada cruce) y en 37,19 (cruce externo: el centro de la segunda familia). Las
-cinco formas de la gramática van en el hueco vacío que queda sobre la línea
-del centro de cada generador, entre el aro del corazón y la punta interior del
-pétalo menor, dos veces cada una y con simetría exacta de 72°, y cada pétalo lleva el color de la
-forma que hay en el centro del círculo que lo engendra. Hay dos órdenes de pétalos: los grandes, del solape de dos generadores, y los
-menores, del solape de dos círculos de la segunda familia —la lente que queda
-entre dos pétalos grandes, con una punta en el centro del generador donde está
-la forma y otra en 40,54—, rellenos del mismo color rebajado con lino. La
-envolvente de todo es 49,79, trazada con una línea fina de tinta, y en ella se enhebran veinte
-piezas menudas cada 18° —rombos y triángulos alternos en los cinco colores—:
-la orla que hace guirnalda. El latido son dos respiraciones, una por familia de círculos, con el mismo
-periodo y un tercio de ciclo de diferencia, y cada pétalo sigue a los círculos
-que lo engendran: por eso un orden de pétalos parece salir del otro. Mueve los
-centros, así que son los solapes —los pétalos— los que abren y cierran; encima corren un brillo que
-gira pétalo a pétalo y un pulso escalonado de la orla, que no tocan la
-geometría y se paran con el mismo botón. Todas las formas son geometría real:
-el rombo es un rombo, no un cuadrado girado.
+La portada se lee con Kandinsky (Punto y línea sobre el plano) y no lleva
+texto explicativo. El punto es el corazón con el título. Los planos son
+las cinco voces, cada una de un color limpio y con la tensión de su
+forma: amarillo del enlace, agudo (60°), arriba; rojo de la casilla y
+violeta del radio, en ángulo recto (90°), a los lados; azul del botón y
+cian del campo, obtusos (150°), abajo: los ángulos de Kandinsky; las direcciones (pentágono) y las longitudes son áureas. Cada pareja comparte ángulo
+(simetría) y las longitudes bajan por la escala áurea (φ², √5, 2). Delante,
+una flor de la vida de diez circunferencias entrelazadas: sus cruces son
+pétalos blancos sobre cada voz y verdes en cada hueco. Cuatro enredaderas,
+arcos tangentes sin salto de trazo, llevan a cuatro flores menores: los
+capítulos El árbol, El nodo, El pulso y El cultivo. Cada capítulo es un
+botón desplegable (aria-expanded) dentro de su encabezado, con el
+capullo de enlace que avisa de que dentro hay enlaces; al abrirlo, sus
+tres estaciones brotan en columna, cada una de su pétalo por un zarcillo y con la misma
+flor de enlace que en las láminas (se abre al pasar o enfocar), y cada una
+enciende el pétalo que apunta hacia ella. Las raíces ya no se enlazan desde
+la portada: el tallo lleva a ellas y un tercer enlace de salto las alcanza. El tallo baja y se convierte en el tronco de la obra.
+La imagen tiene nombre y una cartela enlazada con aria-describedby.
+Sonido y Animaciones nacen apagados (aria-pressed); con Animaciones la
+flor se abre una vez y, con sonido, cada voz suena con su timbre. Con
+prefers-reduced-motion no se mueve nada.
 
-## Recorrido (catorce estaciones)
+## Presentación en sala
 
-1. La estructura y sus lectores — #structure
-2. La sinestesia de la obra — #synesthesia
-3. Lo que leen las máquinas — #machines
-4. El rol: qué es esto — #role
-5. El nombre: cómo se llama — #name
-6. El estado: cómo está ahora — #state
-7. Relaciones y agrupación — #relations
-8. El foco: por dónde va la atención — #focus
-9. El error: cómo se cuenta lo que falta — #errors
-10. El color: nunca el único canal — #color
-11. Las flores marchitas — #wilted
-12. Patrones de diseño accesible — #patterns
-13. El suelo: lo que aún no es rama — #ground
-14. Las raíces: manifiesto WCAG 2.2 AA — pie de página
+En pantallas grandes (90 × 56 rem o más) cada estación ocupa exactamente una
+pantalla y el desplazamiento se asienta al principio de cada una, sin
+atrapar; con zoom o en pantallas pequeñas, la obra vuelve a su flujo normal.
+Cada escena es una lámina con una jerarquía fija: numeral de la estación,
+título, entradilla, cuerpo y detalle. El tronco la parte en dos: la
+afirmación en una orilla y la evidencia en la otra. Tallo, tronco y raíz son
+un solo trazo que engorda hacia la tierra, y cada ramillete cuelga
+exactamente del nudo en que acaba su arco. Todo el diseño sale de una
+retícula de 8 px y de tres capas de variables (primitivas, semánticas y de
+componente).
 
-## Qué enseña
+## Quita un canal (estación 2)
 
-- La diferencia entre árbol de renderizado y Árbol de Accesibilidad.
-- Rol, nombre y estado: de dónde salen y en qué orden se calculan.
-- Primera regla de ARIA: no usarlo si una etiqueta nativa ya da el rol.
-- Relaciones y agrupación: fieldset/legend, listas, landmarks, encabezados.
-- Orden de foco (el del DOM), foco visible y por qué el tabindex positivo daña.
-- Mensajes de error: aria-describedby, aria-invalid y regiones aria-live.
-- Contraste medido y color como canal nunca único.
-- Antipatrones como espécimen, con el trozo de árbol que generan al lado:
-  el div-botón, el estado solo por color, el revelado solo al hover, el
-  sonido automático, el foco secuestrado, la prisa artificial.
-- Propuestas emergentes: AOM (Accessibility Object Model) y HTML in Canvas.
+Kandinsky contaba que veía sonidos y oía colores; la accesibilidad es esa sinestesia
+construida a propósito: un significado, varios canales, ninguno
+imprescindible. Un botón Do4 y cinco interruptores aria-pressed que apagan su
+color (1.4.1), su forma (1.3.3), su sonido (1.1.1, se escribe), su texto
+visible (4.1.2) y sus píxeles (1.3.1). El botón sigue funcionando siempre.
+Con todo apagado queda lo que lee una máquina —lector de pantalla, voz, IA—:
+{ "role": "button", "name": "Do4", "pressed": false }, calculado en vivo con
+las mismas funciones que el inspector.
+
+## La escalera del nombre
+
+En la estación 5, el tallo es una escalera de cinco peldaños, el orden en que
+se calcula el nombre accesible: aria-labelledby, aria-label, <label> o
+<figcaption>, su texto y title. Gana el primer peldaño que da un nombre: cada
+enlace cuelga del peldaño que lo nombra, más grueso y en savia, con el nombre
+que da escrito al lado. «Al suelo» gana en el 2 (aria-label); «Ir al
+inspector» baja hasta el 4 (su texto). El inspector sigue el mismo orden.
+
+## El acorde
+
+En la estación del rol, los tres botones (Do, Mi, Sol) cuelgan de hilos cuya
+longitud es inversa a su frecuencia: sus alturas dibujan el acorde. La cartela
+de cada flor es la ficha de su nodo y destella al cambiar el estado.
+
+## La partitura
+
+En la estación 2, cada voz de la gramática está en un pentagrama (clave de sol,
+temperamento igual, La4 = 440 Hz, Do4 = Do central), en la nota en que suena:
+button en Do4 (261,6 Hz), checkbox en Re4 (293,7), campo de texto en Mi4
+(329,6), radio en Re5 (587,3: la octava exacta de la casilla, el doble de
+frecuencia) y enlace en Fa5 (698,5): las doce estaciones son los doce
+semitonos de Do5 a Si5. El encabezado es un silencio y el div queda
+fuera del pentagrama, igual que queda fuera del árbol.
+
+## Radiografía
+
+El inspector tiene un botón «Radiografía» (aria-pressed) que superpone el
+Árbol de Accesibilidad sobre la obra: cada elemento muestra rol, nombre y
+estado en el color de su forma, calculados con las mismas funciones que el
+inspector; lo oculto a la vista pero presente en el árbol se marca «solo en el
+árbol».
+
+## Recorrido (doce estaciones, cuatro capítulos de tres)
+
+I · El árbol
+
+- [1 · La estructura y sus lectores](index.html#structure): dos árboles del mismo HTML; un nodo y cuatro lecturas (lector, braille, voz, IA)
+- [2 · La sinestesia de la obra](index.html#synesthesia): forma, color, timbre, texto y nodo dicen lo mismo; «Quita un canal»
+- [3 · La ruta: regiones, grupos y listas](index.html#route): landmarks y encabezados leídos en vivo
+
+II · El nodo
+
+- [4 · Rol y acciones](index.html#role): el rol decide el verbo: press, jump, check, activate
+- [5 · El nombre](index.html#name): cómo se calcula el nombre accesible
+- [6 · Estado y valor](index.html#state): estados nativos; invalid también es un estado
+
+III · El pulso
+
+- [7 · El foco](index.html#focus): el orden del foco sigue el HTML, no el dibujo
+- [8 · Lo que cambia](index.html#live): regiones vivas: avisar sin mover el foco
+- [9 · Capas](index.html#layers): dialog modal e inert
+
+IV · El cultivo
+
+- [10 · Patrón y antipatrón](index.html#patterns): lo que vive y lo que se marchita
+- [11 · Percepción](index.html#color): contraste medido y daltonismo simulado
+- [12 · Brotes](index.html#sprouts): lo que aún no es rama: referencias ARIA con elementos, HTML en canvas, nodos virtuales
+- [Las raíces: manifiesto WCAG 2.2 AA](index.html#roots): el pie de la obra; cada promesa enlaza a la estación que la cumple.
+
+Cada enlace de la portada suena en su semitono: de Do5 a Si5, una escala
+cromática completa.
+
+## Para agentes
+
+- [Habilidad para agentes](agent-skill.md): cómo leer la obra por su árbol y qué herramientas WebMCP ofrece.
+- [Manifiesto ARD](ard.json): el descubrimiento de recursos para agentes (Agentic Resource Discovery); también en [ai-catalog.json](ai-catalog.json).
+- Herramientas WebMCP, si el navegador las expone: list_stations, read_station_tree, go_to_station, set_vision y el formulario water_garden. Todo lo que hace un agente se anuncia en la región viva de la obra.
+
+## Qué enseña (en el orden del recorrido)
+
+- La estructura: del mismo HTML salen el árbol de renderizado y el Árbol de
+  Accesibilidad; de este leen el lector de pantalla, el braille, la voz y la IA.
+- La sinestesia: forma, color, timbre, texto y nodo dicen lo mismo; ninguno
+  es imprescindible («Quita un canal»).
+- La ruta: landmarks, niveles de encabezado, grupos (fieldset/legend) y listas.
+- Rol y acciones: la primera regla de ARIA y el verbo que el árbol ofrece
+  para cada rol (press, jump, check, activate).
+- El nombre: cómo se calcula, peldaño a peldaño.
+- Estado y valor: estados nativos primero; invalid también es un estado.
+- El foco: el orden lo pone el HTML; foco siempre visible; nada de tabindex
+  positivo.
+- Lo que cambia: regiones vivas (status, alert); el error atado al campo.
+- Capas: dialog modal e inert.
+- Patrón y antipatrón: el div-botón y el falso control, con el trozo de
+  árbol que generan; las decisiones de la obra y lo que no usa.
+- Percepción: contraste medido, daltonismo simulado (protanopia,
+  deuteranopia, tritanopia) y color como canal nunca único.
+- Brotes: referencias ARIA con elementos, HTML en canvas y nodos virtuales
+  del AOM.
+- Cómo lee y actúa un agente de IA: el mismo árbol, llms.txt, el manifiesto
+  ARD y herramientas WebMCP.
 
 ## Contraste de la paleta contra el lino #f3ead6
 
-- Tinta #17150f — 15,3:1 — texto, líneas, tronco
+- Tinta #17150f — 15,3:1 — texto, líneas, tronco y ramas
 - Violeta #4b2e83 — 8,7:1 — forma y texto
 - Azul #0047ab — 7,1:1 — forma, enlaces y texto
-- Ocre #8a5a00 — 5,0:1 — ramas y notas al margen
+- Ocre #855600 — 5,3:1 — savia: tallos, raicillas y notas de lectura
 - Rojo #d81e3f — 4,2:1 — forma y texto grande (para texto pequeño, #b3132f, 5,8:1)
 - Cian #0f7f8c — 4,0:1 — solo grafismo
 - Amarillo #f2b705 — 1,5:1 — relleno con contorno de tinta; jamás texto
@@ -116,13 +201,15 @@ La flor se abre cuando es verdad que está abierta.
 
 - JSON-LD en la cabecera: VisualArtwork + LearningResource (teaches,
   accessMode, accessibilityFeature, accessibilitySummary, timeRequired) y
-  BreadcrumbList con las trece estaciones del recorrido.
+  BreadcrumbList con las doce estaciones del recorrido.
 - El inspector muestra los niveles reales del árbol y también los nodos de
   texto (StaticText) de los nodos sin nombre accesible, que es lo que lee la
   tecnología de apoyo.
-- El Árbol de Accesibilidad se puede descargar en JSON desde la sección
-  «Lo que leen las máquinas»: rol, nombre, origen del nombre, estado e
+- El Árbol de Accesibilidad se puede descargar en JSON desde «Leer de
+  cerca», en la estación 1: rol, nombre, origen del nombre, estado e
   identificador de cada nodo, con la misma poda que aplica el navegador.
+- La ficha del inspector muestra también la acción que el árbol ofrece
+  para cada nodo (press, jump, check, uncheck, activate, open).
 - Región aria-live="polite" con el relato de cada cambio de estado.
 
 ## Garantías de accesibilidad
@@ -130,15 +217,24 @@ La flor se abre cuando es verdad que está abierta.
 WCAG 2.2 AA. Operable al 100 % con teclado, sin trampas y con foco siempre
 visible. Objetivos de 44x44 px como mínimo. Reflow hasta 400 % de zoom y
 320 px de ancho, sin scroll horizontal. Respeta prefers-reduced-motion,
-prefers-contrast y forced-colors. El sonido solo suena tras una interacción
-y es silenciable de forma persistente. El latido se pausa en el fotograma
-exacto, sin reiniciarse.
+prefers-contrast y forced-colors: con colores forzados, la gramática
+conserva su color y toda la estructura —tallo, tronco, nudos, ramitas,
+brotes, suelo y raíz— se dibuja con el color de texto del sistema, para que
+el árbol no pierda el tronco. El sonido y las animaciones nacen apagados:
+solo empiezan si la persona los activa, y la elección de cada uno se
+recuerda. La flor de la portada se abre una sola vez y no se mueve con
+movimiento reducido. El foco es un anillo continuo en toda la obra. Las casillas
+«Alto contraste» y «Subtítulos» son reales: la primera aplica las reglas de
+prefers-contrast y nace marcada si el sistema lo pide; la segunda escribe en
+pantalla cada sonido que suena. En la estación del color, el botón «Mirar en
+grises» quita el color a toda la obra para comprobar que la forma basta.
 
 ## El código
 
 Clases, atributos data-*, identificadores, variables CSS y nombres de archivo
-están en inglés (.mandala, .petal, .branch__arc, --axis-x, data-heartbeat,
-#structure, tree-ax.js). Los comentarios y el contenido visible, en español.
+están en inglés (.rose, .lens, .branch__arc, --axis-x, data-shape,
+#structure, tree-ax.js), y los comentarios del código también. El contenido
+visible, en español.
 
 ## Uso
 

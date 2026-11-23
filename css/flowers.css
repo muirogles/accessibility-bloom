@@ -1,36 +1,53 @@
 /* ============================================================
-   FLORES — capullo y floración.
-   Cerrada, cada flor es UNA forma simple (el capullo) con su
-   color: círculo azul = <button>, triángulo amarillo = <a>,
-   cuadrado rojo = <input type="checkbox">, rombo violeta =
-   <input type="radio">. Al interactuar se abre el mandala:
-   los pétalos —de la MISMA forma— brotan en corona colocada
-   con trigonometría CSS. Kandinsky fijó las tres primeras
-   correspondencias; el rombo-violeta es extensión propia.
+   FLOWERS — bud and bloom.
+   Closed, each flower is ONE simple shape (the bud) in its colour:
+   blue circle = <button>, yellow triangle = <a>, red square =
+   <input type="checkbox">, violet rhombus = <input type="radio">.
+   On interaction the mandala opens: petals of the SAME shape spring
+   out in a crown placed with CSS trigonometry. Kandinsky fixed the
+   first three correspondences; the violet rhombus is our extension.
    ============================================================ */
 @property --r { syntax: '<percentage>'; inherits: true; initial-value: 0%; }
 @property --s { syntax: '<number>'; inherits: false; initial-value: 0.2; }
 @property --spin { syntax: '<angle>'; inherits: true; initial-value: -20deg; }
 
+/* --- Component tokens: every value of the flower lives here --- */
+.flower {
+  --flower-ring: var(--stroke-fine);         /* the mandala's ring */
+  --flower-outline: var(--stroke-fine);      /* ink outline of bud and petals */
+  --flower-corolla: var(--stroke-bold);
+  --flower-wave: var(--stroke-fine);
+  --flower-wash: 16%;                        /* the filled ring of a true state */
+  --flower-echo: 58%;                        /* second-order petals: the mandala's recipe */
+  --flower-open-r: 42%;                      /* petal orbit when open */
+  --flower-bud-closed: 27%;                  /* bud inset at rest */
+  --flower-bud-open: 24%;                    /* bud inset when open */
+  --flower-bud-invite: 19%;                  /* bud inset on hover/focus: it grows */
+  --flower-grow: 1.05;                       /* links grow with attention, never shrink */
+  --flower-brighten: 1.12;
+  --flower-stagger: calc(var(--dur-1) / 2);  /* 60 ms between petals */
+  --flower-name-gap: var(--space-1);
+}
+
 .flower {
   position: relative; display: block; width: 100%; height: 100%;
   min-width: var(--touch); min-height: var(--touch);
-  background: transparent; border: 0; padding: 0; cursor: pointer;
-  border-radius: 50%; z-index: 1;
+  background: transparent; border: 0; padding: 0; cursor: pointer; font: inherit;
+  border-radius: var(--radius-round); z-index: var(--z-base);
   --color: var(--shape-circle);
 }
-/* El anillo del mandala: invisible mientras la flor es capullo */
+/* The mandala's ring: invisible while the flower is a bud */
 .flower::before {
   content: ""; position: absolute; inset: 0;
-  border: 2.5px solid var(--line); border-radius: 50%;
-  opacity: 0; transition: opacity 0.4s ease;
+  border: var(--flower-ring) solid var(--line); border-radius: var(--radius-round);
+  opacity: 0; transition: opacity var(--motion-bloom) ease;
 }
 .flower__petals {
   position: absolute; inset: 0; display: block;
   --r: 0%; --spin: -20deg;
-  transition: --r 0.55s ease, --spin 0.6s ease;
+  transition: --r var(--motion-bloom) ease, --spin var(--motion-bloom) ease;
 }
-/* Pétalos: ocultos en capullo, brotan al florecer */
+/* Petals: hidden in the bud, they spring out on blooming */
 .flower__petal {
   position: absolute; opacity: 0;
   width: var(--pw, 17%); height: var(--ph, 17%);
@@ -38,40 +55,104 @@
   top: calc(50% + sin(var(--i) * var(--step) + var(--spin)) * var(--r) - var(--ph, 17%) / 2);
   background: var(--color);
   transform: rotate(var(--rot, 0deg)) scale(var(--s));
-  transition: opacity 0.35s ease calc(var(--i) * 45ms),
-              --s 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) calc(var(--i) * 45ms);
+  transition: opacity var(--motion-settle) ease calc(var(--i) * var(--flower-stagger)),
+              --s var(--motion-bloom) var(--ease-out) calc(var(--i) * var(--flower-stagger));
 }
-/* La corola solo existe abierta */
+/* Each petal carries its index as a modifier, and the crown its step
+   by its number of petals: explicit, so adding any other element to the
+   flower never moves a petal */
+.flower__petal--0 { --i: 0; }
+.flower__petal--1 { --i: 1; }
+.flower__petal--2 { --i: 2; }
+.flower__petal--3 { --i: 3; }
+.flower__petal--4 { --i: 4; }
+.flower__petal--5 { --i: 5; }
+.flower__petal--6 { --i: 6; }
+.flower__petal--7 { --i: 7; }
+.flower__petal--8 { --i: 8; }
+.flower__petals--4 { --step: 90deg; }
+.flower__petals--5 { --step: 72deg; }
+.flower__petals--6 { --step: 60deg; }
+.flower__petals--8 { --step: 45deg; }
+.flower__petals--9 { --step: 40deg; }
+
+/* The corolla only exists when open */
 .flower__corolla {
-  position: absolute; inset: 26%; border-radius: 50%;
-  border: 0.2rem solid var(--color);
+  position: absolute; inset: 26%; border-radius: var(--radius-round);
+  border: var(--flower-corolla) solid var(--color);
   opacity: 0; transform: scale(0.7);
-  transition: opacity 0.4s ease, transform 0.4s ease;
+  transition: opacity var(--motion-bloom) ease, transform var(--motion-bloom) ease;
 }
-/* El capullo: la forma simple. Cerrado ocupa el centro; abierto se recoge */
+/* The bud: the simple shape. Closed it fills the centre; open it gathers in */
 .flower__bud {
-  position: absolute; inset: 27%; border-radius: 50%;
-  background: var(--color); box-shadow: 0 0 0 2.5px var(--line);
-  transition: inset 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: absolute; inset: var(--flower-bud-closed); border-radius: var(--radius-round);
+  background: var(--color); box-shadow: 0 0 0 var(--flower-outline) var(--line);
+  transition: inset var(--motion-bloom) var(--ease-out);
 }
 
-/* --- Estado abierto (florecida) --- */
-.flower--open .flower__petals { --r: 42%; --spin: 0deg; }
+/* --- Open state (in bloom) --- */
+.flower--open .flower__petals { --r: var(--flower-open-r); --spin: 0deg; }
 .flower--open .flower__petal { opacity: 1; --s: 1; }
 .flower--open .flower__corolla { opacity: 1; transform: none; }
-.flower--open .flower__bud { inset: 24%; }
+.flower--open .flower__bud { inset: var(--flower-bud-open); }
 .flower--open::before,
 .flower--circle[aria-pressed="true"]::before,
 .flower--square:has(:checked)::before,
 .flower--rhombus:has(:checked)::before {
   opacity: 1; border-color: var(--color);
-  background: color-mix(in oklab, var(--color) 14%, transparent);
+  background: color-mix(in oklab, var(--color) var(--flower-wash), transparent);
 }
 
-/* Conmutadores nativos: el estado real manda sobre la clase */
+/* --------------------------------------------------------------
+   THE BLOOM SPEAKS THE MANDALA'S LANGUAGE
+   · Two orders of petals, as on the cover: odd ones in full colour,
+     even ones in the SAME colour softened with linen (the mandala's
+     second-order recipe, 58 %). The open flower echoes the big one.
+   · An ink outline on every petal, like the bud: the shape reads by
+     its silhouette even when the colour cannot be told apart.
+   · The wave: the instant a state becomes true, a ring in the
+     flower's shape expands and fades, once. It marks the MOMENT of
+     the change; the state itself is still told by petals, filled
+     ring, cartela and inspector. With reduced motion there is no
+     wave and the state looks the same.
+   -------------------------------------------------------------- */
+:is(.flower__petal--1, .flower__petal--3, .flower__petal--5, .flower__petal--7) { background: color-mix(in oklab, var(--color) var(--flower-echo), var(--surface-canvas)); }
+.flower--circle .flower__petal, .flower--square .flower__petal { box-shadow: 0 0 0 var(--flower-outline) var(--line); }
+/* Triangle and rhombus are cut with clip-path, which also clips any
+   drop-shadow of the same element: their ink outline is drawn by the
+   petals' container around everything cut. Four unblurred shadows, one
+   per side: a crisp outline, the same as circle and square petals. */
+:is(.flower--triangle, .flower--rhombus) .flower__petals {
+  filter: drop-shadow(var(--flower-outline) 0 0 var(--line)) drop-shadow(calc(-1 * var(--flower-outline)) 0 0 var(--line))
+          drop-shadow(0 var(--flower-outline) 0 var(--line)) drop-shadow(0 calc(-1 * var(--flower-outline)) 0 var(--line));
+}
+.flower::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  border: var(--flower-wave) solid var(--color); border-radius: var(--radius-round); opacity: 0;
+}
+.flower--square::after { border-radius: 0; }
+.flower--rhombus::after {
+  border: 0; background: color-mix(in oklab, var(--color) var(--wash-24), transparent);
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .flower--circle[aria-pressed="true"]::after,
+  .flower--square:has(:checked)::after,
+  .flower--rhombus:has(:checked)::after { animation: bloom-wave var(--dur-4) var(--ease-out); }
+}
+@keyframes bloom-wave {
+  from { opacity: 0.85; scale: 0.7; }
+  to { opacity: 0; scale: 1.25; }
+}
+/* Wilted flowers get neither echo nor wave: not even that reaches them */
+.flower--wilted :is(.flower__petal--1, .flower__petal--3, .flower__petal--5, .flower__petal--7) { background: var(--k-grey); }
+.flower--wilted .flower__petal { box-shadow: none; }
+.flower--wilted::after { content: none; }
+
+/* Native toggles: the real state rules over the class */
 .flower--circle[aria-pressed="true"] .flower__petals,
 .flower--square:has(:checked) .flower__petals,
-.flower--rhombus:has(:checked) .flower__petals { --r: 42%; --spin: 0deg; }
+.flower--rhombus:has(:checked) .flower__petals { --r: var(--flower-open-r); --spin: 0deg; }
 .flower--circle[aria-pressed="true"] .flower__petal,
 .flower--square:has(:checked) .flower__petal,
 .flower--rhombus:has(:checked) .flower__petal { opacity: 1; --s: 1; }
@@ -80,69 +161,73 @@
 .flower--rhombus:has(:checked) .flower__corolla { opacity: 1; transform: none; }
 .flower--circle[aria-pressed="true"] .flower__bud,
 .flower--square:has(:checked) .flower__bud,
-.flower--rhombus:has(:checked) .flower__bud { inset: 24%; }
+.flower--rhombus:has(:checked) .flower__bud { inset: var(--flower-bud-open); }
 /* --------------------------------------------------------------
-   UN SOLO CONTRATO DE ESTADOS PARA TODA LA OBRA
+   ONE STATE CONTRACT FOR THE WHOLE WORK
 
-   La regla que lo ordena todo: LA FLOR SE ABRE CUANDO ES VERDAD QUE
-   ESTÁ ABIERTA. Nada de floraciones decorativas.
+   The rule behind everything: A FLOWER OPENS WHEN IT IS TRUE THAT IT
+   IS OPEN. No decorative blooming.
 
-   · reposo        capullo cerrado, a su tamaño pleno
-   · puntero       el capullo CRECE y se aclara. No abre: invita.
-   · foco          lo mismo que el puntero + halo de trazo discontinuo,
-                   el mismo en toda la obra
-   · estado cierto FLORACIÓN PLENA y el aro se rellena del color de la
-                   forma: aria-pressed="true", :checked, .flower--open
-   · desactivado   trazo discontinuo y NINGÚN cambio al puntero: si no
-                   se puede, no se insinúa
+   · rest        closed bud at full size
+   · pointer     the bud GROWS and brightens. It does not open: it invites.
+   · focus       same as pointer + the solid focus ring, the same
+                 across the work
+   · true state  FULL BLOOM and the ring fills with the shape's colour:
+                 aria-pressed="true", :checked, .flower--open
+   · disabled    a faded bud and NO change on pointer: if it cannot
+                 be done, it is not hinted
 
-   La excepción razonada es el enlace: un <a> no guarda estado, así que
-   nunca tendría un momento «verdadero» en el que abrirse. Su verdad es
-   la atención, y por eso florece PLENO al puntero y al foco. Y como sí
-   hay un estado real —en qué sección estás—, la flor de la sección
-   actual queda florecida (aria-current): al pulsar y navegar, la
-   floración se ve al llegar.
+   The reasoned exception is the link: an <a> keeps no state, so it
+   would never have a "true" moment to open. Its truth is attention,
+   so it blooms FULLY on pointer and focus. And since there is one real
+   state — which section you are in — the current section's flower
+   stays in bloom (aria-current): click, navigate, and the bloom is
+   there when you arrive.
    -------------------------------------------------------------- */
-/* Puntero y foco sobre un control con estado: el capullo crece y se
-   aclara. Ni un pétalo: todavía no ha pasado nada. */
+/* Pointer and focus on a stateful control: the bud grows and
+   brightens. Not one petal: nothing has happened yet. */
 .flower:not(.flower--disabled, .flower--wilted):hover .flower__bud,
 .flower:not(.flower--disabled, .flower--wilted):has(:focus-visible) .flower__bud,
-button.flower:not(.flower--disabled):focus-visible .flower__bud { inset: 19%; filter: brightness(1.12); }
+button.flower:not(.flower--disabled):focus-visible .flower__bud {
+  inset: var(--flower-bud-invite); filter: brightness(var(--flower-brighten));
+}
 .flower:not(.flower--disabled, .flower--wilted):hover::before,
 .flower:not(.flower--disabled, .flower--wilted):has(:focus-visible)::before { opacity: 0.4; }
 
-/* El enlace florece pleno con la atención: puntero, foco o gesto */
+/* A link blooms fully with attention: pointer, focus or gesture */
 a.flower:hover .flower__petals, a.flower:focus-visible .flower__petals,
-a.flower.blooming .flower__petals { --r: 42%; --spin: 0deg; }
+a.flower.blooming .flower__petals { --r: var(--flower-open-r); --spin: 0deg; }
 a.flower:hover .flower__petal, a.flower:focus-visible .flower__petal,
 a.flower.blooming .flower__petal { opacity: 1; --s: 1; }
 a.flower:hover .flower__corolla, a.flower:focus-visible .flower__corolla,
 a.flower.blooming .flower__corolla { opacity: 1; transform: none; }
 a.flower:hover::before, a.flower:focus-visible::before, a.flower.blooming::before {
   opacity: 1; border-color: var(--color);
-  background: color-mix(in oklab, var(--color) 14%, transparent);
+  background: color-mix(in oklab, var(--color) var(--flower-wash), transparent);
 }
-/* Y crece: nunca se encoge al recibir atención */
-a.flower:hover, a.flower:focus-visible { scale: 1.05; }
-.flower { transition: scale 0.25s ease; }
+/* And it grows: it never shrinks when given attention */
+a.flower:hover, a.flower:focus-visible { scale: var(--flower-grow); }
+.flower { transition: scale var(--motion-settle) ease; }
 
-/* Foco visible aunque el control real esté oculto dentro del label:
-   el mismo trazo discontinuo en toda la obra */
+/* Visible focus even when the real control hides inside its label:
+   the same solid ring across the work */
 .flower:has(:focus-visible),
-a.flower:focus-visible, button.flower:focus-visible { outline: 3px dashed var(--focus); outline-offset: 5px; }
+a.flower:focus-visible, button.flower:focus-visible {
+  outline: var(--focus-width) solid var(--focus); outline-offset: var(--focus-offset);
+}
 
-/* Deshabilitada: nada de cursor de mano */
+/* Disabled: no hand cursor */
 .flower.flower--disabled, .flower.flower--disabled .flower__name,
 .flower.flower--disabled .flower__control, .flower.flower--disabled .flower__petals { cursor: not-allowed; }
 
-/* --- Círculo azul = <button> --- */
+/* --- Blue circle = <button> --- */
 .flower--circle { --color: var(--shape-circle); }
-.flower--circle .flower__petal { border-radius: 50%; }
+.flower--circle .flower__petal { border-radius: var(--radius-round); }
 
-/* --- Triángulo amarillo = <a> --- */
+/* --- Yellow triangle = <a> --- */
 .flower--triangle { --color: var(--shape-triangle); }
-/* Todos los triángulos van rectos: la forma no se gira nunca, solo se
-   coloca (la posición es trigonometría; la forma, geometría) */
+/* Every triangle stays upright: the shape is never rotated, only
+   placed (position is trigonometry; form is geometry) */
 .flower--triangle .flower__petal {
   --pw: 18%; --ph: 21%;
   clip-path: polygon(50% 0, 100% 100%, 0 100%);
@@ -150,72 +235,102 @@ a.flower:focus-visible, button.flower:focus-visible { outline: 3px dashed var(--
 }
 .flower--triangle .flower__bud {
   border-radius: 0; clip-path: polygon(50% 0, 100% 100%, 0 100%);
-  box-shadow: none; filter: drop-shadow(0 0 1.5px var(--line)) drop-shadow(0 0 1.5px var(--line));
+  box-shadow: none;
 }
-.flower--triangle .flower__corolla { border: 0; clip-path: polygon(50% 0, 100% 100%, 0 100%); background: transparent; box-shadow: inset 0 0 0 0.2rem var(--color); border-radius: 0; }
+.flower--triangle .flower__corolla {
+  border: 0; clip-path: polygon(50% 0, 100% 100%, 0 100%); background: transparent;
+  box-shadow: inset 0 0 0 var(--flower-corolla) var(--color); border-radius: 0;
+}
 
-/* --- Cuadrado rojo = <input type="checkbox"> --- */
+/* --- Red square = <input type="checkbox"> --- */
 .flower--square { --color: var(--shape-square); }
 .flower--square .flower__petal { --rot: calc(var(--i) * var(--step) + var(--spin)); }
 .flower--square .flower__bud, .flower--square .flower__corolla { border-radius: 0; }
 
-/* --- Rombo violeta = <input type="radio"> --- */
-.flower--rhombus { --color: var(--shape-rhombus); width: clamp(4rem, 7vw, 5.4rem); height: clamp(4rem, 7vw, 5.4rem); margin-bottom: 1.6rem; }
-/* Rombo de verdad, no un cuadrado girado */
+/* --- Violet rhombus = <input type="radio"> --- */
+.flower--rhombus {
+  --color: var(--shape-rhombus);
+  --flower-rhombus: clamp(var(--space-8), 7vw, var(--space-10));
+  width: var(--flower-rhombus); height: var(--flower-rhombus);
+  /* room for its name below: gap + one body line */
+  margin-bottom: calc(var(--flower-name-gap) + var(--type-body-lh));
+}
+/* A real rhombus, not a rotated square */
 .flower--rhombus .flower__petal {
   --pw: 22%; --ph: 22%; --rot: 0deg;
   clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
 }
 .flower--rhombus .flower__bud {
-  border-radius: 0; inset: 24%;
+  border-radius: 0; inset: var(--flower-bud-open);
   clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
   box-shadow: none;
-  filter: drop-shadow(0 0 1.6px var(--line)) drop-shadow(0 0 1.6px var(--line));
 }
 .flower--rhombus .flower__corolla {
   border: 0; border-radius: 0; inset: 16%; transform: none;
   clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
-  background: color-mix(in oklab, var(--color) 22%, transparent);
+  /* Opaque, mixed with linen: a translucent corolla would show the
+     outline shadows underneath and look dirty. This way it is a crisp
+     rhombus with its own ink stroke, the bud's light echo. */
+  background: color-mix(in oklab, var(--color) var(--wash-24), var(--surface-canvas));
 }
 .flower--rhombus:has(:focus-visible) .flower__bud,
 .flower--rhombus:hover .flower__bud { inset: 17%; }
 
-/* Nombre visible bajo cada flor (label real del control) */
+/* Visible name under each flower (the control's real label) */
 .flower__name {
-  position: absolute; top: calc(100% + 0.4rem); left: 50%;
+  position: absolute; top: calc(100% + var(--flower-name-gap)); left: 50%;
   transform: translateX(-50%);
-  font-family: var(--font-display); font-weight: 600; font-size: 0.78rem;
-  color: var(--ink); background: var(--k-linen);
-  padding: 0 0.3rem; white-space: nowrap; border-radius: 0.2rem;
+  font-family: var(--font-display); font-weight: var(--fw-semibold);
+  font-size: var(--type-body); line-height: var(--type-body-lh);
+  color: var(--ink); background: var(--surface-canvas);
+  padding: 0 var(--space-1); white-space: nowrap; border-radius: var(--radius-1);
 }
-a.flower .flower__name { color: var(--link); text-decoration: underline; text-underline-offset: 0.16em; }
+a.flower .flower__name { color: var(--link); text-decoration: underline; text-underline-offset: var(--underline-offset); }
 
-/* --- Flores marchitas: lo que no florece (solo pintura, aria-hidden) --- */
+/* --- Wilted flowers: what never blooms (paint only, aria-hidden) --- */
 .flower--wilted { --color: var(--k-grey); cursor: not-allowed; }
-.flower--wilted::before { opacity: 0.5; border-style: dashed; }
+/* its ring does not close: one open arc, the wilted line of the work
+   (never dashed: dashes break up at a distance) */
+.flower--wilted::before {
+  opacity: 1; border-color: var(--k-grey-dark);
+  mask: conic-gradient(from 20deg, transparent 0 40deg, #000 0);
+}
 .flower--wilted .flower__bud {
-  background: var(--k-grey); box-shadow: 0 0 0 2px var(--k-grey-dark);
+  background: var(--k-grey); box-shadow: 0 0 0 var(--flower-outline) var(--k-grey-dark);
   transform: rotate(38deg) translateY(8%); border-radius: 50% 50% 50% 12%;
 }
 .flower--wilted .flower__name { color: var(--k-grey-dark); font-style: italic; text-decoration: line-through; }
-/* A medias: algunos pétalos asoman pero caídos */
+/* Half alive: a few petals show, but drooping */
 .flower--half .flower__petals { --r: 30%; --spin: 12deg; }
 .flower--half .flower__petal { opacity: 0.45; --s: 0.7; border-radius: 60% 40% 55% 45%; }
-/* Muerta: pétalos caídos al pie */
+/* Dead: petals fallen at its foot */
 .flower--dead .flower__petals { --r: 46%; --spin: 62deg; }
 .flower--dead .flower__petal { opacity: 0.4; --s: 0.55; top: 78% !important; border-radius: 60% 40% 55% 45%; }
 .flower--dead .flower__bud { transform: rotate(52deg) translateY(14%); }
 
-/* --- Cajas de flor: lienzo + cartela --- */
-.flower-card { margin: 0; width: clamp(7.5rem, 15vw, 12rem); text-align: center; }
-.flower-card--xl { width: clamp(10rem, 22vw, 17rem); }
-.flower-card--l { width: clamp(9rem, 18vw, 14rem); }
-.flower-card--s { width: clamp(5.5rem, 11vw, 8.5rem); }
-.flower-card__canvas { aspect-ratio: 1; margin-bottom: 1.5rem; }
+/* --- Flower cards: canvas + cartela. Four sizes on the grid --- */
+.flower-card {
+  --card-size: clamp(var(--space-16), 15vw, var(--space-20));     /* 128–160 */
+  --card-caption-gap: var(--space-1);
+  margin: 0; width: var(--card-size); text-align: center;
+}
+.flower-card--xl { --card-size: clamp(var(--space-20), 22vw, var(--space-32)); }  /* 160–256 */
+.flower-card--l { --card-size: clamp(var(--space-16), 18vw, var(--space-24)); }   /* 128–192 */
+.flower-card--s { --card-size: clamp(var(--space-10), 11vw, var(--space-12)); }   /*  80–96 */
+/* room under the canvas for the flower's name: its gap + one body line */
+.flower-card__canvas { aspect-ratio: 1; margin-bottom: calc(var(--space-1) + var(--type-body-lh)); }
 .flower-card__caption {
-  display: inline-block; margin-top: 0.7rem; max-width: 100%;
-  font-family: var(--font-mono); font-size: 0.72rem; line-height: 1.4;
-  color: var(--ink); background: var(--k-linen);
-  border: 0; border-top: 1.5px solid var(--line); padding: 0.25rem 0.35rem 0;
-  overflow-wrap: anywhere; position: relative; z-index: 1;
+  display: inline-block; margin-top: var(--card-caption-gap); max-width: 100%;
+  font-family: var(--font-mono); font-size: var(--type-label); line-height: var(--type-label-lh);
+  color: var(--ink); background: var(--surface-canvas);
+  border: 0; border-top: var(--stroke-fine) solid var(--line); padding: var(--space-1) var(--space-1) 0;
+  overflow-wrap: anywhere; position: relative; z-index: var(--z-base);
+}
+/* The cartela is the node's chip: the state, the living part, in sap.
+   When it changes it flashes once in ink, the same instant its node
+   flashes in the inspector (same keyframes, panel.css). With reduced
+   motion it does not flash: the text has already changed. */
+.flower-card__caption [data-state] { color: var(--sap); }
+@media (prefers-reduced-motion: no-preference) {
+  .flower-card__caption [data-state].is-changed { animation: sap var(--dur-4) var(--ease-out); border-radius: var(--radius-1); }
 }
