@@ -92,19 +92,34 @@ sistema pide menos movimiento, nada se mueve y las voces suenan igual.
 
 ## El árbol se aprende leyéndolo
 
-- **Los dos árboles** se leen como un árbol, de la raíz hacia arriba: el
-  cuadrado del DOM abajo, un tallo, una horquilla en U de una sola pieza y
-  las dos copas. Cada copa lleva su nombre encima, como un título —el
-  nombre en tinta y su glosa, «lo que se ve» / «lo que se entiende», debajo
-  y más suave—. Antes la glosa iba en negrita y el nombre en gris, y las dos
-  etiquetas colgaban en los extremos, bajo la horquilla: se leían al revés.
-- **Anatomía de un nodo.** Bajo los dos árboles, una etiqueta leída como la
-  lee el árbol: `<button aria-pressed="false">Do</button>` → **rol**
-  `button` (lo da la etiqueta) · **nombre** «Do» (lo da su texto) ·
-  **estado** `pressed=false` (lo da `aria-pressed`). Es la misma ficha que
-  muestra el inspector en vivo: quien la entiende aquí sabe leerlo después.
-  El rol lleva el color de la gramática del elemento y el estado, el de la
-  savia: lo vivo, lo que cambia.
+- **Del HTML al árbol, dibujado.** La cabecera real de esta página, como se
+  escribe (cuatro líneas de HTML) y como se entiende (su Árbol de
+  Accesibilidad), con la gramática de la obra: el punto, la línea y el plano
+  de Kandinsky. La región `banner` es el **nudo** (cada lámina cuelga de un
+  nudo del tronco); el encabezado, el **arco** de rama, que nace de su rama y
+  se curva como el de las láminas; el botón, el **círculo azul**, vacío porque
+  no está pulsado: el estado se ve. Cada línea de HTML lleva, pequeña, la
+  forma del nodo en que se convierte, y el ojo las empareja sin palabras. El
+  árbol de renderizado no se dibuja: es este HTML con su CSS, la portada.
+- **Un nodo, cuatro lecturas.** Del botón «Sonido» beben, por líneas de
+  savia (no de tinta: no son nodos, son sus lectores), el lector de pantalla
+  («Sonido, botón de alternar, no pulsado»), la línea braille (⠨⠎⠕⠝⠊⠙⠕), el
+  control por voz («pulsa Sonido») y el agente de IA, con «Ver el árbol».
+- **Lo que se lleva un agente.** Bajo la nota, a la vista y sin pliegue, la
+  ruta de un agente de IA por la página, en el orden en que la recorre:
+  `rel="ard"` (**la encuentra**: un enlace de la cabecera anuncia su guía
+  para agentes) → `JSON-LD` (**sabe qué es**: una obra y una lección) →
+  `llms.txt` (**lee el resumen**) → el árbol (**lee cada nodo**: rol,
+  nombre, estado y acción) → `WebMCP` (**actúa**: herramientas con nombre).
+  Cada paso es una pastilla con su fuente sobre un solo tallo, un verbo que
+  se lee desde la sala y una línea. Los cuatro que leen van en contorno; el
+  que actúa, relleno, y ahí acaba el tallo.
+- **«Ver el árbol».** La lectura del agente abre un `<dialog>` modal (el
+  mismo patrón que la capa de la estación 9) con el árbol de la página como
+  datos, en JSON a 16 px para que lo lea la sala: rol, nombre, origen del
+  nombre, estado y acción de cada nodo. Se desplaza dentro (con el teclado
+  también) y lleva «Descargar JSON». Lo que se lleva un agente, lo ve y se
+  lo lleva quien mira.
 - **`disabled` frente a `aria-disabled`.** La estación del estado explica
   ahora lo que hace la casilla «Audiodescripción»: con `disabled` nativo sale
   del orden de foco —tabulando no se llega a ella—, pero el árbol la sigue
@@ -241,8 +256,8 @@ botón, amarillo el enlace, rojo la casilla, violeta el radio, cian el campo,
 tinta el encabezado— y el estado en savia. Los puntos de referencia y las
 regiones son marcos discontinuos; los controles, marcos sólidos.
 
-- Es la estación 1 hecha visible: los dos árboles de un mismo DOM, uno encima
-  del otro.
+- Es la estación 1 hecha visible: el Árbol de Accesibilidad encima de lo
+  que se ve, sobre el mismo DOM.
 - Lee rol, nombre y estado con **las mismas funciones** que el inspector
   (`tree-ax.js`): los dos no pueden contradecirse. Se redibuja al cambiar un
   estado, el tamaño o las fuentes: al pulsar «Do» su chip pasa a
@@ -265,16 +280,25 @@ una pantalla**: nada queda cortado por abajo.
   al principio de cada una (`scroll-snap-type: y proximity`: nunca atrapa,
   se puede parar entre dos; AvPág cae justo en la siguiente). Con movimiento
   reducido no hay imán. El umbral está pensado para la ventana real de quien
-  presenta —Chrome maximizado con la barra de marcadores, 1707 × 917—, no
-  solo para la pantalla completa: medido ahí, a 1707 × 945, 1707 × 1067 y
-  1920 × 1080, las quince escenas caben.
+  presenta —Chrome maximizado, 1707 × 900, o con la barra de marcadores,
+  1707 × 917—, no solo para la pantalla completa: medido ahí, a 1707 × 1067,
+  1920 × 1080, 2560 × 1440 y 3840 × 2160, las doce escenas caben.
 - **La lámina Kandinsky.** Cada escena es una lámina compuesta para leerse
   desde el fondo de la sala, con una jerarquía fija: el **numeral** de la
   estación, grande (el mismo aro con arco de rama de siempre, en el color de
   la estación: el ancla geométrica de la lámina) · el **título** a 40/48 ·
   la **entradilla**, el primer párrafo, a 24/32: la frase que la lámina
-  afirma · el cuerpo a 16/24 · el detalle (código, cartelas, fragmentos de
-  árbol) a 12/16. El numeral no lleva una forma de la gramática: círculo,
+  afirma · el cuerpo a 16/24 · **lo que la sala tiene que leer** también a
+  16/24: la invitación de cada lámina (qué probar ahora, en savia), los pies
+  de figura y las cartelas que cambian en vivo · y solo el detalle de
+  consulta (referencias WCAG, frecuencias, etiquetas de la partitura, el
+  inspector) a 12/16. **Un papel, un estilo:** el nombre de algo (rótulos,
+  flores, leyendas) en Space Grotesk seminegrita; la etiqueta de categoría
+  («Lector de pantalla», «Se anuncia») igual pero más suave; el título de un
+  paso a 20 seminegrita; lo que recibe un lector a 20 regular; la letra mono
+  solo para código, regular y al tamaño de su línea; sin mayúsculas ni
+  cursivas de adorno. De 48 estilos de texto distintos se pasa a 27, y cada
+  lámina usa entre 7 y 16. El numeral no lleva una forma de la gramática: círculo,
   triángulo, cuadrado y rombo están reservados para los tipos de elemento
   HTML, y un número no es un elemento.
 - **El zoom manda.** Al 200 % un portátil de 1707 px se queda en 853 × 533:
@@ -287,6 +311,10 @@ una pantalla**: nada queda cortado por abajo.
   orden pruébalo → lo que se oye → prueba. Solo se disuelven envoltorios `div`
   sin semántica (`display: contents`): ni el orden del DOM ni el árbol de
   accesibilidad cambian (comparado nodo a nodo, dentro y fuera de escena).
+  **Cada orilla se apila sola:** las filas solo alinean el arranque de las
+  dos orillas, y una pieza nunca espera a que acabe la otra orilla (en «La
+  estructura» el árbol y sus cuatro lecturas forman una sola figura; en «La
+  sinestesia» los interruptores quedan justo bajo la flor que apagan).
 - **La rama se curva bajo su carga.** En las escenas con poca carga, la
   carga no se queda arriba con media pantalla vacía: la rama se curva más
   (más caída) y la baja consigo. Cada estación declara cuánto mide su carga
@@ -340,12 +368,27 @@ hablan la misma gramática que las flores:
 
 - **Un botón es el círculo azul**: una píldora (el círculo estirado para que
   quepan sus palabras), con borde y letra azules, `Space Grotesk` seminegrita
-  de 16 px y 48 px de alto. El que encabeza su escena va relleno
-  («Ver árbol»). Los demás —«Descargar el árbol en JSON», «Regar»,
-  «Cerrar», «Contraer todo», «Expandir todo»— son la misma píldora sin
-  relleno.
+  de 16 px y 48 px de alto. El que encabeza su escena o su diálogo va
+  relleno (`.control--primary`: «Ver árbol», «Regar», «Abrir una capa»,
+  «Descargar JSON»). Los demás —«Ver el árbol», «Cerrar», «Contraer todo»,
+  «Expandir todo»— son la misma píldora sin relleno.
+- **No disponible ahora** (`aria-disabled="true"`): el gris de la flor
+  desactivada, sin lavado al pasar y con el puntero de no permitido; sigue
+  siendo enfocable y se anuncia «no disponible». Lo usan «Contraer todo» y
+  «Expandir todo» del inspector cuando no tienen nada que hacer (todo
+  plegado o todo desplegado): el patrón que enseña la estación 6.
+- **Variantes, nunca rellenos sueltos.** Solo hay dos modificadores:
+  `--primary` y `--compact` (relleno corto, para los controles que comparten
+  una fila estrecha: los cinco canales y las dos acciones del inspector).
+  Ningún componente redefine `--control-pad` por su cuenta, y dentro de un
+  control solo hay un tamaño de letra (la coletilla de «Radiografía» sigue en
+  su nombre accesible, oculta a la vista: el nombre empieza por la etiqueta
+  visible, WCAG 2.5.3).
 - **Un interruptor** (`<button aria-pressed>`: «Sonido» y «Animaciones» en
-  la portada, los cinco canales de «Quita un canal» y la Radiografía) lleva el propio círculo como marca, con el
+  la portada, los cinco canales de «Quita un canal», «Mover con CSS» y la
+  Radiografía) y **un desplegable** (`<summary class="control">`: «Leer de
+  cerca», «Para saber más»), porque los dos tienen estado, llevan el propio
+  círculo como marca, con el
   contrato de estados de la obra: **aro vacío** mientras es falso, **aro
   lleno** y el lavado azul de la flor mientras es cierto. La forma dice el
   estado; el color solo lo acompaña.
@@ -429,7 +472,7 @@ fusionando lo que contaba lo mismo:
 
 | Capítulo | # | Estación | Qué enseña |
 | --- | --- | --- | --- |
-| I · El árbol | 1 | La estructura y sus lectores (`#structure`) | los dos árboles; un nodo, cuatro lecturas (lector, braille, voz, IA) |
+| I · El árbol | 1 | La estructura y sus lectores (`#structure`) | del HTML al árbol, dibujado; un nodo, cuatro lecturas (lector, braille, voz, IA); lo que se lleva un agente |
 |  | 2 | La sinestesia de la obra (`#synesthesia`) | cinco canales para el mismo dato; la partitura; «Quita un canal» |
 |  | 3 | La ruta: regiones, grupos y listas (`#route`) | landmarks y niveles leídos en vivo; `fieldset` + `legend`; «lista, N elementos» |
 | II · El nodo | 4 | Rol y acciones (`#role`) | qué es esto, primera regla de ARIA y el verbo que ofrece cada rol |
@@ -472,8 +515,10 @@ Percepción (11), en «El cultivo», prueba cómo la perciben otros ojos sobre
 **toda** la obra.
 
 **Leer de cerca.** El código y los fragmentos del árbol no se leen desde
-el fondo de una sala. Se pliegan en un `<details>` «Leer de cerca»: siguen
-a un clic para quien lee en su mesa.
+el fondo de una sala. En las estaciones 7, 8 y 10 aún se pliegan en un
+`<details>` «Leer de cerca», a un clic para quien lee en su mesa. La
+estación 1 ya no pliega nada: lo que se lleva un agente se ve entero, como
+una ruta visual; el resto irá saliendo del pliegue del mismo modo.
 
 ## Patrón y antipatrón, con la prueba delante
 
@@ -522,8 +567,9 @@ le ofrece, por orden:
 
 1. **Leer.** El árbol, con rol, nombre, estado y acción en cada nodo; el
    JSON-LD de la cabecera (`VisualArtwork` + `LearningResource` y un
-   `BreadcrumbList` con las doce estaciones), y el árbol exportable en JSON
-   desde «Leer de cerca», en la estación 1.
+   `BreadcrumbList` con las doce estaciones), y el árbol en JSON, que se ve
+   y se descarga desde «Ver el árbol», en la estación 1. Esa estación dibuja la
+   ruta entera, «Lo que se lleva un agente», de encontrar la página a actuar.
 2. **Descubrir.**
    - `public/llms.txt`, en el formato de llmstxt.org: H1, resumen en cita
      y listas de enlaces a cada estación.

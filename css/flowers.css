@@ -321,7 +321,7 @@ a.flower .flower__name { color: var(--link); text-decoration: underline; text-un
 .flower-card__canvas { aspect-ratio: 1; margin-bottom: calc(var(--space-1) + var(--type-body-lh)); }
 .flower-card__caption {
   display: inline-block; margin-top: var(--card-caption-gap); max-width: 100%;
-  font-family: var(--font-mono); font-size: var(--type-label); line-height: var(--type-label-lh);
+  font-family: var(--font-mono); font-size: var(--type-caption); line-height: var(--type-caption-lh);
   color: var(--ink); background: var(--surface-canvas);
   border: 0; border-top: var(--stroke-fine) solid var(--line); padding: var(--space-1) var(--space-1) 0;
   overflow-wrap: anywhere; position: relative; z-index: var(--z-base);

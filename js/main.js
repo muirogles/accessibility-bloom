@@ -76,6 +76,9 @@ const flowerName = (el) => el.closest('.flower')?.querySelector('.flower__name')
 // --- The cover: chapters and the flower's opening ---
 const cover = initCover({ play: (el, isOpen) => playFlower(el, isOpen), announce, refresh: (el) => panel.refresh(el) });
 initStations({ announce, play: (el, isOpen) => playFlower(el, isOpen), refresh: (el) => panel.refresh(el) });
+// The stations write content of their own (the route's map, read from the
+// page) after the inspector's first build: read the tree once more
+panel.rebuild();
 initAgent({ announce });
 
 // --- Two switches, both off on arrival. Their names never change:
@@ -209,8 +212,19 @@ if (wateringForm) {
 }
 
 // --- The tree, for machines: the inspector's same data, as JSON ---
+// «Ver el árbol» shows it in a modal dialog (what an agent takes, seen
+// by the room), read fresh each time it opens; the download lives there.
+const treeDialog = document.querySelector('[data-tree-dialog]');
+const treeJson = document.querySelector('[data-tree-json]');
+const treeData = () => JSON.stringify(panel.exportTree(), null, 2);
+document.querySelector('[data-tree-open]')?.addEventListener('click', () => {
+  if (!treeDialog || typeof treeDialog.showModal !== 'function') return;
+  treeJson.textContent = treeData();
+  treeDialog.showModal();
+  treeDialog.querySelector('.layer__data').scrollTop = 0;
+});
 document.querySelector('[data-export-tree]')?.addEventListener('click', () => {
-  const data = JSON.stringify(panel.exportTree(), null, 2);
+  const data = treeJson?.textContent || treeData();
   const url = URL.createObjectURL(new Blob([data], { type: 'application/json' }));
   const link = document.createElement('a');
   link.href = url;

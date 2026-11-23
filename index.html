@@ -252,84 +252,53 @@
           <div class="branch__load branch__load--flowers">
             <div class="note note--wide note--ink">
               <h2 id="structure-title" class="note__title"><span class="note__num" aria-hidden="true">1</span>La estructura y sus lectores</h2>
-              <p>Del <strong>mismo</strong> HTML el navegador cultiva dos árboles: el de <strong>renderizado</strong>, que da los píxeles, y el <strong>Árbol de Accesibilidad</strong>, que da el significado.</p>
+              <p>Del <strong>mismo</strong> HTML el navegador cultiva dos árboles: el de <strong>renderizado</strong>, que con el CSS da los píxeles, y el <strong>Árbol de Accesibilidad</strong>, que da el significado.</p>
               <p>De ese segundo árbol beben el lector de pantalla, la línea braille, el control por voz, los buscadores y los agentes de <abbr title="Inteligencia Artificial">IA</abbr>: todos leen <strong>el mismo nodo</strong>, con su rol, su nombre y su estado.</p>
               <p class="note__look">Un mismo botón, cuatro lecturas. Si el HTML miente, mienten las cuatro.</p>
             </div>
             <div class="branch__visual">
-              <figure class="two-trees">
-                <span class="two-trees__crown two-trees__crown--pixels" aria-hidden="true"></span>
-                <span class="two-trees__crown two-trees__crown--meaning" aria-hidden="true"></span>
-                <span class="two-trees__fork" aria-hidden="true"></span>
-                <span class="two-trees__stem" aria-hidden="true"></span>
-                <p class="two-trees__tag">Árbol de renderizado<br><em>lo que se ve</em></p>
-                <p class="two-trees__tag">Árbol de accesibilidad<br><em>lo que se entiende</em></p>
-                <figcaption class="two-trees__foot">
-                  <span class="two-trees__dom" aria-hidden="true"></span>
-                  <span><code>&lt;html&gt;</code> · un solo DOM, dos lecturas</span>
-                </figcaption>
-              </figure>
-              <figure class="readers">
-                <figcaption id="readers-title" class="readers__title">Un nodo, cuatro lecturas</figcaption>
-                <p class="readers__node"><code>&lt;button aria-pressed="false"&gt;Do&lt;/button&gt;</code></p>
-                <dl class="readers__list">
-                  <div class="readers__item readers__item--speech"><dt>Lector de pantalla</dt><dd>«Do, botón de alternar, no pulsado»</dd></div>
-                  <div class="readers__item readers__item--braille"><dt>Línea braille</dt><dd><span class="readers__cells" aria-hidden="true">⠨⠙⠕</span> <span class="readers__plain">Do</span></dd></div>
-                  <div class="readers__item readers__item--voice"><dt>Control por voz</dt><dd>se le llama por su nombre visible: «Do»</dd></div>
-                  <div class="readers__item readers__item--agent"><dt>Agente de IA</dt><dd><code>{"role": "button", "name": "Do", "pressed": false}</code><span class="readers__acts">Con WebMCP, además de leer, actúa: la página le ofrece herramientas con nombre y descripción.</span></dd></div>
+              <figure class="ax-sketch">
+                <p class="ax-sketch__label">HTML <span class="ax-sketch__gloss">· lo que se escribe</span></p>
+                <pre class="ax-sketch__html"><code><span class="ax-sketch__line ax-sketch__line--region">&lt;header&gt;</span>
+<span class="ax-sketch__line ax-sketch__line--heading">  &lt;h1&gt;Accessibility Bloom&lt;/h1&gt;</span>
+<span class="ax-sketch__line ax-sketch__line--button">  &lt;button aria-pressed="false"&gt;Sonido&lt;/button&gt;</span>
+<span class="ax-sketch__line">&lt;/header&gt;</span></code></pre>
+                <p class="ax-sketch__label">Árbol de Accesibilidad <span class="ax-sketch__gloss">· lo que se entiende</span></p>
+                <ul class="ax-sketch__tree">
+                  <li class="ax-sketch__root"><span class="ax-sketch__knot" aria-hidden="true"></span><span class="ax-sketch__role">banner</span>
+                    <ul class="ax-sketch__children">
+                      <li class="ax-sketch__node ax-sketch__node--heading"><span class="ax-sketch__shape" aria-hidden="true"></span><span class="ax-sketch__text"><span class="ax-sketch__role">heading</span> «Accessibility Bloom»</span></li>
+                      <li class="ax-sketch__node ax-sketch__node--button ax-sketch__node--end"><span class="ax-sketch__shape" aria-hidden="true"></span><span class="ax-sketch__text"><span class="ax-sketch__role">button</span> «Sonido» <span class="ax-sketch__state">pressed=false</span></span></li>
+                    </ul>
+                  </li>
+                </ul>
+                <dl class="ax-sketch__readings">
+                  <div class="ax-sketch__reading"><dt>Lector de pantalla</dt><dd>«Sonido, botón de alternar, no pulsado»</dd></div>
+                  <div class="ax-sketch__reading"><dt>Línea braille</dt><dd><span class="ax-sketch__cells" aria-hidden="true">⠨⠎⠕⠝⠊⠙⠕</span> <span class="ax-sketch__plain">Sonido</span></dd></div>
+                  <div class="ax-sketch__reading"><dt>Control por voz</dt><dd>«pulsa Sonido»</dd></div>
+                  <div class="ax-sketch__reading ax-sketch__reading--end"><dt>Agente de IA</dt><dd><button type="button" class="control ax-sketch__export" aria-haspopup="dialog" data-tree-open>Ver el árbol</button></dd></div>
                 </dl>
+                <figcaption class="ax-sketch__foot">Con su CSS, este HTML es la portada que ya has visto.</figcaption>
               </figure>
-              <details class="closer">
-                <summary>Leer de cerca: la ficha de un nodo y lo que lee un agente</summary>
-                <figure class="anatomy">
-                <figcaption class="anatomy__title">Anatomía de un nodo: lo que el árbol saca de una etiqueta</figcaption>
-                <pre class="anatomy__code"><code>&lt;button aria-pressed="false"&gt;Do&lt;/button&gt;</code></pre>
-                <dl class="anatomy__parts">
-                  <div class="anatomy__part anatomy__part--role"><dt>rol</dt><dd><code>button</code><span>lo da la etiqueta</span></dd></div>
-                  <div class="anatomy__part anatomy__part--name"><dt>nombre</dt><dd>«Do»<span>lo da su texto</span></dd></div>
-                  <div class="anatomy__part anatomy__part--state"><dt>estado</dt><dd><code>pressed=false</code><span>lo da <code>aria-pressed</code></span></dd></div>
-                </dl>
-                <p class="anatomy__foot">Es la misma ficha que muestra el inspector del árbol, en vivo, para cada flor que enfocas.</p>
-                </figure>
-                <figure class="data-card">
-                  <pre class="data-card__json"><code>{
-    "@type": ["VisualArtwork", "LearningResource"],
-    "name": "Accessibility Bloom",
-    "learningResourceType": "Lección interactiva",
-    "teaches": ["El Árbol de Accesibilidad", "Rol, nombre y estado", …],
-    "timeRequired": "PT25M",
-    "accessibilitySummary": "Operable al 100 % con teclado…",
-    "license": "CC BY-NC-SA 4.0"
-  }</code></pre>
-                  <dl class="gloss">
-                    <dt><code>"@type"</code></dt>
-                    <dd>Dice qué es esto: una obra visual <em>y</em> un recurso de aprendizaje. Las dos cosas a la vez, porque las dos son verdad.</dd>
-                    <dt><code>"name"</code></dt>
-                    <dd>Cómo se llama la obra.</dd>
-                    <dt><code>"learningResourceType"</code> y <code>"timeRequired"</code></dt>
-                    <dd>Qué clase de material es y cuánto se tarda en recorrerlo: veinticinco minutos.</dd>
-                    <dt><code>"teaches"</code></dt>
-                    <dd>La lista de lo que enseña, estación por estación. Es lo que permite a un agente saber de qué va sin recorrerla.</dd>
-                    <dt><code>"accessibilitySummary"</code></dt>
-                    <dd>Qué garantiza en accesibilidad, escrito en una frase para personas, no en una etiqueta de conformidad.</dd>
-                    <dt><code>"license"</code></dt>
-                    <dd>Qué se puede hacer con ella: reutilizarla citando, sin fines comerciales y compartiendo igual.</dd>
-                  </dl>
-                  <figcaption>Recortado: la cabecera lleva además el recorrido completo de las doce estaciones como <code>BreadcrumbList</code>. Nada de esto se ve en el cuadro —va escrito en el documento para que buscadores y asistentes sepan de qué va sin mirar los píxeles.</figcaption>
-                </figure>
-                <div class="agents">
-                  <h3 class="agents__title">Lo que se lleva un agente de esta página</h3>
-                  <p>Tres vías, todas legibles sin mirar un solo píxel:</p>
-                  <ul>
-                    <li><strong>JSON-LD</strong> en la cabecera: declara la obra como <code>VisualArtwork</code> y <code>LearningResource</code>, con lo que enseña, cuánto dura y el recorrido de las doce estaciones.</li>
-                    <li><strong><a href="llms.txt">llms.txt</a></strong>: el resumen de la obra en texto plano, con su índice, su licencia y sus garantías de accesibilidad.</li>
-                    <li><strong>El árbol, exportable</strong>: rol, nombre y estado de cada nodo, tal como los ve la tecnología de apoyo.</li>
-                  </ul>
-                  <p class="agents__actions">
-                    <button type="button" class="control" data-export-tree>Descargar el árbol en JSON</button>
-                  </p>
-                </div>
-              </details>
+              <dialog class="layer layer--tree" aria-labelledby="tree-data-title" data-tree-dialog>
+                <h3 id="tree-data-title" class="layer__title">El árbol que se lleva un agente</h3>
+                <p class="layer__text">Esta misma página, como datos: rol, nombre, estado y acción de cada nodo, con la misma poda que hace el navegador.</p>
+                <pre class="layer__data" tabindex="0" role="region" aria-label="El árbol en JSON"><code data-tree-json></code></pre>
+                <form method="dialog" class="layer__foot">
+                  <button type="button" class="control control--primary" data-export-tree>Descargar JSON</button>
+                  <button type="submit" class="control">Cerrar</button>
+                </form>
+              </dialog>
+              <figure class="agent-path">
+                <figcaption class="agent-path__title">Lo que se lleva un agente</figcaption>
+                <ol class="agent-path__steps">
+                  <li class="agent-path__step"><code class="agent-path__source">rel="ard"</code><p class="agent-path__text"><strong class="agent-path__verb">La encuentra.</strong> Un enlace de la cabecera anuncia su <a href="agent-skill.md">guía para agentes</a>.</p></li>
+                  <li class="agent-path__step"><code class="agent-path__source">JSON-LD</code><p class="agent-path__text"><strong class="agent-path__verb">Sabe qué es.</strong> Una obra y una lección: qué enseña y cuánto dura.</p></li>
+                  <li class="agent-path__step"><code class="agent-path__source">llms.txt</code><p class="agent-path__text"><strong class="agent-path__verb">Lee el resumen.</strong> En <a href="llms.txt">texto plano</a>: índice, licencia y garantías.</p></li>
+                  <li class="agent-path__step"><span class="agent-path__source">árbol</span><p class="agent-path__text"><strong class="agent-path__verb">Lee cada nodo.</strong> Rol, nombre, estado y acción, como un lector de pantalla.</p></li>
+                  <li class="agent-path__step agent-path__step--act"><code class="agent-path__source">WebMCP</code><p class="agent-path__text"><strong class="agent-path__verb">Actúa.</strong> La página le ofrece herramientas con nombre: ir a una estación, leer su árbol, mirar como, regar.</p></li>
+                </ol>
+              </figure>
             </div>
           </div>
         </section>
@@ -368,11 +337,11 @@
             <div class="channels" data-channels>
               <h3 id="channels-title" class="channels__title">Quita un canal</h3>
               <ul class="channels__list" aria-labelledby="channels-title">
-                <li class="channels__item"><button type="button" class="control channel" aria-pressed="true" data-channel="color"><span class="control__mark" aria-hidden="true"></span>Color</button><span class="channel__wcag">WCAG 1.4.1</span></li>
-                <li class="channels__item"><button type="button" class="control channel" aria-pressed="true" data-channel="shape"><span class="control__mark" aria-hidden="true"></span>Forma</button><span class="channel__wcag">WCAG 1.3.3</span></li>
-                <li class="channels__item"><button type="button" class="control channel" aria-pressed="true" data-channel="sound"><span class="control__mark" aria-hidden="true"></span>Sonido</button><span class="channel__wcag">WCAG 1.1.1</span></li>
-                <li class="channels__item"><button type="button" class="control channel" aria-pressed="true" data-channel="text"><span class="control__mark" aria-hidden="true"></span>Texto</button><span class="channel__wcag">WCAG 4.1.2</span></li>
-                <li class="channels__item"><button type="button" class="control channel" aria-pressed="true" data-channel="pixels"><span class="control__mark" aria-hidden="true"></span>Píxeles</button><span class="channel__wcag">WCAG 1.3.1</span></li>
+                <li class="channels__item"><button type="button" class="control control--compact channel" aria-pressed="true" data-channel="color"><span class="control__mark" aria-hidden="true"></span>Color</button><span class="channel__wcag">WCAG 1.4.1</span></li>
+                <li class="channels__item"><button type="button" class="control control--compact channel" aria-pressed="true" data-channel="shape"><span class="control__mark" aria-hidden="true"></span>Forma</button><span class="channel__wcag">WCAG 1.3.3</span></li>
+                <li class="channels__item"><button type="button" class="control control--compact channel" aria-pressed="true" data-channel="sound"><span class="control__mark" aria-hidden="true"></span>Sonido</button><span class="channel__wcag">WCAG 1.1.1</span></li>
+                <li class="channels__item"><button type="button" class="control control--compact channel" aria-pressed="true" data-channel="text"><span class="control__mark" aria-hidden="true"></span>Texto</button><span class="channel__wcag">WCAG 4.1.2</span></li>
+                <li class="channels__item"><button type="button" class="control control--compact channel" aria-pressed="true" data-channel="pixels"><span class="control__mark" aria-hidden="true"></span>Píxeles</button><span class="channel__wcag">WCAG 1.3.1</span></li>
               </ul>
               <p class="channels__remains" data-channels-remains>Los cinco canales cuentan lo mismo: es un botón, se llama Do4 y no está pulsado.</p>
               <p class="channels__caption" data-channels-caption>♪ Con el sonido encendido, se oye. Apágalo y se escribe.</p>
@@ -392,7 +361,7 @@
                 <li class="key__row key__row--rest" style="--step: 4"><span class="key__staff" aria-hidden="true"><span class="key__shape key__shape--arc"></span></span><code>h1–h3</code><span class="key__timbre">arco de rama · silencio</span><span class="key__note">sin nota</span></li>
                 <li class="key__row key__row--fallen" style="--step: -4"><span class="key__staff" aria-hidden="true"><span class="key__shape key__shape--grey"></span></span><code>div</code><span class="key__timbre">gris marchito · mudo</span><span class="key__note">fuera de la partitura</span></li>
               </ul>
-              <figcaption>Cada voz, en la nota en que suena (La4 = 440 Hz). El <code>radio</code> canta el Re de la casilla una octava arriba, al doble exacto; el enlace es la voz del recorrido: sus doce estaciones son los doce semitonos de Do5 a Si5.</figcaption>
+              <figcaption>Cada voz, en la nota en que suena (La4 = 440 Hz).</figcaption>
               </figure>
           </div>
         </section>
@@ -527,7 +496,7 @@
                 <p class="lesson__label">Llévatelo</p>
                 <p>Usa la etiqueta que ya trae el rol: <code>&lt;button&gt;</code> para hacer, <code>&lt;a href&gt;</code> para ir (<a href="https://www.w3.org/WAI/WCAG22/Understanding/name-role-value.html" lang="en">WCAG 4.1.2</a>). Míralo en Chrome DevTools, en el campo <em>Role</em>.</p>
                 <details class="lesson__more">
-                  <summary>Para saber más</summary>
+                  <summary class="control"><span class="control__mark" aria-hidden="true"></span>Para saber más</summary>
                   <ul>
                     <li><a href="https://www.w3.org/TR/using-aria/" lang="en">Using ARIA</a>: primera regla (si hay etiqueta, úsala) y tercera (todo control ARIA debe funcionar con teclado)</li>
                     <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/button/" lang="en">APG · Button</a>: Enter y Espacio activan un botón</li>
@@ -685,7 +654,7 @@
                 <p class="lesson__label">Llévatelo</p>
                 <p>Si un control cambia de estado o de valor, el árbol debe saberlo (<a href="https://www.w3.org/WAI/WCAG22/Understanding/name-role-value.html" lang="en">WCAG 4.1.2</a>). Míralo en Chrome DevTools: <em>Elementos → Accesibilidad</em>.</p>
                 <details class="lesson__more">
-                  <summary>Para saber más</summary>
+                  <summary class="control"><span class="control__mark" aria-hidden="true"></span>Para saber más</summary>
                   <ul>
                     <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/button/" lang="en">APG · Button</a>: el interruptor nunca cambia su nombre al pulsarse</li>
                     <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/" lang="en">APG · Disclosure</a>: <code>aria-expanded</code> y <code>aria-controls</code></li>
@@ -723,7 +692,7 @@
                 <p class="focus-order__foot"><button type="button" class="control" aria-pressed="false" data-focus-order-shuffle><span class="control__mark" aria-hidden="true"></span>Mover con CSS</button></p>
               </figure>
               <details class="closer">
-                <summary>Leer de cerca: patrón y antipatrón</summary>
+                <summary class="control"><span class="control__mark" aria-hidden="true"></span>Leer de cerca: patrón y antipatrón</summary>
                 <div class="pair">
                   <div class="pair__case pair__case--pattern">
                     <p class="pair__tag"><span class="pair__mark pair__mark--pattern" aria-hidden="true"></span>Patrón</p>
@@ -792,12 +761,12 @@
                   <p class="field__error" id="watering-error" data-error hidden><span class="field__error-mark" aria-hidden="true"></span><span data-error-text></span></p>
                 </div>
                 <div class="watering__foot">
-                  <button type="submit" class="control">Regar</button>
+                  <button type="submit" class="control control--primary">Regar</button>
                   <p class="field__ok" data-ok hidden><span class="field__ok-mark" aria-hidden="true"></span>Regado: el correo tiene una forma válida.</p>
                 </div>
               </form>
               <details class="closer">
-                <summary>Leer de cerca: patrón y antipatrón</summary>
+                <summary class="control"><span class="control__mark" aria-hidden="true"></span>Leer de cerca: patrón y antipatrón</summary>
                 <div class="pair">
                   <div class="pair__case pair__case--pattern">
                     <p class="pair__tag"><span class="pair__mark pair__mark--pattern" aria-hidden="true"></span>Patrón</p>
@@ -928,7 +897,7 @@
             </ul>
             <div class="branch__visual">
               <details class="closer">
-                <summary>Leer de cerca: las decisiones de la obra y lo que no usa</summary>
+                <summary class="control"><span class="control__mark" aria-hidden="true"></span>Leer de cerca: las decisiones de la obra y lo que no usa</summary>
                 <dl class="practice">
                   <div class="practice__case">
                     <dt>Un solo contrato de estados</dt>
@@ -1111,10 +1080,10 @@
         </div>
         <p class="panel__note">Simulación de DevTools → Accesibilidad, leída del DOM real.</p>
         <p class="panel__focus" data-focus>Sin foco. Pulsa Tab para entrar en el árbol.</p>
-        <button type="button" class="control panel__xray" aria-pressed="false" data-xray-toggle><span class="control__mark" aria-hidden="true"></span>Radiografía<span class="panel__xray-hint">: el árbol sobre la obra</span></button>
+        <button type="button" class="control panel__xray" aria-pressed="false" data-xray-toggle><span class="control__mark" aria-hidden="true"></span>Radiografía<span class="visually-hidden">: el árbol sobre la obra</span></button>
         <div class="panel__actions">
-          <button type="button" class="control panel__action" data-action="collapse">Contraer todo</button>
-          <button type="button" class="control panel__action" data-action="expand">Expandir todo</button>
+          <button type="button" class="control control--compact panel__action" data-action="collapse">Contraer todo</button>
+          <button type="button" class="control control--compact panel__action" data-action="expand">Expandir todo</button>
         </div>
         <div class="tree" data-tree></div>
         <section class="card" aria-labelledby="card-title">

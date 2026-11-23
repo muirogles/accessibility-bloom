@@ -4,7 +4,7 @@
  * the real DOM. Excludes [data-inspector]: like DevTools, the inspector
  * does not inspect itself.
  */
-const FOCUS_SELECTOR = 'a[href],button,summary,input,select,h1,h2,h3,li,header,nav,main,section,article,aside,footer,fieldset,figure';
+const FOCUS_SELECTOR = 'a[href],button,summary,input,select,h1,h2,h3,li,header,nav,main,section,article,aside,footer,fieldset,figure,dialog,[role]';
 
 /* Reads text the way the accname algorithm does: drops aria-hidden and
    hidden subtrees, and inserts a separator at every element boundary —
@@ -24,6 +24,11 @@ function readText(el) {
 
 export function roleOf(el) {
   const t = el.tagName;
+  // An explicit role wins over the tag's (the first token is the one
+  // used); presentation/none remove the role and are pruned in build()
+  const explicit = el.getAttribute('role')?.trim().split(/\s+/)[0];
+  if (explicit && explicit !== 'presentation' && explicit !== 'none') return explicit;
+  if (t === 'DIALOG') return 'dialog';
   if (t === 'HEADER') return 'banner';
   if (t === 'NAV') return 'navigation';
   if (t === 'MAIN') return 'main';
@@ -108,6 +113,8 @@ function nameSteps(el, role) {
 }
 
 export function stateOf(el, role) {
+  // showModal() makes the dialog modal: the rest of the page is inert
+  if (role === 'dialog') return el.matches(':modal') ? 'modal=true' : '';
   if (role === 'checkbox' || role === 'radio') {
     // a checkbox has three values: true, false and mixed (some of its group)
     const checked = el.indeterminate ? 'mixed' : String(el.checked);
@@ -136,17 +143,27 @@ function textOf(el) {
   return readText(el).slice(0, 80);
 }
 
+/* The open modal dialog, if any (the inspector's own, on phones, aside):
+   with one open, the rest of the page is inert and leaves the tree; only
+   the path down to the dialog and the dialog itself remain */
+function openModal() {
+  return [...document.querySelectorAll('dialog')].find((d) => d.matches(':modal') && !d.hasAttribute('data-inspector')) || null;
+}
+
 function build(el) {
   const nodes = [];
+  const modal = openModal();
   for (const child of el.children) {
+    if (modal && !child.contains(modal) && !modal.contains(child)) continue;
     // The real pruning: hidden and decorative content never enters the tree
     if (child.hasAttribute('data-inspector') || child.tagName === 'SCRIPT' || child.tagName === 'STYLE') continue;
     if (child.getAttribute('aria-hidden') === 'true' || child.getAttribute('role') === 'presentation') continue;
     if (!isRendered(child)) continue;
     const role = roleOf(child);
     if (role) {
-      // Every real level: list→listitem, figure→caption…
-      const children = build(child);
+      // Every real level: list→listitem, figure→caption… An img's
+      // children are presentational (ARIA): they never reach the tree
+      const children = role === 'img' ? [] : build(child);
       /* A listitem, a region or a group has no accessible name: its
          content reaches the tree as a text node (StaticText), exactly what
          assistive technology reads aloud. Without this those nodes look
@@ -216,6 +233,7 @@ export function initPanel({ root = document.body } = {}) {
         toggle.setAttribute('aria-expanded', String(!isOpen));
         toggle.textContent = isOpen ? '▸' : '▾';
         if (subList) subList.hidden = isOpen;
+        syncActions();
       });
       rowEl.appendChild(toggle);
       toggles.push(toggle);
@@ -265,6 +283,22 @@ export function initPanel({ root = document.body } = {}) {
     const ul = document.createElement('ul');
     tree.forEach((n) => ul.appendChild(row(n)));
     cont.replaceChildren(ul);
+    syncActions();
+  }
+
+  /* «Contraer todo» and «Expandir todo» say when they have nothing left to
+     do: with every branch open, expanding does nothing; with every branch
+     closed, collapsing does nothing. aria-disabled, not disabled: the
+     button stays focusable and is announced as unavailable, the pattern
+     station 6 teaches. Queried on each call: render() runs before the
+     panel's buttons are wired. */
+  function syncActions() {
+    const open = toggles.filter((a) => a.getAttribute('aria-expanded') === 'true').length;
+    for (const btn of document.querySelectorAll('[data-action]')) {
+      const idle = btn.dataset.action === 'collapse' ? open === 0 : open === toggles.length;
+      if (idle) btn.setAttribute('aria-disabled', 'true');
+      else btn.removeAttribute('aria-disabled');
+    }
   }
   render();
 
@@ -285,12 +319,22 @@ export function initPanel({ root = document.body } = {}) {
     focused = keepFocus ? shapeMap.get(keepFocus) || null : null;
     cont.scrollTop = scrollTop;
     if (focused) { paintFocusLine(focused); visible(focused.sel); }
+    /* A dialog moves the focus BEFORE the tree is rebuilt: showModal()
+       puts it inside, and closing returns it to the button that opened
+       it. The old tree could not hold that node, so the real focus is
+       followed again, now that the tree has it. */
+    const active = document.activeElement;
+    if (active && active !== document.body && !active.closest('[data-inspector]')) follow(active);
   }
-  // <details> fires "toggle" on itself only: listened to on the way down
-  document.addEventListener('toggle', (e) => { if (e.target.tagName === 'DETAILS' && !e.target.closest('[data-inspector]')) rebuild(); }, true);
+  // <details> and <dialog> fire "toggle" on themselves only: listened to on
+  // the way down; "close" too, for browsers whose dialogs do not toggle
+  const opensOrCloses = (e) => ['DETAILS', 'DIALOG'].includes(e.target.tagName) && !e.target.closest('[data-inspector]');
+  document.addEventListener('toggle', (e) => { if (opensOrCloses(e)) rebuild(); }, true);
+  document.addEventListener('close', (e) => { if (opensOrCloses(e)) rebuild(); }, true);
 
   document.querySelectorAll('[data-action]').forEach((btn) => {
     btn.addEventListener('click', () => {
+      if (btn.getAttribute('aria-disabled') === 'true') return;
       const collapse = btn.dataset.action === 'collapse';
       toggles.forEach((a) => {
         if ((a.getAttribute('aria-expanded') === 'true') === collapse) a.click();
@@ -519,6 +563,8 @@ export function initPanel({ root = document.body } = {}) {
       o.name = name || null;
       o.nameSource = source;
       if (state) o.state = state;
+      const action = actionOf(n.el, n.role);
+      if (action) o.action = action;
       if (n.children.length) o.children = serialize(n.children);
       return o;
     });
@@ -526,11 +572,11 @@ export function initPanel({ root = document.body } = {}) {
 
   function exportTree() {
     return {
-      obra: 'Accessibility Bloom',
-      description: 'Árbol de Accesibilidad leído del DOM real de la página: rol, nombre, origen del nombre y estado de cada nodo. Lo decorativo (aria-hidden) y el propio inspector quedan podados, igual que hace el navegador.',
-      generado: new Date().toISOString(),
-      fuente: location.href,
-      licencia: 'CC BY-NC-SA 4.0',
+      work: 'Accessibility Bloom',
+      description: 'Árbol de Accesibilidad leído del DOM real de la página: rol, nombre, origen del nombre, estado y acción de cada nodo. Lo decorativo (aria-hidden) y el propio inspector quedan podados, igual que hace el navegador.',
+      generated: new Date().toISOString(),
+      source: location.href,
+      license: 'CC BY-NC-SA 4.0',
       tree: serialize(tree)
     };
   }

@@ -125,19 +125,22 @@ html:has(dialog:modal) { overflow: hidden; scrollbar-gutter: stable; }
 @media (forced-colors: active) {
   :root { --line: var(--forced-structure); --sap: var(--forced-structure); --sprout: var(--forced-structure); }
   .flower__petal, .flower__bud, .dot, .key__shape, .palette__swatch,
-  .two-trees__crown, .pair__mark,
+  .pair__mark,
   .trunk__axis, .branch__node, .branch__node::after, .branch__arc::after,
   .tendril::before, .tendril::after, .cluster::before, .flower-card__canvas::before, .ladder__rung::before,
-  .branch__load--flowers > .bouquet::before, .branch__load--flowers > .data-card::before,
+  .branch__load--flowers > .bouquet::before, .agent-path__step::before,
+  .ax-sketch__node::before, .ax-sketch__node::after, .ax-sketch__reading::before, .ax-sketch__reading::after,
+  .ax-sketch__knot, .ax-sketch__shape, .ax-sketch__line::before,
   .ground__load::before, .sprouts__list::before, .sprouts__list::after, .sprout::before,
   .ground__soil, .roots__main,
-  .two-trees__stem, .two-trees__dom, .field__ok-mark, .key__sharp, .control__mark { forced-color-adjust: none; }
+  .field__ok-mark, .key__sharp, .control__mark { forced-color-adjust: none; }
   /* the score's staff is structure too */
   .score .key { --staff-ink: var(--forced-structure); }
   .key__staff { forced-color-adjust: none; }
   /* --line is already a system colour, and the system does not force its
      own colours: the primary control goes back to button colours */
   .control.control--primary { background: var(--forced-control-bg); color: var(--forced-control-ink); border-color: var(--forced-control-ink); }
+  .control[aria-disabled="true"] { color: var(--forced-unavailable); border-color: var(--forced-unavailable); }
   :focus-visible { outline: var(--focus-width) solid var(--forced-focus); outline-offset: var(--focus-offset); }
 }
 /* MORE CONTRAST — two paths, one set of rules: the system asks for it
