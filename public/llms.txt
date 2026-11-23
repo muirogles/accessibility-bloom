@@ -138,8 +138,9 @@ IV · El cultivo
 
 - [10 · Patrón y antipatrón](index.html#patterns): lo que vive y lo que se marchita
 - [11 · Percepción](index.html#color): contraste medido y daltonismo simulado
-- [12 · Brotes](index.html#sprouts): lo que aún no es rama: referencias ARIA con elementos, HTML en canvas, nodos virtuales
+- [12 · Brotes](index.html#sprouts): lo que aún no es rama: WebMCP, HTML en canvas, referencias ARIA con elementos, nodos virtuales
 - [Las raíces: manifiesto WCAG 2.2 AA](index.html#roots): el pie de la obra; cada promesa enlaza a la estación que la cumple.
+- [Las fuentes](index.html#sources): todas las fuentes que cita la obra (WCAG 2.2, WAI-ARIA, HTML-AAM, AccName, APG, Machado y otros 2009, brotes, llms.txt, WebMCP, schema.org, Kandinsky).
 
 Cada enlace de la portada suena en su semitono: de Do5 a Si5, una escala
 cromática completa.
@@ -166,10 +167,11 @@ cromática completa.
 - Lo que cambia: regiones vivas (status, alert); el error atado al campo.
 - Capas: dialog modal e inert.
 - Patrón y antipatrón: el div-botón y el falso control, con el trozo de
-  árbol que generan; las decisiones de la obra y lo que no usa.
+  árbol que generan; las seis decisiones de la obra, cada una frente al
+  antipatrón que evita.
 - Percepción: contraste medido, daltonismo simulado (protanopia,
   deuteranopia, tritanopia) y color como canal nunca único.
-- Brotes: referencias ARIA con elementos, HTML en canvas y nodos virtuales
+- Brotes: WebMCP, HTML en canvas, referencias ARIA con elementos y nodos virtuales
   del AOM.
 - Cómo lee y actúa un agente de IA: el mismo árbol, llms.txt, el manifiesto
   ARD y herramientas WebMCP.

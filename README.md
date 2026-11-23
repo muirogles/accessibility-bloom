@@ -27,8 +27,8 @@ Kandinsky fijó tres correspondencias —círculo-azul, triángulo-amarillo,
 cuadrado-rojo—. El rombo violeta, la barra cian y el arco de rama son
 **extensión propia** de esta obra, y se declara para no atribuirle nada que
 no dijera. El **ocre no entra nunca en la flor**: es el color de la savia,
-que corre por los tallos, por las raicillas del manifiesto y por las notas
-de lectura. El tronco y las ramas se trazan en tinta, y la flor de la
+que corre por los tallos, por la línea «Sube a» del manifiesto y por las
+notas de lectura. Las raicillas son de tinta, como la raíz de la que salen. El tronco y las ramas se trazan en tinta, y la flor de la
 portada no tiene tallo de savia: la sostiene el propio tronco, que sube
 hasta su cáliz.
 
@@ -294,7 +294,7 @@ una pantalla**: nada queda cortado por abajo.
   consulta (referencias WCAG, frecuencias, etiquetas de la partitura, el
   inspector) a 12/16. **Un papel, un estilo:** el nombre de algo (rótulos,
   flores, leyendas) en Space Grotesk seminegrita; la etiqueta de categoría
-  («Lector de pantalla», «Se anuncia») igual pero más suave; el título de un
+  («Lector de pantalla», «Agente de IA») igual pero más suave; el título de un
   paso a 20 seminegrita; lo que recibe un lector a 20 regular; la letra mono
   solo para código, regular y al tamaño de su línea; sin mayúsculas ni
   cursivas de adorno. De 48 estilos de texto distintos se pasa a 27, y cada
@@ -386,9 +386,7 @@ hablan la misma gramática que las flores:
   visible, WCAG 2.5.3).
 - **Un interruptor** (`<button aria-pressed>`: «Sonido» y «Animaciones» en
   la portada, los cinco canales de «Quita un canal», «Mover con CSS» y la
-  Radiografía) y **un desplegable** (`<summary class="control">`: «Leer de
-  cerca», «Para saber más»), porque los dos tienen estado, llevan el propio
-  círculo como marca, con el
+  Radiografía), porque tiene estado, lleva el propio círculo como marca, con el
   contrato de estados de la obra: **aro vacío** mientras es falso, **aro
   lleno** y el lavado azul de la flor mientras es cierto. La forma dice el
   estado; el color solo lo acompaña.
@@ -483,7 +481,7 @@ fusionando lo que contaba lo mismo:
 |  | 9 | Capas (`#layers`) | `<dialog>` con `showModal()` e `inert` |
 | IV · El cultivo | 10 | Patrón y antipatrón (`#patterns`) | lo que vive y lo que se marchita; las decisiones de la obra |
 |  | 11 | Percepción (`#color`) | contraste medido; protanopia, deuteranopia, tritanopia y sin color |
-|  | 12 | Brotes (`#sprouts`) | referencias ARIA con elementos, HTML en canvas, nodos virtuales |
+|  | 12 | Brotes (`#sprouts`) | WebMCP, HTML en canvas, referencias ARIA con elementos, nodos virtuales |
 
 **Las raíces** (`#roots`) son el pie, no una estación. Las alcanzan el
 tallo, que se hace tronco, y el tercer enlace de salto.
@@ -514,20 +512,62 @@ dice). El resultado queda escrito como tokens en `tokens.css`.
 Percepción (11), en «El cultivo», prueba cómo la perciben otros ojos sobre
 **toda** la obra.
 
-**Leer de cerca.** El código y los fragmentos del árbol no se leen desde
-el fondo de una sala. En las estaciones 7, 8 y 10 aún se pliegan en un
-`<details>` «Leer de cerca», a un clic para quien lee en su mesa. La
-estación 1 ya no pliega nada: lo que se lleva un agente se ve entero, como
-una ruta visual; el resto irá saliendo del pliegue del mismo modo.
+**Todo a la vista.** Ninguna estación pliega nada (no queda ni un
+`<details>`): lo que una sala no
+puede leer (código largo, fragmentos de árbol) se ha vuelto dibujo. En la
+estación 1, lo que se lleva un agente es una ruta visual.
 
-## Patrón y antipatrón, con la prueba delante
+## Brotes: cuanto más alto, más cerca de ser rama
 
-En las estaciones del foco y de «Lo que cambia», cada caso se muestra por pares: el
-código, la razón, el coste **y el trozo de Árbol de Accesibilidad que ese
-código genera de verdad**, dibujado como lo dibuja el inspector. La
-diferencia deja de ser una opinión: en un lado hay nodos con rol, nombre y
-estado; en el otro, huecos. Ninguno de los antipatrones está activo en la
-página.
+Cada propuesta es una planta que sale de la tierra, y la altura de su
+tallo es su madurez, medida por la pantalla en peldaños (1 · 2 · 4):
+detenida, en pruebas, Baseline. Las referencias con elementos
+(`ariaLabelledByElements`) y los nodos virtuales nacieron en la misma
+propuesta, el AOM: son **una planta con dos brotes** (en el HTML, un `li`
+con su origen y la lista de sus brotes). El brote corto se detuvo; el
+alto se abre por un arco y sube hasta Baseline. WebMCP y HTML en
+`<canvas>`, las dos en prueba de origen, son otras dos plantas, a la misma
+altura, bajo la nota. WebMCP enseña el atributo real de esta obra: el
+riego de la estación 8 es la herramienta `toolname="water_garden"`. Cada tarjeta dibuja, con la gramática de la estación 1, el
+**árbol que produce** su propuesta (`role="img"` con su descripción), la
+línea real de su API y su estado en palabras llanas, verificado en su
+fuente el 23 de noviembre de 2026.
+
+## Las fuentes
+
+Al lado de las raíces, en la misma pantalla, un manantial: «Las fuentes,
+el agua de la que beben las raíces». Un lavado suave del azul cielo con
+una sola línea horizontal por superficie (la línea fría y en calma de
+Kandinsky), en la columna que el inspector deja libre en el pie. Todas
+las fuentes que cita la obra, agrupadas por lo que alimentan (la norma,
+el árbol y sus nombres, los patrones, el color y la gramática, los
+brotes, los agentes), cada grupo en una línea de enlaces. Los criterios
+WCAG muestran su número y llevan su nombre dentro del enlace para quien
+no lo ve. Los puntos entre enlaces son mudos para los lectores de
+pantalla (`content: "·" / ""`). La raíz principal **bebe**: desde
+su punta sigue, tangente, con una curva que baja y se tuerce en
+horizontal hasta entrar en el agua (`.roots__drink`, del grosor de la
+punta y en su mismo eje). El manantial va fuera de la rejilla, para que
+la fila de las raíces conserve su altura. La firma, a la izquierda, en el
+borde de las raíces: hace de contrapeso al manantial. En pantallas de
+sala, las raíces llenan su pantalla: las promesas se reparten a lo alto,
+la raíz principal llega al fondo y allí bebe, y el manantial se apoya
+abajo. Las URL, comprobadas una a
+una; las notas largas de cada fuente se cuentan en voz alta.
+
+## Patrón y antipatrón, por pares
+
+Las estaciones 7 (el foco), 8 (lo que cambia) y 10 (patrón y antipatrón)
+comparten un componente: una tabla en la que cada fila pone un patrón
+frente a su antipatrón, el opuesto exacto (cada fila compara, por eso es
+una tabla, con cabeceras de fila y de columna). Lo que vive cuelga de un
+tallo de tinta con su círculo azul; lo que se marchita es el capullo
+caído, suelto, sin tallo, porque no llega al árbol. Cada celda: un nombre
+técnico y una línea que se entiende desde el fondo de la sala. Las razones
+largas se cuentan en voz alta. Ninguno de los antipatrones está activo en
+la página, y cada afirmación está comprobada en el árbol de Chromium (por
+ejemplo: el `placeholder` sí da nombre accesible, de último recurso; lo
+que falla es que se borra de la vista al escribir).
 
 ## Contraste medido contra el lino `#f3ead6`
 
@@ -536,7 +576,7 @@ página.
 | Tinta `#17150f` | 15,3:1 | texto, líneas, tronco y ramas |
 | Violeta `#4b2e83` | 8,7:1 | forma y texto |
 | Azul `#0047ab` | 7,1:1 | forma, enlaces y texto |
-| Ocre `#855600` | 5,3:1 | savia: tallos, raicillas y notas de lectura |
+| Ocre `#855600` | 5,3:1 | savia: tallos, «Sube a» y notas de lectura |
 | Rojo `#d81e3f` | 4,2:1 | forma y texto grande |
 | Cian `#0f7f8c` | 4,0:1 | solo grafismo |
 | Amarillo `#f2b705` | 1,5:1 | relleno con contorno de tinta; **jamás** texto |
@@ -664,7 +704,7 @@ accessibility-bloom/
 ├── js/
 │   ├── main.js         # cableado de flores, sonido, animaciones, riego y exportación
 │   ├── cover.js        # capítulos desplegables de la portada y su florecer sonoro
-│   ├── stations.js     # la ruta, el orden del foco, el eco, la capa y «Mirar como»
+│   ├── stations.js     # la ruta, el orden del foco, la capa y «Mirar como»
 │   ├── agent.js        # herramientas WebMCP: el agente lee el árbol y actúa
 │   ├── tree-ax.js      # inspector y serialización del árbol (rol, nombre, estado)
 │   ├── xray.js         # chips de la radiografía, con el mismo cálculo que el inspector

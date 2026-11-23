@@ -278,7 +278,6 @@
                   <div class="ax-sketch__reading"><dt>Control por voz</dt><dd>«pulsa Sonido»</dd></div>
                   <div class="ax-sketch__reading ax-sketch__reading--end"><dt>Agente de IA</dt><dd><button type="button" class="control ax-sketch__export" aria-haspopup="dialog" data-tree-open>Ver el árbol</button></dd></div>
                 </dl>
-                <figcaption class="ax-sketch__foot">Con su CSS, este HTML es la portada que ya has visto.</figcaption>
               </figure>
               <dialog class="layer layer--tree" aria-labelledby="tree-data-title" data-tree-dialog>
                 <h3 id="tree-data-title" class="layer__title">El árbol que se lleva un agente</h3>
@@ -494,15 +493,7 @@
               </div>
               <div class="lesson__take">
                 <p class="lesson__label">Llévatelo</p>
-                <p>Usa la etiqueta que ya trae el rol: <code>&lt;button&gt;</code> para hacer, <code>&lt;a href&gt;</code> para ir (<a href="https://www.w3.org/WAI/WCAG22/Understanding/name-role-value.html" lang="en">WCAG 4.1.2</a>). Míralo en Chrome DevTools, en el campo <em>Role</em>.</p>
-                <details class="lesson__more">
-                  <summary class="control"><span class="control__mark" aria-hidden="true"></span>Para saber más</summary>
-                  <ul>
-                    <li><a href="https://www.w3.org/TR/using-aria/" lang="en">Using ARIA</a>: primera regla (si hay etiqueta, úsala) y tercera (todo control ARIA debe funcionar con teclado)</li>
-                    <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/button/" lang="en">APG · Button</a>: Enter y Espacio activan un botón</li>
-                    <li><a href="https://www.w3.org/TR/html-aam-1.0/" lang="en">HTML-AAM</a>: el rol que expone cada etiqueta</li>
-                  </ul>
-                </details>
+                <p>Usa la etiqueta que ya trae el rol: <code>&lt;button&gt;</code> para hacer, <code>&lt;a href&gt;</code> para ir (<a href="https://www.w3.org/WAI/WCAG22/Understanding/name-role-value.html" lang="en">WCAG 4.1.2</a>). Míralo en Chrome DevTools, en el campo <em>Role</em>. Fuentes: <a href="#src-tree">el árbol</a> y <a href="#src-patterns">los patrones</a>.</p>
               </div>
             </div>
           </div>
@@ -652,17 +643,7 @@
               <!-- 6 · take it with you -->
               <div class="lesson__take">
                 <p class="lesson__label">Llévatelo</p>
-                <p>Si un control cambia de estado o de valor, el árbol debe saberlo (<a href="https://www.w3.org/WAI/WCAG22/Understanding/name-role-value.html" lang="en">WCAG 4.1.2</a>). Míralo en Chrome DevTools: <em>Elementos → Accesibilidad</em>.</p>
-                <details class="lesson__more">
-                  <summary class="control"><span class="control__mark" aria-hidden="true"></span>Para saber más</summary>
-                  <ul>
-                    <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/button/" lang="en">APG · Button</a>: el interruptor nunca cambia su nombre al pulsarse</li>
-                    <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/" lang="en">APG · Disclosure</a>: <code>aria-expanded</code> y <code>aria-controls</code></li>
-                    <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/" lang="en">APG · Checkbox</a>: la casilla mixta</li>
-                    <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/slider/" lang="en">APG · Slider</a>: <code>aria-valuetext</code></li>
-                    <li><a href="https://www.w3.org/TR/html-aam-1.0/" lang="en">HTML-AAM</a>: qué expone cada atributo HTML en el árbol</li>
-                  </ul>
-                </details>
+                <p>Si un control cambia de estado o de valor, el árbol debe saberlo (<a href="https://www.w3.org/WAI/WCAG22/Understanding/name-role-value.html" lang="en">WCAG 4.1.2</a>). Míralo en Chrome DevTools: <em>Elementos → Accesibilidad</em>. Fuentes: <a href="#src-tree">el árbol</a> y <a href="#src-patterns">los patrones</a>.</p>
               </div>
             </div>
           </div>
@@ -677,8 +658,7 @@
             <div class="note note--pink">
               <h2 id="focus-title" class="note__title"><span class="note__num" aria-hidden="true">7</span>El foco: por dónde va la atención</h2>
               <p>El foco es el cursor de quien no usa ratón. Su recorrido no lo decide el diseño visual: lo decide el <strong>orden del HTML</strong>. Si el CSS mueve un bloque y el HTML no, el foco seguirá yendo donde dice el código.</p>
-              <p>De ahí tres reglas: <strong>nada de <code>tabindex</code> positivo</strong> —reordenar el foco a mano crea saltos que nadie puede predecir—, foco <strong>siempre visible</strong> y dibujado como un trazo más del cuadro, y enlaces de salto al principio para no obligar a nadie a recorrerlo todo.</p>
-              <p class="note__look">Recorre las paradas con <kbd>Tab</kbd>; luego pulsa «Mover con CSS» y vuelve a recorrerlas: los números siguen el HTML, no el dibujo. En toda la obra, cada capullo de botón o casilla crece y se aclara al recibir el foco, sin abrirse todavía —los enlaces sí florecen: su verdad es la atención—, y el inspector canta el puesto exacto —<em>Xº de Y</em>— en la ficha del nodo.</p>
+              <p class="note__look">Recorre las paradas con <kbd>Tab</kbd>; luego pulsa «Mover con CSS» y vuelve a recorrerlas: los números siguen el HTML, no el dibujo. La ficha del inspector da el puesto exacto: <em>Xº de Y</em>.</p>
             </div>
             <div class="branch__visual">
               <figure class="focus-order" data-focus-order>
@@ -691,44 +671,29 @@
                 </ol>
                 <p class="focus-order__foot"><button type="button" class="control" aria-pressed="false" data-focus-order-shuffle><span class="control__mark" aria-hidden="true"></span>Mover con CSS</button></p>
               </figure>
-              <details class="closer">
-                <summary class="control"><span class="control__mark" aria-hidden="true"></span>Leer de cerca: patrón y antipatrón</summary>
-                <div class="pair">
-                  <div class="pair__case pair__case--pattern">
-                    <p class="pair__tag"><span class="pair__mark pair__mark--pattern" aria-hidden="true"></span>Patrón</p>
-                    <pre class="pair__code"><code>&lt;a class="skip" href="#trunk"&gt;Saltar al contenido&lt;/a&gt;
-  &lt;button&gt;Abrir&lt;/button&gt;
-  :root { --unit: 0.5rem; --k-ink: #17150f; }     /* primitive */
-  :root { --focus: var(--k-ink); --ring: calc(var(--unit) / 2); }
-  button:focus-visible { outline: var(--ring) solid var(--focus);
-                         outline-offset: var(--ring); }</code></pre>
-                    <p class="pair__why"><strong>Razón:</strong> el orden lo pone el DOM y el foco se ve. <strong>Gana:</strong> quien navega con teclado sabe siempre dónde está.</p>
-                    <div class="ax-frag">
-                      <p class="ax-frag__title">Lo que llega al árbol</p>
-                      <ul class="ax-frag__nodes">
-                      <li class="ax-frag__node"><span class="ax-frag__role">link</span> «Saltar al contenido»<span class="ax-frag__meta">foco 1.º de 2 · destino #trunk</span></li>
-                      <li class="ax-frag__node"><span class="ax-frag__role">button</span> «Abrir»<span class="ax-frag__meta">foco 2.º de 2 · Enter y Espacio nativos</span></li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="pair__case pair__case--anti">
-                    <p class="pair__tag"><span class="pair__mark pair__mark--anti" aria-hidden="true"></span>Antipatrón</p>
-                    <pre class="pair__code"><code>&lt;div onclick="open()" tabindex="5"&gt;Abrir&lt;/div&gt;
-
-  div:focus { outline: none; }</code></pre>
-                    <p class="pair__why"><strong>Coste:</strong> <code>tabindex="5"</code> salta la cola y <code>outline:none</code> apaga la única pista de dónde está el foco. <strong>Pierde:</strong> teclado, control por voz y conmutadores.</p>
-                    <div class="ax-frag ax-frag--broken">
-                      <p class="ax-frag__title">Lo que llega al árbol</p>
-                      <ul class="ax-frag__nodes">
-                      <li class="ax-frag__node"><span class="ax-frag__role">generic</span> <span class="ax-frag__missing">sin nombre</span><span class="ax-frag__meta">no es un botón: ni rol, ni Enter, ni Espacio</span></li>
-                      <li class="ax-frag__gap">Con tabindex="5" el foco llega aquí antes que a lo que va delante</li>
-                      <li class="ax-frag__gap">Con outline:none no hay manera de saber dónde está el foco</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-                <p class="pair__foot">Ninguno de los dos casos es un fallo de esta página: son dos especímenes puestos uno al lado del otro para poder compararlos.</p>
-              </details>
+              <table class="craft">
+                <caption class="visually-hidden">El recorrido del foco: patrón y antipatrón</caption>
+                <thead>
+                  <tr>
+                    <th scope="col" class="craft__head craft__head--pattern">Patrón <span class="craft__gloss">· lo que vive</span></th>
+                    <th scope="col" class="craft__head craft__head--anti">Antipatrón <span class="craft__gloss">· lo que se marchita</span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row" class="craft__case"><span class="craft__name">Orden del HTML</span><span class="visually-hidden">: </span><span class="craft__line">El foco va como se lee.</span></th>
+                    <td class="craft__case craft__case--anti"><span class="craft__name"><code>tabindex</code> positivo</span><span class="visually-hidden">: </span><span class="craft__line">Salta la cola: nadie lo prevé.</span></td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="craft__case"><span class="craft__name"><code>outline</code> de foco</span><span class="visually-hidden">: </span><span class="craft__line">Siempre visible: un trazo más.</span></th>
+                    <td class="craft__case craft__case--anti"><span class="craft__name"><code>outline: none</code></span><span class="visually-hidden">: </span><span class="craft__line">Nadie sabe dónde está el foco.</span></td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="craft__case craft__case--end"><span class="craft__name">Enlace de salto</span><span class="visually-hidden">: </span><span class="craft__line">Saltas lo repetido de una vez.</span></th>
+                    <td class="craft__case craft__case--anti"><span class="craft__name">Sin enlace de salto</span><span class="visually-hidden">: </span><span class="craft__line">Recorres todo, en cada página.</span></td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </section>
@@ -742,14 +707,10 @@
             <div class="note note--cyan">
               <h2 id="live-title" class="note__title"><span class="note__num" aria-hidden="true">8</span>Lo que cambia: avisar sin mover el foco</h2>
               <p>Hay cambios que ocurren lejos del foco: un aviso que aparece, un resultado que llega. Una <strong>región viva</strong> —<code>aria-live</code>, o los roles <code>status</code> y <code>alert</code>— los anuncia sin arrastrar a nadie: el foco se queda donde estaba.</p>
-              <p>El riego lo cuenta de las dos maneras. Si todo va bien, un <code>status</code> cortés lo dice en voz baja. Si falla, el error se ata al campo con <code>aria-describedby</code>, el campo pasa a <code>aria-invalid</code> —un <a href="#state">estado</a>— y el foco vuelve a él: reparar está a un tecleo.</p>
+              <p>El riego lo cuenta de las dos maneras. Si todo va bien, un <code>status</code> cortés lo dice en voz baja. Si falla, el campo pasa a <code>aria-invalid</code> —un <a href="#state">estado</a>— y el foco vuelve a él: reparar está a un tecleo.</p>
               <p class="note__look">Riega con un correo válido: se anuncia y el foco no se mueve. Riega vacío: el foco cae en el campo.</p>
             </div>
             <div class="branch__visual">
-              <!-- A visible echo of the work's polite live region: what a
-                   screen reader hears, written for the room. aria-hidden
-                   because the live region itself already says it. -->
-              <p class="echo" aria-hidden="true"><span class="echo__label">Se anuncia</span><span class="echo__text" data-echo>—</span></p>
               <form class="watering" novalidate data-watering aria-labelledby="watering-title" toolname="water_garden" tooldescription="Checks the shape of a contact email in the demo watering form of Accessibility Bloom. Nothing is sent.">
                 <p class="watering__title" id="watering-title">Riego del jardín <span>(demostración: no se envía nada)</span></p>
                 <div class="field">
@@ -765,42 +726,29 @@
                   <p class="field__ok" data-ok hidden><span class="field__ok-mark" aria-hidden="true"></span>Regado: el correo tiene una forma válida.</p>
                 </div>
               </form>
-              <details class="closer">
-                <summary class="control"><span class="control__mark" aria-hidden="true"></span>Leer de cerca: patrón y antipatrón</summary>
-                <div class="pair">
-                  <div class="pair__case pair__case--pattern">
-                    <p class="pair__tag"><span class="pair__mark pair__mark--pattern" aria-hidden="true"></span>Patrón</p>
-                    <pre class="pair__code"><code>&lt;label for="email"&gt;Correo&lt;/label&gt;
-  &lt;input id="email" required aria-describedby="email-help email-error"
-         aria-invalid="true"&gt;
-  &lt;p id="email-help"&gt;nombre@dominio.com&lt;/p&gt;
-  &lt;p id="email-error"&gt;Falta la arroba&lt;/p&gt;
-  &lt;p role="status"&gt;Regado: el correo es válido&lt;/p&gt;</code></pre>
-                    <p class="pair__why"><strong>Razón:</strong> nombre, ayuda y error viajan juntos en el árbol. <strong>Gana:</strong> el lector de pantalla lee el error al entrar en el campo, no solo al fallar.</p>
-                    <div class="ax-frag">
-                      <p class="ax-frag__title">Lo que llega al árbol</p>
-                      <ul class="ax-frag__nodes">
-                      <li class="ax-frag__node"><span class="ax-frag__role">textbox</span> «Correo»<span class="ax-frag__meta">required=true · invalid=true</span></li>
-                      <li class="ax-frag__node"><span class="ax-frag__role">description</span> «nombre@dominio.com Falta la arroba»<span class="ax-frag__meta">ayuda y error atados al campo con aria-describedby, en ese orden: se leen al entrar</span></li>
-                      <li class="ax-frag__node"><span class="ax-frag__role">status</span> «Regado: el correo es válido»<span class="ax-frag__meta">live=polite · se anuncia sin mover el foco</span></li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="pair__case pair__case--anti">
-                    <p class="pair__tag"><span class="pair__mark pair__mark--anti" aria-hidden="true"></span>Antipatrón</p>
-                    <pre class="pair__code"><code>&lt;input placeholder="Correo"&gt;
-  &lt;span style="color:red"&gt;✗&lt;/span&gt;</code></pre>
-                    <p class="pair__why"><strong>Coste:</strong> el <code>placeholder</code> no es nombre accesible y desaparece al escribir; el error solo existe como color y como símbolo sin texto. <strong>Pierde:</strong> memoria de trabajo, visión del color y lectores de pantalla.</p>
-                    <div class="ax-frag ax-frag--broken">
-                      <p class="ax-frag__title">Lo que llega al árbol</p>
-                      <ul class="ax-frag__nodes">
-                      <li class="ax-frag__node"><span class="ax-frag__role">textbox</span> <span class="ax-frag__missing">sin nombre</span><span class="ax-frag__meta">el placeholder no es nombre accesible y desaparece al escribir</span></li>
-                      <li class="ax-frag__gap">El error no existe en el árbol: es un aspa de color sin texto</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </details>
+              <table class="craft">
+                <caption class="visually-hidden">El campo y sus avisos: patrón y antipatrón</caption>
+                <thead>
+                  <tr>
+                    <th scope="col" class="craft__head craft__head--pattern">Patrón <span class="craft__gloss">· lo que vive</span></th>
+                    <th scope="col" class="craft__head craft__head--anti">Antipatrón <span class="craft__gloss">· lo que se marchita</span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row" class="craft__case"><span class="craft__name"><code>&lt;label for&gt;</code></span><span class="visually-hidden">: </span><span class="craft__line">Un nombre que no se borra.</span></th>
+                    <td class="craft__case craft__case--anti"><span class="craft__name">Solo <code>placeholder</code></span><span class="visually-hidden">: </span><span class="craft__line">Se borra de la vista al escribir.</span></td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="craft__case"><span class="craft__name"><code>aria-describedby</code></span><span class="visually-hidden">: </span><span class="craft__line">El error se lee en el campo.</span></th>
+                    <td class="craft__case craft__case--anti"><span class="craft__name"><code>✗</code> en rojo</span><span class="visually-hidden">: </span><span class="craft__line">Texto suelto: no dice qué falla.</span></td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="craft__case craft__case--end"><span class="craft__name"><code>role="status"</code></span><span class="visually-hidden">: </span><span class="craft__line">Se oye sin mover el foco.</span></th>
+                    <td class="craft__case craft__case--anti"><span class="craft__name">Sin región viva</span><span class="visually-hidden">: </span><span class="craft__line">El acierto no se oye.</span></td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </section>
@@ -842,9 +790,9 @@
           <div class="branch__load branch__load--flowers">
             <div class="note note--orange">
               <h2 id="patterns-title" class="note__title"><span class="note__num" aria-hidden="true">10</span>Patrón y antipatrón</h2>
-              <p>Tres botones que en pantalla pueden pintarse iguales: el <code>&lt;button&gt;</code> vive; el <code>div role="button"</code> anuncia su rol pero el foco y el teclado <strong>los tienes que programar tú</strong>; el <code>div onclick</code> es invisible para el árbol: sin rol, sin nombre, sin foco.</p>
-              <p>Lo que vive es el patrón; lo que se marchita, el antipatrón. Cada decisión de la obra tiene una razón y un efecto en la experiencia, y cada antipatrón, una víctima concreta.</p>
-              <p class="note__look">Las dos flores marchitas son pintura (aria-hidden): están aquí como espécimen, no como trampa.</p>
+              <p>Tres botones que se ven iguales y el árbol lee distinto: uno <strong>completo</strong>, uno <strong>a medias</strong> y uno que <strong>no es botón</strong>.</p>
+              <p>Así se decidió toda la obra: cada patrón tiene su antipatrón, y cada antipatrón deja fuera a alguien.</p>
+              <p class="note__look">Las flores marchitas son solo pintura (<code>aria-hidden</code>): se miran, no se pulsan.</p>
             </div>
             <ul class="cluster">
               <li class="cluster__slot" style="--dz:0">
@@ -860,7 +808,7 @@
                       <span class="flower__name">La3 · 220 Hz</span>
                     </button>
                   </div>
-                  <figcaption class="flower-card__caption"><code>&lt;button&gt;</code> · vivo: rol, foco y teclado</figcaption>
+                  <figcaption class="flower-card__caption"><code>&lt;button&gt;</code> · rol, foco y teclado nativos</figcaption>
                 </figure>
               </li>
               <li class="cluster__slot" style="--dz:1.6">
@@ -876,7 +824,7 @@
                       <span class="flower__name">a medias</span>
                     </span>
                   </div>
-                  <figcaption class="flower-card__caption"><code>div role="button"</code> · rol sí, teclado a programar</figcaption>
+                  <figcaption class="flower-card__caption"><code>div role="button"</code> · rol sí; foco y teclado, a mano</figcaption>
                 </figure>
               </li>
               <li class="cluster__slot" style="--dz:0.7">
@@ -891,57 +839,46 @@
                       <span class="flower__name">muerta</span>
                     </span>
                   </div>
-                  <figcaption class="flower-card__caption"><code>div onclick</code> · no llega al árbol</figcaption>
+                  <figcaption class="flower-card__caption"><code>div onclick</code> · sin rol de botón ni foco</figcaption>
                 </figure>
               </li>
             </ul>
             <div class="branch__visual">
-              <details class="closer">
-                <summary class="control"><span class="control__mark" aria-hidden="true"></span>Leer de cerca: las decisiones de la obra y lo que no usa</summary>
-                <dl class="practice">
-                  <div class="practice__case">
-                    <dt>Un solo contrato de estados</dt>
-                    <dd><b>Razón:</b> la flor se abre cuando es verdad que está abierta. El puntero y el foco hacen <em>crecer y aclarar</em> el capullo —invitan, no fingen que ya pasó algo—; la floración plena, con el aro relleno de color, es del estado cierto: <code>pressed</code>, <code>checked</code>. La excepción razonada es el enlace: no guarda estado, así que su verdad es la atención y florece pleno con ella, y la flor de la sección en la que estás queda florecida con <code>aria-current</code>.</dd>
-                    <dd><b>Experiencia:</b> nadie se pregunta si ya pulsó, y al navegar la floración se ve al llegar.</dd>
-                  </div>
-                  <div class="practice__case">
-                    <dt>Cinco canales para un mismo dato</dt>
-                    <dd><b>Razón:</b> forma, color, timbre, texto y nodo del árbol dicen lo mismo por vías distintas, y se puede comprobar: «Mirar como», en Percepción, quita o cambia el color de toda la obra.</dd>
-                    <dd><b>Experiencia:</b> quien no distingue el color reconoce la forma; quien no ve nada oye el timbre y lee el nodo.</dd>
-                  </div>
-                  <div class="practice__case">
-                    <dt>Etiquetas nativas antes que ARIA</dt>
-                    <dd><b>Razón:</b> <code>&lt;button&gt;</code> trae rol, foco y teclado; ARIA solo cambia la semántica, nunca el comportamiento.</dd>
-                    <dd><b>Experiencia:</b> menos código propio, menos formas de romperlo.</dd>
-                  </div>
-                  <div class="practice__case" id="p-motion">
-                    <dt>Movimiento con freno</dt>
-                    <dd><b>Razón:</b> las animaciones nacen apagadas; el interruptor «Animaciones» las pide, se recuerda como el del sonido, y <code>prefers-reduced-motion</code> manda siempre sobre él. La flor de la portada se abre una sola vez, nunca en bucle.</dd>
-                    <dd><b>Experiencia:</b> quien se marea puede quedarse a mirar la obra sin renunciar a ella.</dd>
-                  </div>
-                  <div class="practice__case" id="p-announce">
-                    <dt>Anuncio sin robo de foco</dt>
-                    <dd><b>Razón:</b> cada floración se cuenta en una región <code>aria-live="polite"</code>; el foco no se mueve solo.</dd>
-                    <dd><b>Experiencia:</b> se sabe qué ha pasado sin perder el sitio.</dd>
-                  </div>
-                  <div class="practice__case" id="p-geometry">
-                    <dt>Geometría en <code>rem</code> y contenedores</dt>
-                    <dd><b>Razón:</b> el mandala se dibuja en unidades relativas al cuadrado que lo contiene, no en píxeles fijos.</dd>
-                    <dd><b>Experiencia:</b> al 400 % de zoom y a 320 px la obra se recompone sin recortes; en una pantalla de sala, cada estación cabe entera en una.</dd>
-                  </div>
-                </dl>
-                <div class="practice__anti">
-                  <h3 class="practice__anti-title" id="p-anti">Antipatrones que la obra no usa</h3>
-                  <ul>
-                    <li><b>Revelar solo al hover.</b> Sin puntero no existe: el teclado y el táctil quedan fuera.</li>
-                    <li><b>Estado solo por color.</b> Quien no distingue el color pierde la información entera.</li>
-                    <li><b>Sonido automático.</b> Aquí el sonido solo suena tras un gesto y siempre se puede silenciar.</li>
-                    <li><b>Foco secuestrado.</b> Mover el foco sin pedirlo desorienta a quien navega a ciegas.</li>
-                    <li><b>Falsos botones.</b> Un <code>div</code> con <code>onclick</code> parece un botón y no llega al árbol.</li>
-                    <li><b>Prisa artificial.</b> Cuentas atrás y avisos que se van solos: leer no puede ser una carrera.</li>
-                  </ul>
-                </div>
-              </details>
+              <table class="craft">
+                <caption class="visually-hidden">Las decisiones de la obra y lo que no usa</caption>
+                <thead>
+                  <tr>
+                    <th scope="col" class="craft__head craft__head--pattern">Patrón <span class="craft__gloss">· lo que vive</span></th>
+                    <th scope="col" class="craft__head craft__head--anti" id="p-anti">Antipatrón <span class="craft__gloss">· lo que se marchita</span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row" class="craft__case"><span class="craft__name">Estado en el árbol</span><span class="visually-hidden">: </span><span class="craft__line">Se ve y se oye: «pulsado».</span></th>
+                    <td class="craft__case craft__case--anti"><span class="craft__name">Estado solo en CSS</span><span class="visually-hidden">: </span><span class="craft__line">Se ve, pero no se oye.</span></td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="craft__case"><span class="craft__name">Cinco canales</span><span class="visually-hidden">: </span><span class="craft__line">Si falta uno, quedan cuatro.</span></th>
+                    <td class="craft__case craft__case--anti"><span class="craft__name">Solo el color</span><span class="visually-hidden">: </span><span class="craft__line">Sin ver el color, no hay dato.</span></td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="craft__case"><span class="craft__name"><code>:focus-visible</code></span><span class="visually-hidden">: </span><span class="craft__line">El teclado ve lo mismo.</span></th>
+                    <td class="craft__case craft__case--anti"><span class="craft__name">Solo <code>:hover</code></span><span class="visually-hidden">: </span><span class="craft__line">Sin ratón, no existe.</span></td>
+                  </tr>
+                  <tr id="p-motion">
+                    <th scope="row" class="craft__case"><span class="craft__name">Animación a petición</span><span class="visually-hidden">: </span><span class="craft__line">Apagada; tu sistema manda.</span></th>
+                    <td class="craft__case craft__case--anti"><span class="craft__name">Animación automática</span><span class="visually-hidden">: </span><span class="craft__line">Quien se marea no la para.</span></td>
+                  </tr>
+                  <tr id="p-announce">
+                    <th scope="row" class="craft__case"><span class="craft__name"><code>aria-live</code></span><span class="visually-hidden">: </span><span class="craft__line">Avisa sin mover el foco.</span></th>
+                    <td class="craft__case craft__case--anti"><span class="craft__name">Foco secuestrado</span><span class="visually-hidden">: </span><span class="craft__line">Quien no ve pierde su sitio.</span></td>
+                  </tr>
+                  <tr id="p-geometry">
+                    <th scope="row" class="craft__case craft__case--end"><span class="craft__name">Medidas en <code>rem</code></span><span class="visually-hidden">: </span><span class="craft__line">Sigue la letra del navegador.</span></th>
+                    <td class="craft__case craft__case--anti"><span class="craft__name">Letra en <code>px</code></span><span class="visually-hidden">: </span><span class="craft__line">No sigue la letra del navegador.</span></td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </section>
@@ -1038,30 +975,83 @@
           <div class="ground__load">
             <div class="note note--sprout">
               <h2 id="sprouts-title" class="note__title"><span class="note__num" aria-hidden="true">12</span>Brotes: lo que aún no es rama</h2>
-              <p>La misma tierra que alimenta las raíces empuja <strong>brotes</strong>: propuestas que ya se pueden mirar pero todavía no sostienen peso.</p>
-              <p class="note__look">Nacen del suelo, no de la copa. Cuanto más alto el tallo, más cerca está de ser rama.</p>
+              <p>Propuestas que ya se pueden mirar, pero que todavía <strong>no sostienen peso</strong>.</p>
+              <p class="note__look">Cuanto más alto el tallo, más cerca está de ser rama.</p>
             </div>
             <ul class="sprouts__list">
-              <li class="sprout sprout--grown">
-                <article aria-labelledby="sprout-reflection-title">
-                  <h3 id="sprout-reflection-title">Referencias ARIA con elementos</h3>
-                  <p>Atar un nombre al propio elemento, sin <code>id</code>: <code>ariaLabelledByElements</code>. Nació en el AOM.</p>
-                  <p class="sprout__status">Baseline desde 2025 · <a href="https://developer.mozilla.org/docs/Web/API/Element/ariaLabelledByElements" lang="en">MDN</a></p>
+              <li class="sprout sprout--rising">
+                <article aria-labelledby="sprout-webmcp-title">
+                  <h3 id="sprout-webmcp-title">WebMCP</h3>
+                  <p>La página ofrece herramientas con nombre a un agente: aquí, el riego.</p>
+                  <div class="ax-sketch sprout__sketch" role="img" aria-label="Lo que recibe un agente: el formulario del riego, con su botón «Regar», ofrecido como la herramienta water_garden.">
+                    <ul class="ax-sketch__tree">
+                      <li class="ax-sketch__root"><span class="ax-sketch__knot"></span><span class="ax-sketch__role">form</span>
+                        <ul class="ax-sketch__children">
+                          <li class="ax-sketch__node ax-sketch__node--button ax-sketch__node--end"><span class="ax-sketch__shape"></span><span class="ax-sketch__text"><span class="ax-sketch__role">button</span> «Regar»</span></li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </div>
+                  <p class="sprout__code"><code>toolname="water_garden"</code></p>
+                  <p class="sprout__status">En pruebas: desde Chrome 149, para webs inscritas · <a href="https://developer.chrome.com/docs/ai/webmcp" lang="en">Chrome</a></p>
                 </article>
               </li>
               <li class="sprout sprout--rising">
                 <article aria-labelledby="sprout-canvas-title">
                   <h3 id="sprout-canvas-title">HTML dentro de <code>&lt;canvas&gt;</code></h3>
-                  <p>Pintar HTML vivo en el lienzo sin perder su nodo, su foco ni su semántica.</p>
-                  <p class="sprout__status">Prueba de origen en Chrome desde la 148 · <a href="https://github.com/WICG/html-in-canvas" lang="en">WICG</a></p>
+                  <p>HTML vivo pintado en el lienzo, con su nodo y su foco.</p>
+                  <div class="ax-sketch sprout__sketch" role="img" aria-label="El árbol que conserva: el canvas y, dentro, el botón «Enviar» que pinta, enfocable.">
+                    <ul class="ax-sketch__tree">
+                      <li class="ax-sketch__root"><span class="ax-sketch__knot"></span><span class="ax-sketch__role">canvas</span>
+                        <ul class="ax-sketch__children">
+                        <li class="ax-sketch__node ax-sketch__node--button ax-sketch__node--end"><span class="ax-sketch__shape"></span><span class="ax-sketch__text"><span class="ax-sketch__role">button</span> «Enviar» <span class="ax-sketch__state">focusable</span></span></li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </div>
+                  <p class="sprout__code"><code>content="drawable"</code></p>
+                  <p class="sprout__status">En pruebas: Chrome 148–150, para webs inscritas · <a href="https://developer.chrome.com/blog/html-in-canvas-origin-trial" lang="en">Chrome</a></p>
                 </article>
               </li>
-              <li class="sprout sprout--seed">
-                <article aria-labelledby="sprout-virtual-title">
-                  <h3 id="sprout-virtual-title">Nodos virtuales del AOM</h3>
-                  <p>Añadir al árbol nodos que no existen en el DOM, para lo que se dibuja sin HTML.</p>
-                  <p class="sprout__status">Sin implementación · <a href="https://wicg.github.io/aom/caniuse.html" lang="en">WICG</a></p>
-                </article>
+              <li class="sprout sprout--plant">
+                <p class="sprout__origin">Un tallo, el <abbr title="Accessibility Object Model" lang="en">AOM</abbr>: el modelo de objetos de accesibilidad · <a href="https://wicg.github.io/aom/caniuse.html" lang="en">WICG</a></p>
+                <ul class="sprout__shoots">
+                  <li class="sprout__shoot sprout__shoot--seed">
+                    <article aria-labelledby="sprout-virtual-title">
+                      <h3 id="sprout-virtual-title">Nodos virtuales</h3>
+                      <p>Nodos sin HTML detrás.</p>
+                      <div class="ax-sketch sprout__sketch" role="img" aria-label="El árbol que propone: un canvas con dos botones virtuales, «Jugar» y «Pausa», sin HTML detrás. Propuesta detenida: ningún navegador la implementa (tabla de la WICG, 2022).">
+                        <ul class="ax-sketch__tree">
+                          <li class="ax-sketch__root"><span class="ax-sketch__knot"></span><span class="ax-sketch__role">canvas</span>
+                            <ul class="ax-sketch__children">
+                            <li class="ax-sketch__node ax-sketch__node--virtual"><span class="ax-sketch__shape"></span><span class="ax-sketch__text"><span class="ax-sketch__role">button</span> «Jugar»</span></li>
+                            <li class="ax-sketch__node ax-sketch__node--virtual ax-sketch__node--end"><span class="ax-sketch__shape"></span><span class="ax-sketch__text"><span class="ax-sketch__role">button</span> «Pausa»</span></li>
+                            </ul>
+                          </li>
+                        </ul>
+                      </div>
+                      <p class="sprout__status">Detenidos: ningún navegador los implementa</p>
+                    </article>
+                  </li>
+                  <li class="sprout__shoot sprout__shoot--grown">
+                    <article aria-labelledby="sprout-reflection-title">
+                      <h3 id="sprout-reflection-title">Referencias con elementos</h3>
+                      <p>Atar el nombre al propio elemento, sin <code>id</code>.</p>
+                      <div class="ax-sketch sprout__sketch" role="img" aria-label="El árbol que resulta: un grupo con el encabezado «Riego» y un botón que toma de él su nombre, «Riego».">
+                        <ul class="ax-sketch__tree">
+                          <li class="ax-sketch__root"><span class="ax-sketch__knot"></span><span class="ax-sketch__role">group</span>
+                            <ul class="ax-sketch__children">
+                            <li class="ax-sketch__node ax-sketch__node--heading"><span class="ax-sketch__shape"></span><span class="ax-sketch__text"><span class="ax-sketch__role">heading</span> «Riego»</span></li>
+                            <li class="ax-sketch__node ax-sketch__node--button ax-sketch__node--end"><span class="ax-sketch__shape"></span><span class="ax-sketch__text"><span class="ax-sketch__role">button</span> «Riego» <span class="ax-sketch__state">nombre ← heading</span></span></li>
+                            </ul>
+                          </li>
+                        </ul>
+                      </div>
+                      <p class="sprout__code"><code>button.ariaLabelledByElements = [title];</code></p>
+                      <p class="sprout__status">Baseline 2025: ya en los navegadores principales · <a href="https://developer.mozilla.org/docs/Web/API/Element/ariaLabelledByElements" lang="en">MDN</a></p>
+                    </article>
+                  </li>
+                </ul>
               </li>
             </ul>
           </div>
@@ -1096,6 +1086,7 @@
 
     <footer class="roots">
       <span class="roots__main" aria-hidden="true"></span>
+      <span class="roots__drink" aria-hidden="true"></span>
       <section id="roots" class="roots__box" aria-labelledby="manifesto-title">
         <h2 id="manifesto-title" class="note__title roots__title">Las raíces: manifiesto WCAG 2.2 AA</h2>
         <p class="roots__lead">Cada raíz sostiene una promesa y sube su savia hasta la rama que la cumple: sigue el enlace para verla funcionando. Las que no tienen rama propia se cumplen en toda la obra.</p>
@@ -1105,14 +1096,88 @@
         <li>Nombre, rol y estado nativos en cada flor; los div-botón, solo como espécimen marchito. <span class="manifesto__sap">Sube a <a href="#role">Rol y acciones</a>, <a href="#name">El nombre</a>, <a href="#state">Estado y valor</a> y <a href="#patterns">Patrón y antipatrón</a>.</span></li>
         <li>Labels visibles en los controles; landmarks, jerarquía de encabezados y enlaces de salto. <span class="manifesto__sap">Sube a <a href="#name">El nombre</a>, <a href="#route">La ruta</a> y <a href="#focus">El foco</a>.</span></li>
         <li>Objetivos ≥ 44×44 px en las flores; ≥ 24×24 px con separación en el inspector (2.5.8).</li>
-        <li>Mobile first: reflow hasta 400 % de zoom y 320 px de ancho sin recortes ni scroll horizontal. <span class="manifesto__sap">Sube a <a href="#p-geometry">Geometría en rem y contenedores</a>.</span></li>
-        <li>Respeta <code>prefers-reduced-motion</code>, <code>prefers-contrast</code> y <code>forced-colors</code>. <span class="manifesto__sap">Sube a <a href="#p-motion">Movimiento con freno</a>, <a href="#state">Estado y valor</a> y <a href="#p-forced">Percepción</a>.</span></li>
+        <li>Mobile first: reflow hasta 400 % de zoom y 320 px de ancho sin recortes ni scroll horizontal. <span class="manifesto__sap">Sube a <a href="#p-geometry">Medidas en rem</a>.</span></li>
+        <li>Respeta <code>prefers-reduced-motion</code>, <code>prefers-contrast</code> y <code>forced-colors</code>. <span class="manifesto__sap">Sube a <a href="#p-motion">Animación a petición</a>, <a href="#state">Estado y valor</a> y <a href="#p-forced">Percepción</a>.</span></li>
         <li>El sonido nace apagado, solo suena si se activa y nada esencial es solo-audio. <span class="manifesto__sap">Sube a <a href="#synesthesia">La sinestesia</a> y <a href="#state">Estado y valor</a>.</span></li>
-        <li>Cada floración y cambio de estado se anuncia en una región <code>aria-live</code> sin mover el foco. <span class="manifesto__sap">Sube a <a href="#p-announce">Anuncio sin robo de foco</a>.</span></li>
-        <li>UX predecible: sin recorridos obligatorios, navegación consistente y sin sorpresas de foco. <span class="manifesto__sap">Sube a <a href="#p-anti">Antipatrones que la obra no usa</a>.</span></li>
+        <li>Cada floración y cambio de estado se anuncia en una región <code>aria-live</code> sin mover el foco. <span class="manifesto__sap">Sube a <a href="#p-announce">Aviso con aria-live</a>.</span></li>
+        <li>UX predecible: sin recorridos obligatorios, navegación consistente y sin sorpresas de foco. <span class="manifesto__sap">Sube a <a href="#p-anti">Lo que la obra no usa</a>.</span></li>
         <li>Idioma declarado y lenguaje claro.</li>
       </ul>
     </section>
+      <section id="sources" class="sources" aria-labelledby="sources-title">
+        <h2 id="sources-title" class="sources__heading">Las fuentes</h2>
+        <p class="sources__lead">El agua de la que beben las raíces.</p>
+          <div class="sources__group">
+            <h3 class="sources__title" id="src-norms">La norma</h3>
+            <ul class="sources__list">
+              <li><a href="https://www.w3.org/TR/WCAG22/" lang="en">WCAG 2.2</a> <span class="sources__who">· W3C, 2024</span></li>
+            </ul>
+            <ul class="sources__list sources__list--criteria" aria-label="Criterios citados">
+              <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships.html">1.3.1<span class="visually-hidden" lang="en"> Info and Relationships</span></a></li>
+              <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html">1.4.1<span class="visually-hidden" lang="en"> Use of Color</span></a></li>
+              <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/audio-control.html">1.4.2<span class="visually-hidden" lang="en"> Audio Control</span></a></li>
+              <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html">1.4.3<span class="visually-hidden" lang="en"> Contrast (Minimum)</span></a></li>
+              <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/reflow.html">1.4.10<span class="visually-hidden" lang="en"> Reflow</span></a></li>
+              <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html">1.4.11<span class="visually-hidden" lang="en"> Non-text Contrast</span></a></li>
+              <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/no-keyboard-trap.html">2.1.2<span class="visually-hidden" lang="en"> No Keyboard Trap</span></a></li>
+              <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide.html">2.2.2<span class="visually-hidden" lang="en"> Pause, Stop, Hide</span></a></li>
+              <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/focus-order.html">2.4.3<span class="visually-hidden" lang="en"> Focus Order</span></a></li>
+              <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/headings-and-labels.html">2.4.6<span class="visually-hidden" lang="en"> Headings and Labels</span></a></li>
+              <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/focus-visible.html">2.4.7<span class="visually-hidden" lang="en"> Focus Visible</span></a></li>
+              <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/label-in-name.html">2.5.3<span class="visually-hidden" lang="en"> Label in Name</span></a></li>
+              <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html">2.5.8<span class="visually-hidden" lang="en"> Target Size (Minimum)</span></a></li>
+              <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/error-identification.html">3.3.1<span class="visually-hidden" lang="en"> Error Identification</span></a></li>
+              <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/error-suggestion.html">3.3.3<span class="visually-hidden" lang="en"> Error Suggestion</span></a></li>
+              <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/name-role-value.html">4.1.2<span class="visually-hidden" lang="en"> Name, Role, Value</span></a></li>
+              <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html">4.1.3<span class="visually-hidden" lang="en"> Status Messages</span></a></li>
+            </ul>
+          </div>
+          <div class="sources__group">
+            <h3 class="sources__title" id="src-tree">El árbol y sus nombres</h3>
+            <ul class="sources__list">
+              <li><a href="https://www.w3.org/TR/wai-aria-1.2/" lang="en">WAI-ARIA 1.2</a></li>
+              <li><a href="https://www.w3.org/TR/html-aam-1.0/" lang="en">HTML-AAM</a></li>
+              <li><a href="https://www.w3.org/TR/accname-1.2/" lang="en">AccName 1.2</a></li>
+              <li><a href="https://www.w3.org/TR/using-aria/" lang="en">Using ARIA</a></li>
+              <li><a href="https://developer.chrome.com/docs/devtools/accessibility/reference" lang="en">Chrome DevTools</a></li>
+            </ul>
+          </div>
+          <div class="sources__group">
+            <h3 class="sources__title" id="src-patterns">Los patrones <span class="sources__who">· APG</span></h3>
+            <ul class="sources__list">
+              <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/button/" lang="en">Button</a></li>
+              <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/" lang="en">Disclosure</a></li>
+              <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/" lang="en">Checkbox</a></li>
+              <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/slider/" lang="en">Slider</a></li>
+              <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/" lang="en">Dialog (Modal)</a></li>
+            </ul>
+          </div>
+          <div class="sources__group">
+            <h3 class="sources__title" id="src-color">El color y la gramática</h3>
+            <ul class="sources__list">
+              <li><a href="https://www.inf.ufrgs.br/~oliveira/pubs_files/CVD_Simulation/CVD_Simulation.html">Machado, Oliveira y Fernandes</a> <span class="sources__who">· 2009</span></li>
+              <li>Kandinsky, <cite>Punto y línea sobre el plano</cite> <span class="sources__who">· 1926</span></li>
+            </ul>
+          </div>
+          <div class="sources__group">
+            <h3 class="sources__title" id="src-sprouts">Los brotes</h3>
+            <ul class="sources__list">
+              <li><a href="https://developer.mozilla.org/docs/Web/API/Element/ariaLabelledByElements" lang="en">ariaLabelledByElements</a> <span class="sources__who">· MDN</span></li>
+              <li><a href="https://github.com/WICG/html-in-canvas" lang="en">HTML-in-Canvas</a> <span class="sources__who">· WICG</span></li>
+              <li><a href="https://developer.chrome.com/blog/html-in-canvas-origin-trial" lang="en">Origin trial</a> <span class="sources__who">· Chrome</span></li>
+              <li><a href="https://wicg.github.io/aom/caniuse.html" lang="en">AOM</a> <span class="sources__who">· WICG</span></li>
+            </ul>
+          </div>
+          <div class="sources__group">
+            <h3 class="sources__title" id="src-agents">Los agentes</h3>
+            <ul class="sources__list">
+              <li><a href="https://llmstxt.org/" lang="en">llms.txt</a></li>
+              <li><a href="https://webmachinelearning.github.io/webmcp/" lang="en">WebMCP</a> <span class="sources__who">· W3C CG</span></li>
+              <li><a href="https://developer.chrome.com/docs/ai/webmcp" lang="en">WebMCP</a> <span class="sources__who">· Chrome</span></li>
+              <li><a href="https://schema.org/VisualArtwork" lang="en">schema.org</a></li>
+            </ul>
+          </div>
+      </section>
     <p class="roots__credit"><span class="roots__artwork">Accessibility Bloom</span> <span class="roots__sign">© 2026 María Rogles · <span class="roots__license">Licencia CC BY-NC-SA 4.0</span></span></p>
   </footer>
 </div>
