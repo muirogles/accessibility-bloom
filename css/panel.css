@@ -7,157 +7,349 @@
    ============================================================ */
 .panel {
   --panel-pad: var(--space-2);
-  --panel-radius: var(--space-3);           /* the arch of an <aside> */
-  --panel-row: var(--space-4);              /* one tree row: 32 */
+  --panel-radius: var(--space-3);
+  /* the arch of an <aside> */
+  --panel-row: var(--space-4);
+  /* one tree row: 32 */
   --panel-indent: var(--space-3);
 }
 
-/* Floating button (mobile/tablet only) */
+/* The mobile controls share a bottom row so neither covers the cover links.
+   Radiografía stays outside the modal so it can turn itself off. */
+.open-controls {
+  position: fixed;
+  inset-inline-end: var(--space-2);
+  bottom: var(--space-2);
+  z-index: var(--z-float);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.open-xray,
 .open-panel {
-  position: fixed; right: var(--space-2); bottom: var(--space-2); z-index: var(--z-float);
-  box-shadow: var(--half) var(--half) 0 var(--tint-shadow);   /* a primary control (artwork.css) that floats */
+  position: static;
+  box-shadow: var(--half) var(--half) 0 var(--tint-shadow);
+  padding-inline: var(--space-2);
+  white-space: nowrap;
 }
 
 /* The modal dialog (mobile) */
 .panel-box {
-  width: min(94vw, var(--space-64)); max-height: 88dvh;
-  margin: auto; padding: 0; border: 0; background: none;
+  width: min(94vw, var(--space-64));
+  max-height: 88dvh;
+  margin: auto;
+  padding: 0;
+  border: 0;
+  background: none;
 }
-.panel-box::backdrop { background: var(--tint-backdrop); }
+
+.panel-box::backdrop {
+  background: var(--tint-backdrop);
+}
 
 .panel {
-  display: flex; flex-direction: column;
+  display: flex;
+  flex-direction: column;
   max-height: 88dvh;
-  background: var(--surface-plate); border: var(--stroke-fine) solid var(--line);
+  background: var(--surface-plate);
+  border: var(--stroke-fine) solid var(--line);
   border-radius: var(--panel-radius) var(--panel-radius) 0 0;
   padding: var(--panel-pad);
   box-shadow: var(--space-1) var(--space-1) 0 var(--tint-code);
 }
-.panel__header { display: flex; align-items: center; justify-content: space-between; gap: var(--gap-2xs); }
+
+.panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-2xs);
+}
+
 .panel__title {
-  font-size: var(--type-subhead); line-height: var(--type-subhead-lh);
-  margin: 0 0 var(--space-1); color: var(--ink);
-}
-.panel__close { flex: none; }
-.panel__note {
-  font-size: var(--type-label); line-height: var(--type-label-lh);
-  color: var(--ink-soft); margin: 0 0 var(--space-1);
-}
-.panel__focus {
-  font-family: var(--font-mono); font-size: var(--type-label); line-height: var(--type-label-lh);
+  font-size: var(--type-subhead);
+  line-height: var(--type-subhead-lh);
+  margin: 0 0 var(--space-1);
   color: var(--ink);
-  background: var(--surface-canvas); border: var(--stroke-hair) solid var(--line);
-  padding: var(--space-1); margin: 0 0 var(--space-1);
 }
+
+.panel__close {
+  flex: none;
+}
+
+.panel__note {
+  font-size: var(--type-label);
+  line-height: var(--type-label-lh);
+  color: var(--ink-soft);
+  margin: 0 0 var(--space-1);
+}
+
+.panel__focus {
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  line-height: var(--type-label-lh);
+  color: var(--ink);
+  background: var(--surface-canvas);
+  border: var(--stroke-hair) solid var(--line);
+  padding: var(--space-1);
+  margin: 0 0 var(--space-1);
+}
+
 /* Two controls of the system, sharing the row */
-.panel__actions { display: flex; gap: var(--gap-2xs); margin: var(--space-1) 0; }
-.panel__action { flex: 1; }
+.panel__actions {
+  display: flex;
+  gap: var(--gap-2xs);
+  margin: var(--space-1) 0;
+}
+
+.panel__action {
+  flex: 1;
+}
 
 /* The tree: the ONLY scrolling area of the panel */
 .tree {
-  flex: 1 1 auto; min-height: var(--space-8); overflow: auto;
-  border-block: var(--stroke-hair) solid var(--tint-shadow); padding: var(--space-1) 0;
+  flex: 1 1 auto;
+  min-height: var(--space-8);
+  overflow: auto;
+  border-block: var(--stroke-hair) solid var(--tint-shadow);
+  padding: var(--space-1) 0;
   overscroll-behavior: contain;
 }
+
 /* The page highlight of the selected node, like DevTools': the
    button's blue wash and a solid edge, over the element's real box */
 .inspect-highlight {
-  position: absolute; z-index: var(--z-float); pointer-events: none;
-  left: var(--hx); top: var(--hy); width: var(--hw); height: var(--hh);
+  position: absolute;
+  z-index: var(--z-float);
+  pointer-events: none;
+  left: var(--hx);
+  top: var(--hy);
+  width: var(--hw);
+  height: var(--hh);
   background: color-mix(in oklab, var(--shape-circle) var(--wash-24), transparent);
   outline: var(--stroke-bold) solid var(--shape-circle);
 }
-.inspect-highlight[hidden] { display: none; }
+
+.inspect-highlight[hidden] {
+  display: none;
+}
+
 @media (forced-colors: active) {
-  .inspect-highlight { background: none; outline-color: Highlight; }
+  .inspect-highlight {
+    background: none;
+    outline-color: Highlight;
+  }
 }
 
 .tree ul {
-  list-style: none; margin: 0; padding-left: var(--space-2);
-  border-left: var(--stroke-hair) solid var(--tint-line);
+  list-style: none;
+  margin: 0;
+  padding-inline-start: var(--space-2);
+  border-inline-start: var(--stroke-hair) solid var(--tint-line);
 }
-.tree > ul { padding-left: 0; border-left: 0; }
-.node__row { display: flex; align-items: center; gap: 0; }
+
+.tree>ul {
+  padding-inline-start: 0;
+  border-inline-start: 0;
+}
+
+.node__row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
 .node__toggle {
-  flex: none; width: var(--panel-indent); height: var(--panel-row);
-  background: none; border: 0; cursor: pointer; font: inherit;
-  font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink);
+  flex: none;
+  width: var(--panel-indent);
+  height: var(--panel-row);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--type-label);
+  line-height: var(--type-label-lh);
+  color: var(--ink);
 }
-.node__indent { flex: none; width: var(--panel-indent); }
+
+.node__indent {
+  flex: none;
+  width: var(--panel-indent);
+}
+
 /* The row wraps instead of clipping: when role, name and state do not
    fit on one line, the state drops to the next one. Before, the state
    (flex: none) pushed the row out of the panel and squashed the name to
    0 px in the deepest nodes. */
 .node__sel {
-  display: flex; flex-wrap: wrap; align-items: baseline; column-gap: var(--gap-2xs); row-gap: 0;
-  flex: 1; min-width: 0; min-height: var(--panel-row);
-  text-align: left; background: none; border: 0; font: inherit;
-  font-size: var(--type-label); line-height: var(--type-label-lh); padding: var(--space-1);
-  cursor: pointer; border-radius: var(--radius-1); color: var(--ink);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: var(--gap-2xs);
+  row-gap: 0;
+  flex: 1;
+  min-width: 0;
+  min-height: var(--panel-row);
+  text-align: start;
+  background: none;
+  border: 0;
+  font: inherit;
+  font-size: var(--type-label);
+  line-height: var(--type-label-lh);
+  padding: var(--space-1);
+  cursor: pointer;
+  border-radius: var(--radius-1);
+  color: var(--ink);
 }
-.node__sel:hover { background: var(--tint-highlight); }
-.node__sel[aria-current="true"] { background: var(--k-yellow); }
-.node__role { font-family: var(--font-mono); font-weight: var(--fw-semibold); color: var(--k-blue); flex: none; }
+
+.node__sel:hover {
+  background: var(--tint-highlight);
+}
+
+.node__sel[aria-current="true"] {
+  background: var(--k-yellow);
+}
+
+.node__role {
+  font-family: var(--font-mono);
+  font-weight: var(--fw-semibold);
+  color: var(--k-blue);
+  flex: none;
+}
+
 /* A text node is not an element: it is painted grey and not bold so it
    reads apart from a node with its own role */
-.node--text > .node__row > .node__sel > .node__role { font-weight: var(--fw-regular); color: var(--ink-soft); }
-.node--text > .node__row > .node__sel > .node__name { color: var(--ink); font-style: italic; }
+.node--text>.node__row>.node__sel>.node__role {
+  font-weight: var(--fw-regular);
+  color: var(--ink-soft);
+}
+
+.node--text>.node__row>.node__sel>.node__name {
+  color: var(--ink);
+  font-style: italic;
+}
+
 /* The accessible name is what the tree shows: up to two lines, the rest
    lives in the node card (the button reads it in full). */
 .node__name {
-  flex: 1 1 var(--space-12); min-width: 0; overflow-wrap: anywhere;
-  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden;
+  flex: 1 1 var(--space-12);
+  min-width: 0;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
 }
+
 .node__state {
-  font-family: var(--font-mono); color: var(--sap);
-  flex: 0 1 auto; max-width: 100%; margin-left: auto; overflow-wrap: anywhere;
+  font-family: var(--font-mono);
+  color: var(--sap);
+  flex: 0 1 auto;
+  max-width: 100%;
+  margin-inline-start: auto;
+  overflow-wrap: anywhere;
 }
-.node__sel[aria-current="true"] .node__state { color: var(--k-ochre-deep); }
+
+.node__sel[aria-current="true"] .node__state {
+  color: var(--k-ochre-deep);
+}
+
 /* The sap reaches the tree: the state that just changed flips to ink
    and returns within a second, tying the opening flower to its node.
    With reduced motion it does not flash: the state's text has already
    changed, which is what matters. */
 @media (prefers-reduced-motion: no-preference) {
-  .node__state--changed { animation: sap var(--dur-4) var(--ease-out); border-radius: var(--radius-1); }
+  .node__state--changed {
+    animation: sap var(--dur-4) var(--ease-out);
+    border-radius: var(--radius-1);
+  }
 }
+
 @keyframes sap {
-  from, 35% { background: var(--ink); color: var(--surface-canvas); }
+
+  from,
+  35% {
+    background: var(--ink);
+    color: var(--surface-canvas);
+  }
 }
 
 /* Node card: fixed under the tree, never inside the scroll */
-.card { flex: none; border-top: var(--stroke-fine) solid var(--line); margin-top: var(--space-1); padding-top: var(--space-1); }
+.card {
+  flex: none;
+  border-top: var(--stroke-fine) solid var(--line);
+  margin-top: var(--space-1);
+  padding-top: var(--space-1);
+}
 
 /* Short screens: compact what is fixed so the card ALWAYS fits, with a
    rescue scroll on the panel itself as the last net */
 @media (max-height: 40rem) {
-  .panel__note { display: none; }
-  .panel { overflow: auto; }
+  .panel__note {
+    display: none;
+  }
+
+  .panel {
+    overflow: auto;
+  }
 }
+
 .card__title {
-  font-size: var(--type-body); line-height: var(--type-body-lh);
-  margin: 0; color: var(--ink); font-family: var(--font-display);
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-display);
 }
+
 .card__dl {
-  display: grid; grid-template-columns: minmax(0, auto) minmax(0, 1fr);
-  align-items: baseline; gap: 0 var(--gap-xs);
-  font-size: var(--type-label); line-height: var(--type-label-lh);
-  margin: var(--space-1) 0 0; color: var(--ink-soft);
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+  align-items: baseline;
+  gap: 0 var(--gap-xs);
+  font-size: var(--type-label);
+  line-height: var(--type-label-lh);
+  margin: var(--space-1) 0 0;
+  color: var(--ink-soft);
 }
-.card__dl dt { font-family: var(--font-mono); font-weight: var(--fw-semibold); color: var(--ink); }
-.card__dl dd { margin: 0; overflow-wrap: anywhere; }
+
+.card__dl dt {
+  font-family: var(--font-mono);
+  font-weight: var(--fw-semibold);
+  color: var(--ink);
+}
+
+.card__dl dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
 
 /* ============================================================
    ≥ 64rem: the dialog dissolves and the aside sticks
    ============================================================ */
 @media (min-width: 64rem) {
-  .open-panel { display: none; }
-  .panel-box { display: contents; }
-  .panel-box::backdrop { display: none; }
-  .panel__close { display: none; }
+  .open-controls {
+    display: none;
+  }
+
+  .panel-box {
+    display: contents;
+  }
+
+  .panel-box::backdrop {
+    display: none;
+  }
+
+  .panel__close {
+    display: none;
+  }
+
   .panel {
     --panel-pad: var(--space-3);
     --panel-radius: var(--space-6);
-    position: sticky; top: var(--space-2);
+    position: sticky;
+    top: var(--space-2);
     max-height: calc(100dvh - var(--space-4));
   }
 }

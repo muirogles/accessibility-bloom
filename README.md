@@ -107,13 +107,16 @@ sistema pide menos movimiento, nada se mueve y las voces suenan igual.
   control por voz («pulsa Sonido») y el agente de IA, con «Ver el árbol».
 - **Lo que se lleva un agente.** Bajo la nota, a la vista y sin pliegue, la
   ruta de un agente de IA por la página, en el orden en que la recorre:
-  `rel="ard"` (**la encuentra**: un enlace de la cabecera anuncia su guía
-  para agentes) → `JSON-LD` (**sabe qué es**: una obra y una lección) →
-  `llms.txt` (**lee el resumen**) → el árbol (**lee cada nodo**: rol,
-  nombre, estado y acción) → `WebMCP` (**actúa**: herramientas con nombre).
-  Cada paso es una pastilla con su fuente sobre un solo tallo, un verbo que
-  se lee desde la sala y una línea. Los cuatro que leen van en contorno; el
-  que actúa, relleno, y ahí acaba el tallo.
+  `ard.json` (**la encuentra**: un manifiesto en la cabecera apunta a su
+  guía) → `JSON-LD` (**sabe qué es**: la ficha de la obra en `artwork.json`) →
+  `llms.txt` (**lee el resumen**: índice en texto plano) → el árbol (**lee
+  cada nodo**: el Árbol de Accesibilidad) → `WebMCP` (**actúa**: herramientas
+  que la página registra). Cada paso es una pastilla con su fuente sobre un
+  solo tallo, un verbo que se lee desde la sala y una línea que nombra el
+  artefacto. Los cuatro que leen van en contorno; el que actúa, relleno, y
+  ahí acaba el tallo. El dato declarado (ard, JSON-LD, llms) se abre con
+  enlace; el árbol vivo, con el dialog «Ver el árbol». En la charla se
+  desarrolla el `rel="ard"` del `<head>`; en la pastilla se ve el archivo.
 - **«Ver el árbol».** La lectura del agente abre un `<dialog>` modal (el
   mismo patrón que la capa de la estación 9) con el árbol de la página como
   datos, en JSON a 16 px para que lo lea la sala: rol, nombre, origen del
@@ -607,8 +610,9 @@ le ofrece, por orden:
 
 1. **Leer.** El árbol, con rol, nombre, estado y acción en cada nodo; el
    JSON-LD de la cabecera (`VisualArtwork` + `LearningResource` y un
-   `BreadcrumbList` con las doce estaciones), y el árbol en JSON, que se ve
-   y se descarga desde «Ver el árbol», en la estación 1. Esa estación dibuja la
+   `BreadcrumbList` con las doce estaciones; el mismo grafo en `artwork.json`,
+   enlazado desde la ruta del agente), y el árbol en JSON, que se ve y se
+   descarga desde «Ver el árbol», en la estación 1. Esa estación dibuja la
    ruta entera, «Lo que se lleva un agente», de encontrar la página a actuar.
 2. **Descubrir.**
    - `public/llms.txt`, en el formato de llmstxt.org: H1, resumen en cita
@@ -691,6 +695,7 @@ accessibility-bloom/
 ├── public/
 │   ├── llms.txt        # resumen para agentes (formato llmstxt.org)
 │   ├── agent-skill.md  # habilidad para agentes: cómo recorrer la obra
+│   ├── artwork.json    # ficha JSON-LD de la obra (mismo grafo que el embebido)
 │   ├── ard.json        # manifiesto ARD (y ai-catalog.json, su nombre anterior)
 │   └── robots.txt
 ├── css/

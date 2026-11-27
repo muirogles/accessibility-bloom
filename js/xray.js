@@ -71,7 +71,11 @@ function chipText(el, role) {
   return { role, name, state };
 }
 
-export function initXray({ button, hosts, announce }) {
+export function initXray({ button, buttons, hosts, announce }) {
+  // One control in the inspector (desktop) and, on mobile, a twin
+  // outside the modal dialog — otherwise the toggle is trapped inert
+  // under showModal() and the overlay cannot be turned off while looking.
+  const toggles = (buttons ?? (button ? [button] : [])).filter(Boolean);
   let on = false;
   let layers = [];
   let frame = 0;
@@ -141,17 +145,19 @@ export function initXray({ button, hosts, announce }) {
 
   function set(next) {
     on = next;
-    button.setAttribute('aria-pressed', String(on));
+    for (const b of toggles) b.setAttribute('aria-pressed', String(on));
     document.documentElement.dataset.xray = on ? 'on' : 'off';
     if (on) draw(); else clear();
   }
 
-  button.addEventListener('click', () => {
-    set(!on);
-    announce(on
-      ? 'Radiografía activada: cada elemento muestra sobre la obra su rol, su nombre y su estado'
-      : 'Radiografía desactivada');
-  });
+  for (const b of toggles) {
+    b.addEventListener('click', () => {
+      set(!on);
+      announce(on
+        ? 'Radiografía activada: cada elemento muestra sobre la obra su rol, su nombre y su estado'
+        : 'Radiografía desactivada');
+    });
+  }
 
   // The x-ray tells the state NOW: it is redrawn when a state changes,
   // when the layout changes and when the fonts arrive.

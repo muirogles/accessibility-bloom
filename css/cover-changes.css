@@ -1,0 +1,1104 @@
+/* ============================================================
+   COVER · «FLOR Y ENREDADERA» (mobile first)
+   The first screen of the work, inside the painting's frame and
+   above the canvas: the inspector is not on the cover.
+
+   BASE (< 64rem) — storytelling for a narrow stage:
+     the rose (point, planes, crown) sits above; the four chapter
+     menus sit below in reading order (a Z). Same HTML, same focus
+     order, same chapter hearts. Vines stay off: the chapters are
+     no longer on the ring. The stem falls through the gutter and
+     steps onto the trunk's left axis.
+   FROM 64rem — the radial painting:
+     chapters return to the ring, vines reconnect, fruits open to
+     the side; the stem steps onto the column beside the inspector.
+
+   · PLANES (behind). The five voices of the grammar
+     (js/synesthesia-map.js) as Kandinsky colour planes, one clean hue
+     each. Form = tension (Point and Line to Plane: acute yellow, right
+     red, obtuse blue), shared by mirrored pairs:
+       yellow · link                     60°   tip h·φ²
+       red · checkbox, violet · radio    90°   tip h·√5   (φ² − 1/φ²)
+       blue · button, cyan · text field 144°   tip h·2    (√5 − 1/φ³)
+     Warm voices sit high, cold ones low (the basic plane's weight).
+   · CROWN (in front). The flower of life of the first landing: ten
+     circles that interlace. Two neighbours cross at h/φ (under the
+     heart) and at h·φ, so each crown petal is h long and widest on
+     the heart's rim: white on the voices (their quiet core), green in
+     the five gaps. In units of h: centre c = √5/(2·cos 18°), ρ = 1/φ.
+   · CHAPTERS. Four smaller flowers. On the ring (64rem+): upper pair
+     at h·(2φ − 1/φ²), lower at h·2φ; each heart (½h), one green leaf
+     facing the flower, three station petals 36° apart, tendrils to
+     the links. Below 64rem: the same hearts in a two-column grid,
+     stations open under each heart (no horizontal overflow).
+   · VINES (64rem+). One arc each, tangent to a crown circle and to
+     the chapter's leaf. Ink band inside each construction circle,
+     vine band outside: no step in the stroke at the tangencies.
+   · THE POINT is the heart with the title; THE LINE is the stem.
+     It falls through the bottom gap and, with two tangent quarter
+     arcs, steps onto the trunk's axis at the cover's bottom edge,
+     with the trunk's own neck width: flower and trunk are one stroke.
+   No length is placed by eye: h, φ and CSS trigonometry only. The
+   theory never appears on screen: #rose-note, the talk, the bibliography.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   STAGE — mobile first: a compact radial under the rose.
+   Tools sit at the top (clear of the floating «Ver árbol»).
+   Chapters keep φ angles, closer --dist; vines grow down to them;
+   stations open under each heart. Enlarge --h if the title needs
+   room — never shrink the type or break φ.
+   ------------------------------------------------------------ */
+.cover {
+  position: relative;
+  /* Mobile: height follows the paint (stage + elbow). A 100dvh floor
+     left empty stem between the menus and the section. Desk restores
+     the viewport height at 64rem. */
+  /* Query container for --h / --shift: cqw on .cover__paint itself was
+     cyclic with min-height + padding and snapped the elbow pad to 50vw. */
+  container-type: inline-size;
+  container-name: cover;
+  /* .artwork already clips x; keep y open so open fruits are not cut */
+  overflow: visible;
+  background: var(--surface-canvas);
+}
+/* the trunk starts exactly where the cover ends */
+.cover + .canvas { padding-top: 0; }
+
+.cover__paint {
+  --paint-thick: var(--space-1);
+  --paint-thin: var(--half);
+  --stem-w: var(--w-neck);
+  --stem-hand: -1;
+  /* Rose at 50% of the paint; cqw is .cover (same width as the paint
+     border box). Minus the inline pad so the length matches the old
+     content-box 50cqw − axis. Exit = trunk centre. */
+  --shift: max(var(--space-0), calc(50cqw - var(--axis) - var(--space-2)));
+  /* Compact ring: room for tools above, chapters around the gutter.
+     cqw from .cover; dvh for the height cap (cqh would be cyclic). */
+  --h: max(
+    var(--space-12),
+    min(
+      calc(36cqw / (var(--phi) + 1)),
+      calc(20dvh / (var(--phi) * var(--phi) + 2))
+    )
+  );
+  /* Rose high under the tools: yellow tip at oy − φ²·h clears the tool row */
+  --oy: calc(var(--touch) + var(--phi) * var(--phi) * var(--h));
+  --c1: calc(sqrt(5) / (2 * cos(18deg)));
+  --rho1: calc(1 / var(--phi));
+  /* Compact distances (φ), still outside the crown (c1+ρ ≈ 2.32) so the
+     leaf tip clears it and the vine circle stays defined. Far pair just
+     under the near row — all four hearts stay in the cover stage. */
+  /* Near: high under the flower (leaf tip still past c1+ρ). Far: +1.35·h
+     so the lower link triangles stay on a phone screen. */
+  --dist-near: calc(var(--phi) + 1.25);
+  --dist-far: calc(var(--dist-near) + 1.35);
+  /* Slide far only as far as the under-column needs: bloom stack − the
+     closed row gap + a little air. (Old φ·h/2+… left ~250px empty.) */
+  --open-stack: calc(
+    var(--space-6) * 1.5
+    + var(--space-1)
+    + 2 * var(--h) / var(--phi)
+    - var(--h)
+    + var(--space-4)
+  );
+  /* Hang of an open under-column from the heart centre to the last
+     bloom bottom (matches .chapter__stations::before + station--3). */
+  --menu-hang: calc(
+    var(--space-6) * 1.5
+    + var(--space-1)
+    + var(--half)
+    + 2 * var(--h) / var(--phi)
+  );
+  /* Closed stage ends at the far heart centres. Elbow ink may run
+     through the lower half of those circles; on open the row drops and
+     clears the S. Pad is half --shift: the join sits on the mid-line,
+     the lower quarter arcs continue into the canvas onto the trunk. */
+  --cover-stage: calc(
+    var(--oy)
+    + var(--dist-far) * var(--h)
+    + var(--shift) / 2
+  );
+  --stage-pad: calc(var(--shift) / 2);
+  position: relative;
+  box-sizing: border-box;
+  min-height: calc(var(--cover-stage) + var(--stage-pad));
+  padding-block: var(--space-0) var(--stage-pad);
+  padding-inline: var(--space-2);
+}
+[dir="rtl"] .cover__paint { --stem-hand: 1; }
+
+/* Open: full elbow pad under the column so the S stays below the links. */
+.cover:has(.chapter__toggle[aria-expanded="true"]) .cover__paint {
+  --stage-pad: var(--shift);
+}
+/* Open far chapter: hang the under-column under the far hearts. */
+.cover:has(:is(.chapter--3, .chapter--4) .chapter__toggle[aria-expanded="true"]) .cover__paint {
+  --cover-stage: calc(
+    var(--oy)
+    + var(--dist-far) * var(--h)
+    + var(--menu-hang)
+  );
+}
+/* Open near chapter: far row slides by --open-stack; keep half a heart. */
+.cover:has(:is(.chapter--1, .chapter--2) .chapter__toggle[aria-expanded="true"]) .cover__paint {
+  --cover-stage: calc(
+    var(--oy)
+    + var(--dist-far) * var(--h)
+    + var(--open-stack)
+    + var(--h) / 2
+    + var(--space-2)
+  );
+}
+
+/* A circle by its centreline: radius --orb-r, stroke --orb-s, centre
+   (--x, --y). Not --r / --s: flowers.css registers those as a
+   percentage and a number. Border (not a gradient): same AA as the
+   rest of the tree; joins stay on φ / trig tangencies. */
+/* Horizontal offsets use inset-inline-start so the painting mirrors
+   under [dir=rtl] without rewriting φ / vine maths. */
+.orb {
+  position: absolute;
+  inset-inline-start: calc(var(--x) - var(--orb-r) - var(--orb-s) / 2);
+  top: calc(var(--y) - var(--orb-r) - var(--orb-s) / 2);
+  width: calc(2 * var(--orb-r) + var(--orb-s));
+  aspect-ratio: 1;
+  border: var(--orb-s) solid var(--line);
+  border-radius: var(--radius-round);
+  background: var(--fill, transparent);
+}
+
+/* A lens: the overlap of two circles of radius --lr, centres --dd
+   apart, from a length and a tip angle: r = L / (2·sin(α/2)),
+   d = 2r·cos(α/2). Base at (--ox, --oy-p), pointing along --a; the
+   ink band (--edge) lies inside the circles. */
+.lens {
+  --lr: calc(var(--len) / (2 * sin(var(--alpha) / 2)));
+  --dd: calc(2 * var(--lr) * cos(var(--alpha) / 2));
+  position: absolute;
+  inset-inline-start: calc(var(--ox, var(--space-0)) + var(--len) / 2 * cos(var(--a)));
+  top: calc(var(--oy-p, var(--space-0)) + var(--len) / 2 * sin(var(--a)));
+  width: 0;
+  height: 0;
+  rotate: calc(var(--a) + 90deg);
+}
+.lens__layer {
+  --orb-r: calc(var(--lr) - var(--inset));
+  position: absolute;
+  inset-inline-start: calc(-1 * var(--dd) / 2 - var(--orb-r));
+  top: calc(-1 * var(--orb-r));
+  width: calc(2 * var(--orb-r));
+  aspect-ratio: 1;
+  border-radius: var(--radius-round);
+  clip-path: circle(var(--orb-r) at calc(var(--orb-r) + var(--dd)) 50%);
+}
+.lens__layer--1 { --inset: var(--space-0); background: var(--line); }
+.lens__layer--2 { --inset: var(--edge, var(--paint-thin)); background: var(--fill); }
+
+/* ------------------------------------------------------------
+   DEPTH. Flower and chapters share one stacking context (the
+   paint): stem and vines z-under, planes z-base, crown and the
+   chapters' petals z-over, hearts and words z-top.
+   ------------------------------------------------------------ */
+.rose {
+  position: absolute;
+  inset-inline-start: 50%;
+  top: var(--oy);
+  bottom: 0;
+  width: 0;
+  height: auto;
+}
+
+.rose__plane {
+  --len: calc(var(--plane-len) * var(--h));
+  --fill: var(--tone);
+  --edge: var(--paint-thick);
+  z-index: var(--z-base);
+}
+.voice--triangle { --a: -90deg; --alpha: 60deg;  --plane-len: calc(var(--phi) * var(--phi)); --tone: var(--shape-triangle); --voice-delay: var(--dur-3); }
+.voice--square   { --a: -18deg; --alpha: 90deg;  --plane-len: sqrt(5);                      --tone: var(--shape-square);   --voice-delay: var(--dur-2); }
+.voice--rhombus  { --a: 198deg; --alpha: 90deg;  --plane-len: sqrt(5);                      --tone: var(--shape-rhombus);  --voice-delay: var(--dur-2); }
+.voice--circle   { --a: 54deg;  --alpha: 150deg; --plane-len: 2;                            --tone: var(--shape-circle);   --voice-delay: var(--dur-1); }
+.voice--bar      { --a: 126deg; --alpha: 150deg; --plane-len: 2;                            --tone: var(--shape-bar);      --voice-delay: var(--dur-1); }
+
+/* The crown: ten circles every 36°, centred between the petals; the
+   ink band lies inside each circle, like every lens edge */
+.crown--1  { --i: 0; } .crown--2  { --i: 1; } .crown--3  { --i: 2; }
+.crown--4  { --i: 3; } .crown--5  { --i: 4; } .crown--6  { --i: 5; }
+.crown--7  { --i: 6; } .crown--8  { --i: 7; } .crown--9  { --i: 8; }
+.crown--10 { --i: 9; }
+.crown__circle {
+  --ca: calc(-72deg + var(--i) * 36deg);
+  --orb-s: var(--paint-thin);
+  --orb-r: calc(var(--rho1) * var(--h) - var(--orb-s) / 2);
+  --x: calc(var(--c1) * var(--h) * cos(var(--ca)));
+  --y: calc(var(--c1) * var(--h) * sin(var(--ca)));
+  z-index: var(--z-over);
+}
+.crown__lens {
+  --a: calc(-90deg + var(--i) * 36deg);
+  --lr: calc(var(--rho1) * var(--h));
+  --dd: calc(2 * var(--c1) * sin(18deg) * var(--h));
+  --len: var(--h);
+  --ox: calc(var(--h) / var(--phi) * cos(var(--a)));
+  --oy-p: calc(var(--h) / var(--phi) * sin(var(--a)));
+  z-index: var(--z-over);
+}
+/* white on the voices, green in the gaps (where the vines and the
+   stem grow from) */
+.crown__lens:is(.crown--1, .crown--3, .crown--5, .crown--7, .crown--9) { --fill: var(--k-white); }
+.crown__lens:is(.crown--2, .crown--4, .crown--6, .crown--8, .crown--10) { --fill: var(--sprout); }
+
+/* The point: the heart, outer edge exactly h */
+.rose__heart {
+  --orb-s: var(--paint-thick); --orb-r: calc(var(--h) - var(--orb-s) / 2); --x: var(--space-0); --y: var(--space-0);
+  --fill: var(--surface-canvas);
+  z-index: var(--z-top);
+}
+
+/* The line. The rose stretches to the cover's bottom edge, so the
+   elbow is placed from that edge — not from 100cqh. A size container
+   whose height is auto resolves cqh to 0 and the elbow jumps into
+   the flower. Straight down the gutter, then two tangent quarters of
+   radius shift/2 step onto the trunk axis and leave the cover
+   vertical, on the trunk's centre, at the neck width.
+   The straight run overlaps the first arc by half a stroke. Each mask
+   overruns its quarter by atan2(stroke/2, r): the antialiased cut
+   falls inside the next piece, and the centreline stays the tangency. */
+.rose__stem {
+  position: absolute;
+  z-index: var(--z-under);
+  inset-inline-start: calc(-1 * var(--stem-w) / 2);
+  top: 0;
+  bottom: calc(var(--shift) - var(--stem-w) / 2);
+  width: var(--stem-w);
+  height: auto;
+  background: var(--line);
+}
+/* Filled ring, not a border: a border snaps to a different device pixel
+   than the stem's background and the join changes width. The radial
+   keeps a band of --stem-w about radius --bend-r; the conic keeps the
+   quarter. mask-composite intersects the two. */
+.rose__bend {
+  --bend-r: calc(var(--shift) / 2);
+  --orb-r: var(--bend-r);
+  --orb-s: var(--stem-w);
+  --x: calc(var(--stem-hand) * var(--bend-r));
+  --lap: atan2(calc(var(--stem-w) / 2), var(--bend-r));
+  --ring: radial-gradient(
+    circle at center,
+    transparent calc(var(--bend-r) - var(--stem-w) / 2),
+    #000 calc(var(--bend-r) - var(--stem-w) / 2)
+  );
+  border: 0;
+  background: var(--line);
+  z-index: var(--z-under);
+  mask-composite: intersect;
+}
+/* LTR: east→south, then west→north. Centres share x; south of bend 1
+   is north of bend 2. RTL: the mirrored quarters. */
+.rose__bend--1 {
+  top: calc(100% - var(--shift) - var(--orb-r) - var(--orb-s) / 2);
+  --quarter: conic-gradient(from calc(90deg - var(--lap)), #000 0 calc(90deg + 2 * var(--lap)), transparent 0);
+  mask-image: var(--ring), var(--quarter);
+}
+.rose__bend--2 {
+  top: calc(100% - var(--orb-r) - var(--orb-s) / 2);
+  --quarter: conic-gradient(from calc(270deg - var(--lap)), #000 0 calc(90deg + 2 * var(--lap)), transparent 0);
+  mask-image: var(--ring), var(--quarter);
+}
+[dir="rtl"] .rose__bend--1 {
+  --quarter: conic-gradient(from calc(0deg - var(--lap)), #000 0 calc(90deg + 2 * var(--lap)), transparent 0);
+}
+[dir="rtl"] .rose__bend--2 {
+  --quarter: conic-gradient(from calc(180deg - var(--lap)), #000 0 calc(90deg + 2 * var(--lap)), transparent 0);
+}
+/* Half a neck of the trunk sits on the elbow's exit, covering the butt. */
+.cover + .canvas .trunk__axis {
+  top: calc(-1 * var(--w-neck) / 2);
+}
+
+/* ------------------------------------------------------------
+   VINES (units of h). Chapter at gap --g, distance --dist; its leaf faces
+   the flower: base ½/φ, length ½, tip T = C + (φ/2)·u(g + 180°). The
+   leaf's edge circle F (radius r_F) is one of its two circles. The
+   vine is the circle tangent to F AT T and tangent to the crown
+   circle E (centre at g − --sig·18°, radius 1/φ):
+     v = (T − F)/r_F,  w = T − E,
+     r = (ρE² − |w|²) / (2(w·v − ρE)),  Q = F + (r_F + r)·v
+   --sig mirrors left and right and picks the short arc's start.
+   ------------------------------------------------------------ */
+.vine {
+  display: none;                                       /* mobile: the trunk runs the gutter; desk restores the arcs */
+  --la: 90deg;                                         /* the leaf's tip angle */
+  --cx: calc(var(--dist) * cos(var(--g)));
+  --cy: calc(var(--dist) * sin(var(--g)));
+  --in: calc(var(--g) + 180deg);
+  --l-lr: calc(0.5 / (2 * sin(var(--la) / 2)));
+  --l-dd: calc(2 * var(--l-lr) * cos(var(--la) / 2));
+  --l-m: calc(0.5 / var(--phi) + 0.25);
+  --tx: calc(var(--cx) + var(--phi) / 2 * cos(var(--in)));
+  --ty: calc(var(--cy) + var(--phi) / 2 * sin(var(--in)));
+  --fx: calc(var(--cx) + var(--l-m) * cos(var(--in)) + var(--sig) * var(--l-dd) / 2 * cos(var(--in) + 90deg));
+  --fy: calc(var(--cy) + var(--l-m) * sin(var(--in)) + var(--sig) * var(--l-dd) / 2 * sin(var(--in) + 90deg));
+  --vx: calc((var(--tx) - var(--fx)) / var(--l-lr));
+  --vy: calc((var(--ty) - var(--fy)) / var(--l-lr));
+  --ea: calc(var(--g) - var(--sig) * 18deg);
+  --ex: calc(var(--c1) * cos(var(--ea)));
+  --ey: calc(var(--c1) * sin(var(--ea)));
+  --wx: calc(var(--tx) - var(--ex));
+  --wy: calc(var(--ty) - var(--ey));
+  --rk: calc((var(--rho1) * var(--rho1) - var(--wx) * var(--wx) - var(--wy) * var(--wy)) / (2 * (var(--wx) * var(--vx) + var(--wy) * var(--vy) - var(--rho1))));
+  --qx: calc(var(--fx) + (var(--l-lr) + var(--rk)) * var(--vx));
+  --qy: calc(var(--fy) + (var(--l-lr) + var(--rk)) * var(--vy));
+  --angle-tip: atan2(calc(-1 * var(--vy)), calc(-1 * var(--vx)));
+  --angle-start: atan2(calc(var(--ey) - var(--qy)), calc(var(--ex) - var(--qx)));
+  --sweep: mod(calc(var(--sig) * (var(--angle-tip) - var(--angle-start))), 360deg);
+  /* --grow (0…1) draws it from the crown (S) towards the leaf (T).
+     Tuck stays 0: the arc ends on the tangency. A tuck past the tip
+     leaves a kink on the far side of the leaf. */
+  --vine-tuck: 0deg;
+  --drawn: calc(var(--sweep) * var(--grow) + var(--vine-tuck));
+  --from: calc(
+    (var(--angle-start) - var(--vine-tuck)) * (1 + var(--sig)) / 2
+    + (var(--angle-tip) + var(--sweep) * (1 - var(--grow))) * (1 - var(--sig)) / 2
+  );
+  /* the band lies OUTSIDE the vine's circle, so it continues the
+     bands of E and F, which lie inside theirs */
+  --orb-s: var(--paint-thin);
+  --orb-r: calc(var(--rk) * var(--h) + var(--orb-s) / 2);
+  --x: calc(var(--qx) * var(--h));
+  --y: calc(var(--qy) * var(--h));
+  /* Mobile: above the crown so the stroke reads on the bottom green.
+     Desk restores z-under (side exits clear the crown on their own). */
+  z-index: var(--z-top);
+  mask: conic-gradient(from calc(var(--from) + 90deg), #000 0 var(--drawn), transparent 0);
+}
+/* Mobile: vines born on green crown lenses (sprout gaps).
+   Near pair: lower-left / lower-right greens (ea 144° / 36°).
+   Far pair: cascade — born at the near chapter's green leaf tip
+   (not the crown); desk restores crown ring. */
+.vine--1 { --g: 104deg; --sig: -1; --dist: var(--dist-near); --ea: 144deg; }
+.vine--2 { --g: 76deg;  --sig: 1;  --dist: var(--dist-near); --ea: 36deg; }
+.vine--3 {
+  --g: 98deg; --sig: 1; --dist: var(--dist-far);
+  --from-g: 104deg; --from-dist: var(--dist-near);
+}
+.vine--4 {
+  --g: 82deg; --sig: -1; --dist: var(--dist-far);
+  --from-g: 76deg; --from-dist: var(--dist-near);
+}
+/* Cascade (mobile far vines): the circle through the parent bud tip S,
+   the child bud tip T, and a point P just off the parent heart on the
+   channel side. That is the red curve: it leaves the upper green,
+   follows the inner flank of that circle, and arrives at the lower green.
+   Desk restores the crown tangent. */
+.vine--3, .vine--4 {
+  --scx: calc(var(--from-dist) * cos(var(--from-g)));
+  --scy: calc(var(--from-dist) * sin(var(--from-g)));
+  --s-in: calc(var(--from-g) + 180deg);
+  --sx: calc(var(--scx) + var(--phi) / 2 * cos(var(--s-in)));
+  --sy: calc(var(--scy) + var(--phi) / 2 * sin(var(--s-in)));
+  /* P: heart equator, toward the channel, a small gap past the ring.
+     Closed hug 0.12 follows the inner flank. Open lengthens the chord
+     and the same hug crosses the other vine, so the open rule tightens it. */
+  --hug: 0.12;
+  --in-x: calc(-1 * sign(cos(var(--from-g))));
+  --px: calc(var(--scx) + (0.5 + var(--hug)) * var(--in-x));
+  --py: var(--scy);
+  --s2: calc(var(--sx) * var(--sx) + var(--sy) * var(--sy));
+  --t2: calc(var(--tx) * var(--tx) + var(--ty) * var(--ty));
+  --p2: calc(var(--px) * var(--px) + var(--py) * var(--py));
+  --den: calc(2 * (
+    var(--sx) * (var(--ty) - var(--py))
+    + var(--tx) * (var(--py) - var(--sy))
+    + var(--px) * (var(--sy) - var(--ty))
+  ));
+  --qx: calc((
+    var(--s2) * (var(--ty) - var(--py))
+    + var(--t2) * (var(--py) - var(--sy))
+    + var(--p2) * (var(--sy) - var(--ty))
+  ) / var(--den));
+  --qy: calc((
+    var(--s2) * (var(--px) - var(--tx))
+    + var(--t2) * (var(--sx) - var(--px))
+    + var(--p2) * (var(--tx) - var(--sx))
+  ) / var(--den));
+  --rk: hypot(calc(var(--qx) - var(--sx)), calc(var(--qy) - var(--sy)));
+  /* Stroke centreline is the circle through both bud tips. */
+  --orb-r: calc(abs(var(--rk)) * var(--h));
+  --angle-tip: atan2(calc(var(--ty) - var(--qy)), calc(var(--tx) - var(--qx)));
+  --angle-start: atan2(calc(var(--sy) - var(--qy)), calc(var(--sx) - var(--qx)));
+  /* Short arc only. mod(…, 360deg) turns a small negative gap into the long way. */
+  --delta: calc(var(--angle-tip) - var(--angle-start));
+  --short: calc(var(--delta) - 360deg * round(var(--delta) / 360deg));
+  --drawn: calc(abs(var(--short)) * var(--grow) + var(--vine-tuck));
+  --from: calc(
+    (var(--angle-start) - var(--vine-tuck)) * (1 + sign(var(--short))) / 2
+    + var(--angle-tip) * (1 - sign(var(--short))) / 2
+  );
+  /* Stop on the peak. A tuck past the tip exits the leaf on the far side. */
+  --vine-tuck: 0deg;
+}
+
+/* ------------------------------------------------------------
+   THE TITLE lives in the heart, outside role="img".
+   Never shrink the brand to fit: --h grows so the heart can hold it.
+   φ ratios of the painting stay intact (everything scales with --h).
+   ------------------------------------------------------------ */
+.cover__node {
+  --node-w: calc(2 * var(--h) - 2 * var(--space-2));
+  position: absolute;
+  z-index: var(--z-top);
+  inset-inline-start: calc(50% - var(--node-w) / 2);
+  top: var(--oy);
+  translate: 0 -50%;
+  width: var(--node-w);
+  text-align: center;
+}
+.cover__title {
+  margin: 0;
+  font-size: var(--type-subhead);
+  line-height: var(--type-subhead-lh);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--tracking-tight);
+  text-wrap: balance;
+}
+.cover__sub {
+  max-width: calc(var(--h) * 1.2);
+  margin: var(--space-1) auto 0;
+  text-wrap: balance;
+  font-family: var(--font-display);
+  font-size: var(--type-label);
+  line-height: var(--type-label-lh);
+  font-weight: var(--fw-medium);
+  color: var(--ink-soft);
+}
+
+/* ------------------------------------------------------------
+   CHAPTERS — base (mobile): compact radial under the rose.
+   Same Z reading order (I II / III IV). No vines: the trunk runs
+   the gutter between them. Stations open UNDER each heart (a side
+   column cannot fit fruit+label on a 320–375px stage). Desk
+   restores the ring, the vines and the side columns.
+   ------------------------------------------------------------ */
+.chapters {
+  position: relative;
+  z-index: var(--z-float);
+}
+.chapters__list,
+.chapter__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.chapter {
+  /* units of hc, φ only: petal tips at hc·φ; buds at hc·φ² (φ²−φ=1);
+     rows 2/φ·hc apart; three petals 36° apart (the pentagon).
+     hc = h/2 always: vine tip T = C + (φ/2)·u(in) (in units of h) lands
+     on the leaf tip (hc·φ). A fixed --space-* heart broke that tangency. */
+  --hc: calc(var(--h) / 2);
+  --rf: calc(var(--hc) * var(--phi) * var(--phi));
+  /* Same φ geometry as the desk tendrils: petal tip at φ·hc, brote at
+     φ²·hc (gap = hc). Bloom keeps the mobile token size. Desk bumps
+     bloom to space-8; --bud stays --rf. */
+  --bloom: var(--space-6);
+  --row-gap: calc(var(--hc) * 2 / var(--phi));
+  --fan: 36deg;
+  --tuck: 0.25;
+  /* Same horizontal lane for both rows (far pair’s |x|). At 360 the
+     cue may kiss the stage edge — prefer this spread over tightening. */
+  --lane: calc(var(--dist-far) * sin(8deg));
+  /* Full-size cue (--bloom), two modules past the petal tip — closer
+     to the stage rail. Desk restores --rf. */
+  --bud: calc(var(--hc) * var(--phi) + var(--space-2));
+  /* Extra air above the first under-link so the peduncle does not kiss
+     the side petal. Desk side-column ignores this. */
+  --hang-pad: var(--half);
+  position: absolute;
+  inset-inline-start: calc(50% + var(--dir) * var(--lane) * var(--h));
+  top: calc(var(--oy) + var(--dist) * sin(var(--g)) * var(--h));
+  width: 0;
+  height: 0;
+}
+/* --n: its turn when the cover blooms (vine n reaches chapter n) */
+:is(.chapter--1, .vine--1) { --n: 0; }
+:is(.chapter--2, .vine--2) { --n: 1; }
+:is(.chapter--3, .vine--3) { --n: 2; }
+:is(.chapter--4, .vine--4) { --n: 3; }
+/* Mobile: below the rose. Same |lane| for near and far. Petals keep
+   the desk fan (--dir / --out); the link column hangs under the cue. */
+.chapter--1 { --g: 104deg; --dist: var(--dist-near); --dir: -1; --out: 180deg; }
+.chapter--2 { --g: 76deg;  --dist: var(--dist-near); --dir: 1;  --out: 0deg; }
+.chapter--3 { --g: 98deg;  --dist: var(--dist-far);  --dir: -1; --out: 180deg; }
+.chapter--4 { --g: 82deg;  --dist: var(--dist-far);  --dir: 1;  --out: 0deg; }
+/* Horizontal rail at mid-circumference: each half runs from the heart
+   centre to the stem. Desk turns this off (ring has vines). */
+.chapter::after {
+  content: "";
+  position: absolute;
+  z-index: var(--z-under);
+  top: calc(50% - var(--paint-thin) / 2);
+  height: var(--paint-thin);
+  width: calc(var(--lane) * var(--h) - var(--stem-w) / 2);
+  /* dir −1 (left): bar grows toward the stem (inline-end).
+     dir +1 (right): bar starts at the stem and meets the heart. */
+  inset-inline-start: calc(
+    50% + (-1 * var(--dir) - 1) / 2 * (var(--lane) * var(--h) - var(--stem-w) / 2)
+  );
+  background: var(--line);
+  pointer-events: none;
+}
+/* Near chapter open: grow far --dist so hearts + cascade vines redraw
+   together from the same parent leaf tip. Vines live under .rose —
+   .cover:has reaches both. */
+.cover:has(:is(.chapter--1, .chapter--2) .chapter__toggle[aria-expanded="true"])
+  :is(.chapter--3, .chapter--4, .vine--3, .vine--4) {
+  --dist: calc(var(--dist-far) + var(--open-stack) / var(--h));
+}
+/* Open chord is longer: pull P back to the ring so the two arcs
+   stay on their own side of the channel. */
+.cover:has(:is(.chapter--1, .chapter--2) .chapter__toggle[aria-expanded="true"])
+  :is(.vine--3, .vine--4) {
+  --hug: 0.08;
+}
+
+/* ONE CONTROL, ONE FOCUS: the heading's button is the chapter's heart */
+.chapter__heading {
+  position: absolute;
+  inset-inline-start: calc(-1 * max(var(--hc), var(--touch) / 2));
+  top: calc(-1 * max(var(--hc), var(--touch) / 2));
+  width: calc(2 * max(var(--hc), var(--touch) / 2));
+  margin: 0;
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
+}
+.chapter__toggle {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  min-width: var(--touch);
+  min-height: var(--touch);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-round);
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+.chapter__toggle:focus-visible { outline-offset: var(--space-1); }
+.chapter__art {
+  position: absolute;
+  inset: 0;
+}
+/* every chapter lens: base ½h/φ, length ½h, tip reaches ½h·φ */
+.chapter__leaf,
+.chapter__petal {
+  --len: var(--hc);
+  --ox: calc(50% + var(--hc) / var(--phi) * cos(var(--a)));
+  --oy-p: calc(50% + var(--hc) / var(--phi) * sin(var(--a)));
+  z-index: var(--z-over);
+}
+/* leaf faces the rose: the vine ends at its tip */
+.chapter__leaf {
+  --a: calc(var(--g) + 180deg);
+  --alpha: 90deg;
+  --fill: var(--sprout);
+}
+.chapter__petal {
+  --a: calc(var(--out) + var(--dir) * var(--k) * var(--fan));
+  --alpha: 90deg;
+  --fill: var(--tone);
+}
+/* Middle stalk: heart → middle petal along --out / --dir. Mobile hangs
+   the link column under that bud; desk fans stations beside it. */
+.chapter__stalk {
+  position: absolute;
+  z-index: var(--z-base);
+  inset-inline-start: calc(50% + (var(--dir) - 1) / 2 * var(--bud));
+  top: calc(50% - var(--paint-thin) / 2);
+  width: var(--bud);
+  height: var(--paint-thin);
+  background: var(--line);
+}
+
+/* The heart speaks the button's grammar at rest: a blue ring.
+   Pointer thickens it; open fills it with a pressed .control's wash. */
+.chapter__heart {
+  --orb-s: var(--paint-thin); --orb-r: calc(var(--hc) - var(--orb-s) / 2); --x: 50%; --y: 50%;
+  --fill: var(--surface-canvas);
+  border-color: var(--shape-circle);
+  z-index: var(--z-top);
+}
+.chapter__toggle:hover .chapter__heart { --orb-s: var(--paint-thick); }
+.chapter__toggle[aria-expanded="true"] .chapter__heart {
+  --fill: color-mix(in oklab, var(--shape-circle) var(--wash-16), var(--k-white));
+}
+.chapter__label {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-top);
+  display: grid;
+  place-items: center;
+  font-weight: var(--fw-semibold);
+  white-space: nowrap;
+}
+
+/* Open, the petals step back to a light tint and the one whose link
+   has pointer or focus comes forward in full colour, grown and
+   outlined with the trunk's ink: each link lights its own petal */
+.chapter__toggle[aria-expanded="true"] .chapter__petal {
+  --fill: color-mix(in oklab, var(--tone) var(--wash-48), var(--k-white));
+}
+.chapter:has(.chapter__station--1 .fruit:is(:hover, :focus-visible)) .chapter__petal--1,
+.chapter:has(.chapter__station--2 .fruit:is(:hover, :focus-visible)) .chapter__petal--2,
+.chapter:has(.chapter__station--3 .fruit:is(:hover, :focus-visible)) .chapter__petal--3 {
+  --fill: var(--tone);
+  --edge: var(--paint-thick);
+  scale: 1.2;
+}
+
+/* Station tones */
+.tone--structure   { --tone: var(--station-structure); }
+.tone--synesthesia { --tone: var(--station-synesthesia); }
+.tone--route       { --tone: var(--station-route); }
+.tone--role        { --tone: var(--station-role); }
+.tone--name        { --tone: var(--station-name); }
+.tone--state       { --tone: var(--station-state); }
+.tone--focus       { --tone: var(--station-focus); }
+.tone--live        { --tone: var(--station-live); }
+.tone--layers      { --tone: var(--station-layers); }
+.tone--color       { --tone: var(--station-color); }
+.tone--patterns    { --tone: var(--station-patterns); }
+.tone--sprouts     { --tone: var(--station-ground); }
+
+/* The cue: on the open side at --bud (past the petal tip on mobile;
+   desk φ² column). Full bloom size; only the arm length separates it
+   from the petal. Link column hangs under it on mobile. */
+.chapter__cue.flower {
+  position: absolute;
+  z-index: var(--z-top);
+  width: var(--bloom);
+  height: var(--bloom);
+  min-width: 0;
+  min-height: 0;
+  inset-inline-start: calc(50% + var(--dir) * var(--bud) - var(--bloom) / 2);
+  top: calc(50% - var(--bloom) / 2);
+}
+.chapter__toggle[aria-expanded="true"] .chapter__cue { visibility: hidden; }
+
+/* ------------------------------------------------------------
+   STATIONS — mobile: column under the heart. Desk: side column.
+   ------------------------------------------------------------ */
+.chapter__stations {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0;
+}
+.chapter__stations[hidden] { display: none; }
+.chapter__petal--1, .chapter__station--1, .chapter__tendril--1 { --k: -1; }
+.chapter__petal--2, .chapter__station--2 { --k: 0; }
+.chapter__petal--3, .chapter__station--3, .chapter__tendril--3 { --k: 1; }
+/* Mobile row index: 0,1,2 downward (desk restores --fy with --k) */
+.chapter__station--1 { --fy: 0; }
+.chapter__station--2 { --fy: 1; }
+.chapter__station--3 { --fy: 2; }
+
+/* TENDRILS (units of hc, origin the chapter's centre). The outer two
+   petals reach their buds with one arc each: the circle tangent to the
+   petal's axis AT its tip T and passing through the bud B.
+     T = φ·u(a),  B = (dir·φ², k·2/φ),  n = u(a + 90°),  w = B − T,
+     r = |w|² / (2·w·n)  (signed),  C = T + r·n
+   The sign of r is −k·dir (by symmetry), so |r| = r·sg and the arc
+   runs clockwise from T when sg > 0, from B otherwise. Drawn like the
+   vines: an .orb masked to its short arc; the bud hides the end.
+   --grow (0…1) draws the arc from T, so it can grow out of the petal;
+   it starts --tuck (hc) before T, under the petal, so the stroke is
+   born inside the petal and leaves its tip with no cut. */
+@property --grow { syntax: "<number>"; inherits: false; initial-value: 1; }
+.chapter__tendril {
+  --ta: calc(var(--out) + var(--dir) * var(--k) * var(--fan));
+  --tx: calc(var(--phi) * cos(var(--ta)));
+  --ty: calc(var(--phi) * sin(var(--ta)));
+  --bx: calc(var(--dir) * var(--phi) * var(--phi));
+  --by: calc(var(--k) * 2 / var(--phi));
+  --wx: calc(var(--bx) - var(--tx));
+  --wy: calc(var(--by) - var(--ty));
+  --nx: calc(-1 * sin(var(--ta)));
+  --ny: cos(var(--ta));
+  --rr: calc((var(--wx) * var(--wx) + var(--wy) * var(--wy)) / (2 * (var(--wx) * var(--nx) + var(--wy) * var(--ny))));
+  --qx: calc(var(--tx) + var(--rr) * var(--nx));
+  --qy: calc(var(--ty) + var(--rr) * var(--ny));
+  --sg: calc(-1 * var(--k) * var(--dir));
+  --angle-tip: atan2(calc(var(--ty) - var(--qy)), calc(var(--tx) - var(--qx)));
+  --angle-bud: atan2(calc(var(--by) - var(--qy)), calc(var(--bx) - var(--qx)));
+  --sweep: mod(calc(var(--sg) * (var(--angle-bud) - var(--angle-tip))), 360deg);
+  --drawn: calc(var(--sweep) * var(--grow));
+  --ext: calc(var(--tuck) / (var(--rr) * var(--sg)) * 1rad);
+  --from: calc(var(--angle-tip) - var(--drawn) * (1 - var(--sg)) / 2 - var(--ext) * (1 + var(--sg)) / 2);
+  --orb-s: var(--paint-thin);
+  --orb-r: calc(var(--rr) * var(--sg) * var(--hc));
+  --x: calc(var(--qx) * var(--hc));
+  --y: calc(var(--qy) * var(--hc));
+  z-index: var(--z-base);
+  mask: conic-gradient(from calc(var(--from) + 90deg), #000 0 calc(var(--drawn) + var(--ext)), transparent 0);
+}
+/* Peduncle: continues the middle-petal stalk downward through every
+   bloom. Same exit petal as the desk; only the hang is under, not beside.
+   When open the cue hides — peduncle starts at the stalk (50%) so the
+   brote join stays drawn (no empty gap where the triangle was). */
+.chapter__stations:not([hidden])::before {
+  content: "";
+  position: absolute;
+  z-index: var(--z-under);
+  inset-inline-start: calc(var(--dir) * var(--bud) - var(--paint-thin) / 2);
+  top: calc(50% - var(--paint-thin) / 2);
+  width: var(--paint-thin);
+  /* stalk → hang-pad → first bloom top → last bloom bottom (+ stroke) */
+  height: calc(
+    var(--bloom) / 2
+    + var(--space-1)
+    + var(--hang-pad, 0px)
+    + 2 * var(--row-gap)
+    + var(--bloom)
+    + var(--paint-thin)
+  );
+  background: var(--line);
+  pointer-events: none;
+}
+.chapter__station {
+  position: absolute;
+  z-index: var(--z-float);
+  /* Mobile: under the brote, stacked by --fy (desk restores side --fy) */
+  inset-inline-start: calc(var(--dir) * var(--bud));
+  top: calc(
+    50%
+    + var(--bloom) / 2
+    + var(--space-1)
+    + var(--hang-pad, 0px)
+    + var(--fy) * var(--row-gap)
+  );
+  translate: calc(-1 * var(--bloom) / 2) 0;
+}
+/* Open-side right (dir +1): name reads inward (toward the rose) */
+.chapter--2 .chapter__station,
+.chapter--4 .chapter__station {
+  translate: calc(-100% + var(--bloom) / 2) 0;
+}
+.chapter--2 .fruit,
+.chapter--4 .fruit {
+  flex-direction: row-reverse;
+}
+/* Open-side left (dir −1): name reads inward too */
+.chapter--1 .fruit,
+.chapter--3 .fruit {
+  flex-direction: row;
+}
+/* Side tendrils belong to the desk column; hide on the under layout */
+.chapter__tendril { display: none; }
+
+.cover .fruit {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--space-1);
+  min-height: var(--touch);
+  min-width: var(--touch);
+  padding: 0 var(--space-1) 0 0;
+  border-radius: var(--radius-2);
+  color: var(--ink);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.chapter--2 .fruit,
+.chapter--4 .fruit {
+  padding: 0 0 0 var(--space-1);
+}
+/* The link's own flower, the same component as on the plates: a
+   triangular bud at rest that opens its five petals, corolla and ring
+   when the link is looked at, focused, pressed or is the current
+   section. Sized to the touch target. */
+.cover .fruit__bloom {
+  flex: none;
+  width: var(--bloom);
+  height: var(--bloom);
+  pointer-events: none;
+}
+.cover .fruit:is(:hover, :focus-visible, .blooming, [aria-current]) .flower__petals { --r: var(--flower-open-r); --spin: 0deg; }
+.cover .fruit:is(:hover, :focus-visible, .blooming, [aria-current]) .flower__petal { opacity: 1; --s: 1; }
+.cover .fruit:is(:hover, :focus-visible, .blooming, [aria-current]) .flower__corolla { opacity: 1; transform: none; }
+.cover .fruit:is(:hover, :focus-visible, .blooming, [aria-current]) .flower__bud { inset: var(--flower-bud-open); }
+.cover .fruit:is(:hover, :focus-visible, .blooming, [aria-current]) .fruit__bloom::before {
+  opacity: 1; border-color: var(--color);
+  background: color-mix(in oklab, var(--color) var(--flower-wash), transparent);
+}
+.cover .fruit__name {
+  font-family: var(--font-display);
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
+  font-weight: var(--fw-semibold);
+  text-decoration: underline;
+  text-decoration-thickness: var(--stroke-fine);
+  text-underline-offset: var(--underline-offset);
+}
+.cover .fruit:hover { color: var(--ink); }
+.cover .fruit:is(:hover, :focus-visible, [aria-current]) .fruit__name { text-decoration-thickness: var(--stroke-bold); }
+
+/* ------------------------------------------------------------
+   TOOLS — top of the cover on mobile (clear of «Ver árbol»).
+   On the desk they sit beside the stem.
+   ------------------------------------------------------------ */
+.cover__tools {
+  position: absolute;
+  z-index: calc(var(--z-float) + 1); /* above chapter hearts on mobile */
+  inset-inline: var(--space-2);
+  top: var(--space-2);
+  bottom: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--gap-2xs);
+  margin: 0;
+}
+
+/* ------------------------------------------------------------
+   RADIAL STAGE (min-width: 64rem) — original «flor y enredadera».
+   Restores the full ring distances, centred rose, tools by the stem.
+   Mobile overrides above must not leak here.
+   ------------------------------------------------------------ */
+@media (min-width: 64rem) {
+  .cover {
+    /* Viewport floor only when the radial layout is on. */
+    height: calc(100dvh - var(--artwork-margin) - var(--artwork-frame));
+    min-height: calc(100dvh - var(--artwork-margin) - var(--artwork-frame));
+    overflow: clip;
+  }
+
+  .cover__paint {
+    /* trunk axis: centre of the left column, beside the inspector */
+    --shift: calc((var(--panel-col) + var(--gap-canvas)) / 2);
+    /* Three φ-units, one paint:
+       --h-fit  · ring that fits the stage (centres stay here)
+       --h-rose · title heart + crown + planes (brand floor)
+       --h-ch   · chapter flowers + vines (label floor)
+       Distances are the original φ ring scaled by h-fit/h-ch so
+       centres do not drift; vines use --h-ch so tip T = C+(φ/2)·u
+       still meets the leaf (hc = h-ch/2). Tools untouched. */
+    --reach: calc(var(--space-6) + var(--space-5) + var(--space-1) + var(--space-20) + var(--space-3));
+    --h-fit: min(
+      calc((50cqh - var(--space-2)) / ((2 * var(--phi) - 1 / (var(--phi) * var(--phi))) * sin(54deg) + var(--phi) / 2)),
+      calc((50cqw - var(--reach)) / (2 * var(--phi) * cos(18deg) + var(--phi) / 2))
+    );
+    --h-rose: max(
+      var(--h-fit),
+      calc(var(--type-title-lh) * var(--phi) * var(--phi) + var(--space-2))
+    );
+    --h-ch: max(
+      var(--h-fit),
+      calc((var(--type-heading-lh) * var(--phi) + var(--half)) * 2)
+    );
+    --h: var(--h-ch);
+    --dist-near: calc((2 * var(--phi) - 1 / (var(--phi) * var(--phi))) * var(--h-fit) / var(--h-ch));
+    --dist-far: calc(2 * var(--phi) * var(--h-fit) / var(--h-ch));
+    --oy: 50cqh;
+    /* Height is definite here — size unlocks cqh for --oy / --h. */
+    container-type: size;
+    padding: 0;
+    height: 100%;
+    min-height: 0;
+  }
+
+  /* Original ring: angles + side stations (mobile opens under) */
+  .vine--1, .chapter--1 { --g: 234deg; }
+  .vine--2, .chapter--2 { --g: -54deg; }
+  .vine--3, .chapter--3 { --g: 162deg; }
+  .vine--4, .chapter--4 { --g: 18deg; }
+  /* Undo mobile vine tweaks; desk g already lands on crown circles.
+     Restore ring --sig and crown-tangent geometry (no cascade). */
+  .vine--1 { --sig: -1; }
+  .vine--2 { --sig: 1; }
+  .vine--3 { --sig: -1; }
+  .vine--4 { --sig: 1; }
+  .vine--1, .vine--2, .vine--3, .vine--4 {
+    display: block;
+    --ea: calc(var(--g) - var(--sig) * 18deg);
+    --vine-tuck: 0deg;
+    z-index: var(--z-under);
+  }
+  /* Far vines: restore crown formula (overrides mobile cascade). */
+  .vine--3, .vine--4 {
+    --rk: calc(
+      (var(--rho1) * var(--rho1) - var(--wx) * var(--wx) - var(--wy) * var(--wy))
+      / (2 * (var(--wx) * var(--vx) + var(--wy) * var(--vy) - var(--rho1)))
+    );
+    --qx: calc(var(--fx) + (var(--l-lr) + var(--rk)) * var(--vx));
+    --qy: calc(var(--fy) + (var(--l-lr) + var(--rk)) * var(--vy));
+    --angle-tip: atan2(calc(-1 * var(--vy)), calc(-1 * var(--vx)));
+    --angle-start: atan2(calc(var(--ey) - var(--qy)), calc(var(--ex) - var(--qx)));
+    --orb-r: calc(var(--rk) * var(--h) + var(--orb-s) / 2);
+    --sweep: mod(calc(var(--sig) * (var(--angle-tip) - var(--angle-start))), 360deg);
+    --drawn: calc(var(--sweep) * var(--grow) + var(--vine-tuck));
+    --from: calc(
+      (var(--angle-start) - var(--vine-tuck)) * (1 + var(--sig)) / 2
+      + (var(--angle-tip) + var(--sweep) * (1 - var(--grow))) * (1 - var(--sig)) / 2
+    );
+  }
+  .chapter--1 { --dir: -1; --out: 180deg; }
+  .chapter--2 { --dir: 1;  --out: 0deg; }
+  .chapter--3 { --dir: -1; --out: 180deg; }
+  .chapter--4 { --dir: 1;  --out: 0deg; }
+  /* Ring placement (mobile lane / rail must not leak). */
+  .chapter {
+    inset-inline-start: calc(50% + var(--dist) * cos(var(--g)) * var(--h));
+  }
+  .chapter::after { content: none; }
+  /* No under-stack nudge on the desk — side columns do not cover the far pair */
+  .cover:has(:is(.chapter--1, .chapter--2) .chapter__toggle[aria-expanded="true"])
+    :is(.chapter--3, .chapter--4, .vine--3, .vine--4) {
+    --dist: var(--dist-far);
+  }
+
+  /* Rose → brand unit; vines → chapter unit (same as --hc·2). */
+  .rose { --h: var(--h-rose); }
+  .vine { --h: var(--h-ch); }
+  .cover__node { --node-w: calc(2 * var(--h-rose) - 2 * var(--space-3)); }
+  .cover__title {
+    font-size: var(--type-title);
+    line-height: var(--type-title-lh);
+  }
+  .cover__sub {
+    max-width: calc(var(--h-rose) * 1.2);
+    font-size: var(--type-subhead);
+    line-height: var(--type-subhead-lh);
+  }
+
+  .chapter {
+    --hc: calc(var(--h) / 2);
+    --bud: var(--rf);
+    --bloom: var(--space-8);
+  }
+  .chapter__station { --fy: calc(var(--k) * var(--row-gap)); }
+  .chapter__station--1 { --fy: calc(-1 * var(--row-gap)); }
+  .chapter__station--2 { --fy: 0; }
+  .chapter__station--3 { --fy: var(--row-gap); }
+
+  /* No mobile peduncle on the desk — tendrils carry the fruits */
+  .chapter__stations:not([hidden])::before { content: none; }
+  /* Desk stations: side column + tendrils (stalk/cue already side-shared) */
+  .chapter__tendril { display: block; }
+  .chapter__station {
+    inset-inline-start: calc(var(--dir) * var(--rf));
+    top: var(--fy);
+    translate: calc(-1 * var(--bloom) / 2 - var(--space-1)) -50%;
+  }
+  .chapter--1 .chapter__station,
+  .chapter--3 .chapter__station {
+    translate: calc(-100% + var(--bloom) / 2 + var(--space-1)) -50%;
+  }
+  .chapter--2 .chapter__station,
+  .chapter--4 .chapter__station {
+    translate: calc(-1 * var(--bloom) / 2 - var(--space-1)) -50%;
+  }
+  .cover .fruit {
+    justify-content: flex-start;
+    padding: 0 var(--space-1);
+  }
+  .chapter--1 .fruit,
+  .chapter--3 .fruit { flex-direction: row-reverse; }
+  .chapter--2 .fruit,
+  .chapter--4 .fruit { flex-direction: row; }
+  .chapter__heading {
+    font-size: var(--type-heading);
+    line-height: var(--type-heading-lh);
+  }
+  .cover .fruit__name {
+    font-size: var(--type-heading);
+    line-height: var(--type-heading-lh);
+  }
+
+  /* Tools beside the stem — original desk placement */
+  .cover__tools {
+    inset-inline: auto;
+    inset-inline-start: calc(50% + var(--space-4));
+    top: auto;
+    bottom: var(--space-3);
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+  }
+}
+
+/* ------------------------------------------------------------
+   MOTION: only when asked for AND the system does not ask for less.
+   The flower opens once, cold voices first and yellow last (each one
+   sounding, if sound is on: js/cover.js reads --voice-delay).
+   ------------------------------------------------------------ */
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-motion="on"] .rose__plane {
+    animation: bloom var(--dur-4) var(--ease-out) backwards;
+    animation-delay: var(--voice-delay, 0s);
+  }
+  :root[data-motion="on"] .crown__lens {
+    animation: bloom var(--dur-3) var(--ease-out) backwards;
+    animation-delay: calc(var(--dur-3) + var(--i) * var(--dur-1) / 2);
+  }
+  /* The four chapters bloom after the rose, in reading order: the vine
+     grows from the crown, the leaf and then the three petals open, and
+     last the sprout: the stalk grows out of the middle petal and the
+     triangle bud appears at its end. */
+  :root[data-motion="on"] :is(.chapter, .vine) { --at: calc(var(--dur-4) + var(--n) * var(--dur-2)); }
+  :root[data-motion="on"] .vine { animation: tendril-grow var(--dur-3) var(--ease-out) backwards; animation-delay: var(--at); }
+  :root[data-motion="on"] .chapter__leaf { animation: bloom var(--dur-3) var(--ease-out) backwards; animation-delay: calc(var(--at) + var(--dur-2)); }
+  :root[data-motion="on"] .chapter__petal { animation: bloom var(--dur-3) var(--ease-out) backwards; animation-delay: calc(var(--at) + var(--dur-3) + (var(--k) + 1) * var(--dur-1) / 2); }
+  :root[data-motion="on"] .chapter__stalk {
+    transform-origin: calc((1 - var(--dir)) / 2 * 100%) 50%;
+    animation: stalk-grow var(--dur-2) var(--ease-out) backwards;
+    animation-delay: calc(var(--at) + 2 * var(--dur-3));
+  }
+  :root[data-motion="on"] .chapter__cue { animation: bloom var(--dur-2) var(--ease-out) backwards; animation-delay: calc(var(--at) + 2 * var(--dur-3) + var(--dur-2)); }
+  /* A chapter opens as one gesture, nothing vanishes and comes back:
+     the petals only change tint; the middle link is the very cue, so
+     it stays put; the outer two split from it to their rows while
+     their tendrils grow from the petal tips; each name unfolds from
+     its bud, outwards. */
+  :root[data-motion="on"] .chapter__petal { transition: scale var(--motion-quick) var(--ease-out); }
+  :root[data-motion="on"] .chapter__petal .lens__layer--2 {
+    transition: background-color var(--motion-bloom) var(--ease-out), inset var(--motion-quick) var(--ease-out);
+  }
+  :root[data-motion="on"] :is(.chapter__station--1, .chapter__station--3) { animation: station-split var(--motion-bloom) var(--ease-out) backwards; }
+  :root[data-motion="on"] .chapter__tendril { animation: tendril-grow var(--motion-bloom) var(--ease-out) backwards; }
+  :root[data-motion="on"] .chapter__station .fruit__name {
+    animation: name-unfold var(--motion-bloom) var(--ease-out) backwards;
+    animation-delay: var(--motion-settle);
+  }
+}
+@keyframes bloom {
+  from { scale: 0.4; opacity: 0; }
+}
+@keyframes stalk-grow {
+  from { scale: 0 1; }
+}
+@keyframes station-split {
+  from { top: var(--space-0); }
+}
+@keyframes tendril-grow {
+  from { --grow: 0; }
+}
+/* the clip opens from the bud side: right inset when the column opens
+   right (dir 1), left inset when it opens left (dir −1) */
+@keyframes name-unfold {
+  from { clip-path: inset(0 calc((1 + var(--dir)) / 2 * 100%) 0 calc((1 - var(--dir)) / 2 * 100%)); }
+}
+
+@media (forced-colors: active) {
+  .orb, .lens__layer, .rose__stem, .chapter__stalk, .chapter__cue { forced-color-adjust: none; }
+  .cover__paint { --line: var(--forced-structure); }
+  .rose__heart, .chapter__heart { --fill: var(--forced-surface); }
+  .cover__node, .chapter__label { color: var(--forced-text); }
+}
+
+.chapter-fallback { padding: var(--space-3); }
