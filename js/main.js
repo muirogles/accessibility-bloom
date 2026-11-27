@@ -217,6 +217,10 @@ if (wateringForm) {
 const treeDialog = document.querySelector('[data-tree-dialog]');
 const treeJson = document.querySelector('[data-tree-json]');
 const treeData = () => JSON.stringify(panel.exportTree(), null, 2);
+const qrDialog = document.querySelector('[data-qr-dialog]');
+document.querySelector('[data-qr-open]')?.addEventListener('click', () => {
+  if (typeof qrDialog?.showModal === 'function') qrDialog.showModal();
+});
 document.querySelector('[data-tree-open]')?.addEventListener('click', () => {
   if (!treeDialog || typeof treeDialog.showModal !== 'function') return;
   treeJson.textContent = treeData();
@@ -335,10 +339,10 @@ document.addEventListener('focusout', () => {
   });
 });
 
-// --- X-ray: the Accessibility Tree laid over the work, from the
-//     inspector (always at hand while presenting) ---
+// --- X-ray: over the work. Desktop: inspector control. Mobile: a
+//     twin outside the modal, so showModal() cannot trap the toggle. ---
 initXray({
-  button: document.querySelector('[data-xray-toggle]'),
+  buttons: [...document.querySelectorAll('[data-xray-toggle]')],
   hosts: [...document.querySelectorAll('.cover, .artwork-side, .roots')],
   announce,
 });

@@ -118,7 +118,7 @@ inspector; lo oculto a la vista pero presente en el árbol se marca «solo en el
 
 I · El árbol
 
-- [1 · La estructura y sus lectores](index.html#structure): la cabecera de la página, del HTML a su Árbol de Accesibilidad, dibujada con el punto, la línea y el plano; un nodo y cuatro lecturas (lector, braille, voz, IA); lo que se lleva un agente, de encontrar la página a actuar (rel="ard", JSON-LD, llms.txt, el árbol, WebMCP)
+- [1 · La estructura y sus lectores](index.html#structure): la cabecera de la página, del HTML a su Árbol de Accesibilidad, dibujada con el punto, la línea y el plano; un nodo y cuatro lecturas (lector, braille, voz, IA); lo que se lleva un agente, de encontrar la página a actuar (ard.json, JSON-LD, llms.txt, el árbol, WebMCP)
 - [2 · La sinestesia de la obra](index.html#synesthesia): forma, color, timbre, texto y nodo dicen lo mismo; «Quita un canal»
 - [3 · La ruta: regiones, grupos y listas](index.html#route): landmarks y encabezados leídos en vivo
 
@@ -203,9 +203,10 @@ La flor se abre cuando es verdad que está abierta.
 
 ## Datos para agentes
 
-- JSON-LD en la cabecera: VisualArtwork + LearningResource (teaches,
-  accessMode, accessibilityFeature, accessibilitySummary, timeRequired) y
-  BreadcrumbList con las doce estaciones del recorrido.
+- JSON-LD en la cabecera (y el mismo grafo en artwork.json): VisualArtwork +
+  LearningResource (teaches, accessMode, accessibilityFeature,
+  accessibilitySummary, timeRequired) y BreadcrumbList con las doce
+  estaciones del recorrido.
 - El inspector muestra los niveles reales del árbol y también los nodos de
   texto (StaticText) de los nodos sin nombre accesible, que es lo que lee la
   tecnología de apoyo.

@@ -1,0 +1,76 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": ["VisualArtwork", "LearningResource"],
+      "@id": "#obra",
+      "name": "Accessibility Bloom",
+      "alternateName": "El florecer de la accesibilidad",
+      "inLanguage": "es",
+      "artform": "Composición interactiva accesible",
+      "artMedium": "HTML semántico, CSS, Web Audio API",
+      "creator": {
+        "@type": "Person",
+        "name": "María Rogles"
+      },
+      "copyrightYear": 2026,
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "isAccessibleForFree": true,
+      "learningResourceType": ["Lección interactiva", "Objeto de arte digital"],
+      "educationalLevel": "Introductorio a intermedio",
+      "timeRequired": "PT25M",
+      "teaches": [
+        "El Árbol de Accesibilidad y su relación con el DOM",
+        "Redundancia sensorial: forma, color, timbre, texto y nodo",
+        "Semántica legible por máquinas y agentes",
+        "Rol accesible, primera regla de ARIA y el verbo que ofrece cada rol",
+        "Cálculo del nombre accesible",
+        "Estados nativos: checked, pressed y disabled",
+        "La ruta: regiones, niveles de encabezado, grupos y listas",
+        "Orden del foco y foco visible",
+        "Regiones vivas: avisar sin mover el foco, y el error como estado",
+        "Capas: dialog modal e inert",
+        "Percepción: contraste medido, daltonismo simulado y color como canal no único",
+        "Patrón y antipatrón: el div-botón, el falso control y las decisiones de la obra",
+        "Brotes: referencias ARIA con elementos, HTML en canvas y nodos virtuales del AOM"
+      ],
+      "accessMode": ["textual", "visual", "auditory"],
+      "accessModeSufficient": [["textual"], ["textual", "visual"]],
+      "accessibilityFeature": [
+        "structuralNavigation",
+        "ARIA",
+        "readingOrder",
+        "tableOfContents",
+        "displayTransformability",
+        "highContrastDisplay"
+      ],
+      "accessibilityHazard": ["noFlashingHazard", "noMotionSimulationHazard"],
+      "accessibilityControl": [
+        "fullKeyboardControl",
+        "fullMouseControl",
+        "fullTouchControl"
+      ],
+      "accessibilitySummary": "Operable al 100 % con teclado y con foco siempre visible. El sonido y las animaciones nacen apagados y solo empiezan si la persona los activa; el movimiento respeta siempre prefers-reduced-motion. Ninguna información depende solo del color: cada forma lleva silueta, texto y nodo propios.",
+      "description": "Enredadera geométrica sobre lienzo de lino que enseña el Árbol de Accesibilidad: el main es el tronco, cada section una rama y cada elemento interactivo un capullo que florece en mandala."
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "#recorrido",
+      "name": "Recorrido de la obra",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Estructura", "item": "#structure" },
+        { "@type": "ListItem", "position": 2, "name": "Sinestesia", "item": "#synesthesia" },
+        { "@type": "ListItem", "position": 3, "name": "Ruta", "item": "#route" },
+        { "@type": "ListItem", "position": 4, "name": "Rol", "item": "#role" },
+        { "@type": "ListItem", "position": 5, "name": "Nombre", "item": "#name" },
+        { "@type": "ListItem", "position": 6, "name": "Estado", "item": "#state" },
+        { "@type": "ListItem", "position": 7, "name": "Foco", "item": "#focus" },
+        { "@type": "ListItem", "position": 8, "name": "Cambio", "item": "#live" },
+        { "@type": "ListItem", "position": 9, "name": "Capas", "item": "#layers" },
+        { "@type": "ListItem", "position": 10, "name": "Patrones", "item": "#patterns" },
+        { "@type": "ListItem", "position": 11, "name": "Percepción", "item": "#color" },
+        { "@type": "ListItem", "position": 12, "name": "Brotes", "item": "#sprouts" }
+      ]
+    }
+  ]
+}
