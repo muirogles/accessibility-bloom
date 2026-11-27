@@ -2,8 +2,16 @@
    BASE — reset, type, focus, utilities, user preferences
    (light mode: black ink on a linen canvas)
    ============================================================ */
-*, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 /* ROOM SCREENS — on a 4K or 8K screen at 100 % scaling, 16 px is a
    stamp in the middle of a wall. Above 1920 px wide the base size grows
    with the screen, and with it the whole work, which is measured in
@@ -17,9 +25,17 @@ html { scroll-behavior: smooth; }
    enlarging text — at 300 % on 4K, exactly twice the text. Below
    120 rem nothing changes. */
 @media (min-width: 120rem) {
-  html { font-size: max(100%, min(calc(50% + 100vw / 240), calc(100dvh / 56))); }
+  html {
+    font-size: max(100%, min(calc(50% + 100vw / 240), calc(100dvh / 56)));
+  }
 }
-html, body { margin: 0; padding: 0; }
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
 body {
   background: var(--surface-band);
   color: var(--ink);
@@ -29,11 +45,26 @@ body {
   overflow-x: clip;
 }
 
-h1, h2, h3 { font-family: var(--font-display); text-wrap: pretty; }
-p { text-wrap: pretty; }
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  text-wrap: pretty;
+}
 
-a { color: var(--link); text-decoration: underline; text-underline-offset: var(--underline-offset); }
-a:hover { color: var(--link-active); }
+p {
+  text-wrap: pretty;
+}
+
+a {
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: var(--underline-offset);
+}
+
+a:hover {
+  color: var(--link-active);
+}
 
 /* Inline code and keys keep the size of the text around them: a mono
    face at the same size already reads as "code" */
@@ -46,6 +77,7 @@ code {
   padding: 0 var(--half);
   border-radius: var(--radius-1);
 }
+
 kbd {
   font-family: var(--font-mono);
   font-size: inherit;
@@ -58,9 +90,15 @@ kbd {
 
 /* Screen readers only */
 .visually-hidden {
-  position: absolute; width: var(--stroke-1); height: var(--stroke-1);
-  padding: 0; margin: calc(-1 * var(--stroke-1)); overflow: hidden;
-  clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  position: absolute;
+  width: var(--stroke-1);
+  height: var(--stroke-1);
+  padding: 0;
+  margin: calc(-1 * var(--stroke-1));
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* Skip links — links, so they speak as links: the yellow of the
@@ -69,47 +107,87 @@ kbd {
    length: at 320 px the text wraps to two lines and a fixed offset let
    a strip peek out at the top. */
 .skip {
-  position: absolute; left: var(--space-2); top: 0; z-index: var(--z-skip);
-  background: var(--shape-triangle); color: var(--ink);
+  position: absolute;
+  inset-inline-start: var(--space-2);
+  top: 0;
+  z-index: var(--z-skip);
+  background: var(--shape-triangle);
+  color: var(--ink);
   border: var(--stroke-fine) solid var(--line);
   padding: var(--space-1) var(--space-3);
-  font-weight: var(--fw-semibold); line-height: var(--lh-32);
-  text-decoration: underline; text-underline-offset: var(--underline-offset);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-32);
+  text-decoration: underline;
+  text-underline-offset: var(--underline-offset);
   translate: 0 calc(-100% - var(--space-1));
   transition: translate var(--motion-quick);
 }
+
 /* The three skip links stack: at 320 px the second and third must not
    leave the screen when focused (2.4.7 and 1.4.10). The third reaches
    the roots, which the cover no longer links: the stem leads there. */
-.skip:focus { translate: 0 var(--space-2); }
-.skip--2:focus { translate: 0 calc(var(--space-2) + var(--touch) + var(--space-1)); }
-.skip--3:focus { translate: 0 calc(var(--space-2) + 2 * (var(--touch) + var(--space-1))); }
+.skip:focus {
+  translate: 0 var(--space-2);
+}
+
+.skip--2:focus {
+  translate: 0 calc(var(--space-2) + var(--touch) + var(--space-1));
+}
+
+.skip--3:focus {
+  translate: 0 calc(var(--space-2) + 2 * (var(--touch) + var(--space-1)));
+}
+
 @media (min-width: 48rem) {
-  .skip--2 { left: var(--space-48); }
-  .skip--3 { left: calc(2 * var(--space-48)); }
-  .skip--2:focus, .skip--3:focus { translate: 0 var(--space-2); }
+  .skip--2 {
+    inset-inline-start: var(--space-48);
+  }
+
+  .skip--3 {
+    inset-inline-start: calc(2 * var(--space-48));
+  }
+
+  .skip--2:focus,
+  .skip--3:focus {
+    translate: 0 var(--space-2);
+  }
 }
 
 /* While a modal dialog is open (the layer of station 9, the inspector
    on small screens) the page underneath is inert: it must not scroll
    either. The gutter is kept, so nothing shifts sideways. */
-html:has(dialog:modal) { overflow: hidden; scrollbar-gutter: stable; }
+html:has(dialog:modal) {
+  overflow: hidden;
+  scrollbar-gutter: stable;
+}
 
 /* Visible focus: a SOLID ring, one more element of the painting.
    Dashed or dotted strokes break up at a distance and on a projector,
    and the work is shown in a room (2026-11-22). */
-:focus { outline: none; }
-:focus-visible { outline: var(--focus-width) solid var(--focus); outline-offset: var(--focus-offset); }
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: var(--focus-width) solid var(--focus);
+  outline-offset: var(--focus-offset);
+}
 
 /* System preferences */
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  *, *::before, *::after {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
 }
+
 /* FORCED COLOURS (Windows contrast themes) — the system imposes its own
    colours and erases backgrounds. The work does two things here, and
    both tell the same story as the rest of the page:
@@ -123,25 +201,80 @@ html:has(dialog:modal) { overflow: hidden; scrollbar-gutter: stable; }
    Ink, sap and leaf take --forced-structure (the system text colour);
    the flower's linen, --forced-surface (the system canvas). */
 @media (forced-colors: active) {
-  :root { --line: var(--forced-structure); --sap: var(--forced-structure); --sprout: var(--forced-structure); }
-  .flower__petal, .flower__bud, .dot, .key__shape, .palette__swatch,
-  .trunk__axis, .branch__node, .branch__node::after, .branch__arc::after,
-  .tendril::before, .tendril::after, .cluster::before, .flower-card__canvas::before, .ladder__rung::before,
-  .branch__load--flowers > .bouquet::before, .agent-path__step::before, .craft__case::before, .craft__case::after,
-  .ax-sketch__node::before, .ax-sketch__node::after, .ax-sketch__reading::before, .ax-sketch__reading::after,
-  .ax-sketch__knot, .ax-sketch__shape, .ax-sketch__line::before,
-  .ground__load::before, .sprouts__list::before, .sprouts__list::after, .sprout::before, .sprout::after, .sprout__shoot::before, .sprout__shoot::after,
-  .ground__soil, .roots__main,
-  .field__ok-mark, .key__sharp, .control__mark { forced-color-adjust: none; }
+  :root {
+    --line: var(--forced-structure);
+    --sap: var(--forced-structure);
+    --sprout: var(--forced-structure);
+  }
+
+  .flower__petal,
+  .flower__bud,
+  .dot,
+  .key__shape,
+  .palette__swatch,
+  .trunk__axis,
+  .branch__node,
+  .branch__node::after,
+  .branch__arc::after,
+  .tendril::before,
+  .tendril::after,
+  .cluster::before,
+  .flower-card__canvas::before,
+  .ladder__rung::before,
+  .branch__load--flowers>.bouquet::before,
+  .agent-path__step::before,
+  .craft__case::before,
+  .craft__case::after,
+  .ax-sketch__node::before,
+  .ax-sketch__node::after,
+  .ax-sketch__reading::before,
+  .ax-sketch__reading::after,
+  .ax-sketch__knot,
+  .ax-sketch__shape,
+  .ax-sketch__line::before,
+  .ground__load::before,
+  .sprouts__list::before,
+  .sprouts__list::after,
+  .sprout::before,
+  .sprout::after,
+  .sprout__shoot::before,
+  .sprout__shoot::after,
+  .ground__soil,
+  .roots__main,
+  .field__ok-mark,
+  .key__sharp,
+  .control__mark {
+    forced-color-adjust: none;
+  }
+
   /* the score's staff is structure too */
-  .score .key { --staff-ink: var(--forced-structure); }
-  .key__staff { forced-color-adjust: none; }
+  .score .key {
+    --staff-ink: var(--forced-structure);
+  }
+
+  .key__staff {
+    forced-color-adjust: none;
+  }
+
   /* --line is already a system colour, and the system does not force its
      own colours: the primary control goes back to button colours */
-  .control.control--primary { background: var(--forced-control-bg); color: var(--forced-control-ink); border-color: var(--forced-control-ink); }
-  .control[aria-disabled="true"] { color: var(--forced-unavailable); border-color: var(--forced-unavailable); }
-  :focus-visible { outline: var(--focus-width) solid var(--forced-focus); outline-offset: var(--focus-offset); }
+  .control.control--primary {
+    background: var(--forced-control-bg);
+    color: var(--forced-control-ink);
+    border-color: var(--forced-control-ink);
+  }
+
+  .control[aria-disabled="true"] {
+    color: var(--forced-unavailable);
+    border-color: var(--forced-unavailable);
+  }
+
+  :focus-visible {
+    outline: var(--focus-width) solid var(--forced-focus);
+    outline-offset: var(--focus-offset);
+  }
 }
+
 /* MORE CONTRAST — two paths, one set of rules: the system asks for it
    (prefers-contrast: more) or the "Alto contraste" checkbox of the state
    station sets data-contrast="more". With JavaScript the checkbox starts
@@ -151,21 +284,57 @@ html:has(dialog:modal) { overflow: hidden; scrollbar-gutter: stable; }
 :root[data-contrast="more"] {
   --ink-soft: var(--ink);
 }
-:root[data-contrast="more"] body { background: var(--k-white); }
-:root[data-contrast="more"] a { text-decoration-thickness: var(--stroke-fine); }
-:root[data-contrast="more"] code { background: var(--tint-code-strong); }
+
+:root[data-contrast="more"] body {
+  background: var(--k-white);
+}
+
+:root[data-contrast="more"] a {
+  text-decoration-thickness: var(--stroke-fine);
+}
+
+:root[data-contrast="more"] code {
+  background: var(--tint-code-strong);
+}
+
 /* thicker edges drawn inside the border (an inset shadow): the boxes keep
    their size, so nothing on the page or in the inspector moves */
-:root[data-contrast="more"] :is(.plate, .sprout) { box-shadow: inset 0 0 0 var(--stroke-fine) var(--line); }
-:root[data-contrast="more"] .panel { box-shadow: inset 0 0 0 var(--stroke-fine) var(--line), var(--space-1) var(--space-1) 0 var(--tint-code); }
-:root[data-contrast="more"] .note__look { color: var(--ink); }
-:root[data-contrast="more"] .branch { background: none; }
+:root[data-contrast="more"] :is(.plate, .sprout) {
+  box-shadow: inset 0 0 0 var(--stroke-fine) var(--line);
+}
+
+:root[data-contrast="more"] .panel {
+  box-shadow: inset 0 0 0 var(--stroke-fine) var(--line), var(--space-1) var(--space-1) 0 var(--tint-code);
+}
+
+:root[data-contrast="more"] .note__look {
+  color: var(--ink);
+}
+
+:root[data-contrast="more"] .branch {
+  background: none;
+}
+
 @media (prefers-contrast: more) {
-  :root:not([data-contrast]) { --ink-soft: var(--ink); }
-  :root:not([data-contrast]) body { background: var(--k-white); }
-  :root:not([data-contrast]) a { text-decoration-thickness: var(--stroke-fine); }
-  :root:not([data-contrast]) :is(.plate, .sprout) { box-shadow: inset 0 0 0 var(--stroke-fine) var(--line); }
-  :root:not([data-contrast]) .panel { box-shadow: inset 0 0 0 var(--stroke-fine) var(--line), var(--space-1) var(--space-1) 0 var(--tint-code); }
+  :root:not([data-contrast]) {
+    --ink-soft: var(--ink);
+  }
+
+  :root:not([data-contrast]) body {
+    background: var(--k-white);
+  }
+
+  :root:not([data-contrast]) a {
+    text-decoration-thickness: var(--stroke-fine);
+  }
+
+  :root:not([data-contrast]) :is(.plate, .sprout) {
+    box-shadow: inset 0 0 0 var(--stroke-fine) var(--line);
+  }
+
+  :root:not([data-contrast]) .panel {
+    box-shadow: inset 0 0 0 var(--stroke-fine) var(--line), var(--space-1) var(--space-1) 0 var(--tint-code);
+  }
 }
 
 /* GREYSCALE — the proof of the colour station. The "Mirar en grises"
@@ -178,10 +347,16 @@ html:has(dialog:modal) { overflow: hidden; scrollbar-gutter: stable; }
    looks the same on mobile and desktop.
    Without JavaScript there is no flower to ask for it. */
 :root[data-greyscale="on"],
-:root[data-greyscale="on"] dialog[open] { filter: grayscale(1); }
+:root[data-greyscale="on"] dialog[open] {
+  filter: grayscale(1);
+}
+
 @media (forced-colors: active) {
+
   :root[data-greyscale="on"],
-  :root[data-greyscale="on"] dialog[open] { filter: none; }
+  :root[data-greyscale="on"] dialog[open] {
+    filter: none;
+  }
 }
 
 /* CAPTIONS — the written version of each sound while the "Subtítulos"
@@ -191,24 +366,49 @@ html:has(dialog:modal) { overflow: hidden; scrollbar-gutter: stable; }
    view, so it never covers the focused element (2.4.11). */
 .captions {
   --captions-gap: var(--space-2);
-  position: fixed; z-index: var(--z-float);
-  left: var(--captions-gap); right: var(--captions-gap);
+  position: fixed;
+  z-index: var(--z-float);
+  inset-inline: var(--captions-gap);
   bottom: calc(var(--captions-gap) + var(--touch) + var(--space-1));
-  margin: 0 auto; max-width: var(--space-64); width: fit-content;
+  margin: 0 auto;
+  max-width: var(--space-64);
+  width: fit-content;
   padding: var(--space-1) var(--space-2);
-  background: var(--ink); color: var(--surface-canvas);
-  font-family: var(--font-display); font-weight: var(--fw-medium);
-  font-size: var(--type-body); line-height: var(--type-body-lh);
-  border-radius: var(--radius-2); text-align: center;
+  background: var(--ink);
+  color: var(--surface-canvas);
+  font-family: var(--font-display);
+  font-weight: var(--fw-medium);
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
+  border-radius: var(--radius-2);
+  text-align: center;
   box-shadow: var(--half) var(--half) 0 var(--tint-shadow);
 }
-.captions[hidden] { display: none; }
-/* Reserve: "Ver árbol" button + gap + up to two caption lines */
-html:has(.captions:not([hidden])) { scroll-padding-bottom: var(--space-20); }
-@media (min-width: 64rem) {
-  .captions { left: var(--space-3); right: auto; bottom: var(--space-3); margin: 0; }
-  html:has(.captions:not([hidden])) { scroll-padding-bottom: var(--space-10); }
+
+.captions[hidden] {
+  display: none;
 }
+
+/* Reserve: "Ver árbol" button + gap + up to two caption lines */
+html:has(.captions:not([hidden])) {
+  scroll-padding-bottom: var(--space-20);
+}
+
+@media (min-width: 64rem) {
+  .captions {
+    inset-inline-start: var(--space-3);
+    inset-inline-end: auto;
+    bottom: var(--space-3);
+    margin: 0;
+  }
+
+  html:has(.captions:not([hidden])) {
+    scroll-padding-bottom: var(--space-10);
+  }
+}
+
 @media (forced-colors: active) {
-  .captions { border: var(--stroke-fine) solid var(--forced-text); }
+  .captions {
+    border: var(--stroke-fine) solid var(--forced-text);
+  }
 }

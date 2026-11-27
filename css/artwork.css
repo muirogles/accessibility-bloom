@@ -14,32 +14,48 @@
 .artwork {
   --artwork-margin: var(--space-1);
   --artwork-frame: var(--stroke-bold);
-  --side-pad: var(--space-4);                /* mobile: room left of the trunk */
-  --axis: var(--space-2);                    /* mobile trunk axis, from the side's edge */
-  --trunk-width: var(--space-1);             /* T: the trunk's width at the soil */
+  --side-pad: var(--space-4);
+  /* mobile: room left of the trunk */
+  --axis: var(--space-2);
+  /* mobile trunk axis, from the side's edge */
+  --trunk-width: var(--space-1);
+  /* T: the trunk's width at the soil */
   /* ONE STROKE THAT THICKENS TOWARDS THE SOIL, like any plant: the neck
      from the calyx down, thickest at the ground, thinning into the root.
      Each stretch ENDS with the width the next one starts with, so no
      joint changes thickness:
-       neck 0.6 T (constant)        cover stem, from behind the calyx
-       neck 0.6 T (constant)        bridge elbow
-       neck 0.6 T → T               trunk, from the bridge to the soil
-       T → 0.24 T                   main root                        */
-  --w-neck: calc(var(--trunk-width) * 0.6);
+       neck ½ T (constant)          cover stem, from behind the calyx
+       neck ½ T (constant)          bridge elbow
+       neck ½ T → T                 trunk, from the bridge to the soil
+       T → 0.24 T                   main root
+     Half of T stays on the stroke scale (1 · 2 · 4 · 8): at the mobile
+     T of space-1 it is 4 px, a whole pixel without rounding. */
+  --w-neck: calc(var(--trunk-width) / 2);
   /* THE AXIS, declared once: trunk, branches, roots and the cover's
      bridge all read it. While they all read this variable there cannot
      be two misaligned black lines. */
   --axis-x: calc(var(--axis) - var(--side-pad));
   --canvas-pad-m: var(--space-2);
 
-  position: relative; overflow-x: clip;
+  position: relative;
+  overflow-x: clip;
   margin: var(--artwork-margin);
   border: var(--artwork-frame) solid var(--line);
   background: var(--surface-canvas);
-  min-height: 100vh;
+  min-height: 100dvh;
 }
-.canvas { position: relative; z-index: var(--z-base); padding: var(--canvas-pad-m) var(--canvas-pad-m) 0; }
-.artwork-side { position: relative; min-width: 0; padding-left: var(--side-pad); }
+
+.canvas {
+  position: relative;
+  z-index: var(--z-base);
+  padding: var(--canvas-pad-m) var(--canvas-pad-m) 0;
+}
+
+.artwork-side {
+  position: relative;
+  min-width: 0;
+  padding-inline-start: var(--side-pad);
+}
 
 /* ============================================================
    CONTROLS — one system for every button of the work, spoken in the
@@ -63,43 +79,92 @@
      linen the blue turns grey, and grey reads as disabled */
   --control-wash: color-mix(in oklab, var(--control-c) var(--wash-16), var(--k-white));
   --control-hover: color-mix(in oklab, var(--control-c) var(--wash-24), var(--k-white));
-  display: inline-flex; align-items: center; justify-content: center; gap: var(--gap-2xs);
-  min-height: var(--touch); padding: 0 var(--control-pad);
-  font-family: var(--font-display); font-weight: var(--fw-semibold);
-  font-size: var(--type-body); line-height: var(--type-body-lh);
-  color: var(--control-c); background: var(--surface-canvas);
-  border: var(--stroke-fine) solid var(--control-c); border-radius: var(--radius-pill);
-  cursor: pointer; text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap-2xs);
+  min-height: var(--touch);
+  padding: 0 var(--control-pad);
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
+  color: var(--control-c);
+  background: var(--surface-canvas);
+  border: var(--stroke-fine) solid var(--control-c);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  text-align: center;
 }
+
 /* Variants, never ad-hoc paddings:
    --primary  the action that leads its scene or its dialog, filled
    --compact  controls that share a tight row (the five channels, the
               inspector's two actions): the short padding */
-.control--primary { background: var(--control-c); color: var(--k-white); }
-.control--compact { --control-pad: var(--space-1); }
-.control__mark {
-  flex: none; width: var(--control-mark); aspect-ratio: 1; border-radius: var(--radius-round);
-  border: var(--stroke-fine) solid var(--control-c); background: transparent;
+.control--primary {
+  background: var(--control-c);
+  color: var(--k-white);
 }
+
+.control--compact {
+  --control-pad: var(--space-1);
+}
+
+.control__mark {
+  flex: none;
+  width: var(--control-mark);
+  aspect-ratio: 1;
+  border-radius: var(--radius-round);
+  border: var(--stroke-fine) solid var(--control-c);
+  background: transparent;
+}
+
 /* A control with a state wears the mark: a toggle (aria-pressed) fills
    it while true */
-.control[aria-pressed="true"] { background: var(--control-wash); }
-.control[aria-pressed="true"] .control__mark { background: var(--control-c); }
-.control:hover, .control[aria-pressed]:hover { background: var(--control-hover); }
+.control[aria-pressed="true"] {
+  background: var(--control-wash);
+}
+
+.control[aria-pressed="true"] .control__mark {
+  background: var(--control-c);
+}
+
+.control:hover,
+.control[aria-pressed]:hover {
+  background: var(--control-hover);
+}
+
 /* Unavailable now (aria-disabled: still focusable, announced as not
    available): the grammar's disabled grey, as on a disabled flower; no
    hover wash, the not-allowed pointer */
-.control[aria-disabled="true"] { --control-c: var(--k-grey-dark); cursor: not-allowed; }
-.control[aria-disabled="true"]:hover { background: var(--surface-canvas); }
-.control--primary:hover { background: color-mix(in oklab, var(--ink) var(--wash-24), var(--control-c)); }
+.control[aria-disabled="true"] {
+  --control-c: var(--k-grey-dark);
+  cursor: not-allowed;
+}
+
+.control[aria-disabled="true"]:hover {
+  background: var(--surface-canvas);
+}
+
+.control--primary:hover {
+  background: color-mix(in oklab, var(--ink) var(--wash-24), var(--control-c));
+}
 
 /* ============================================================
    TRUNK — <main>: one continuous axis (left on mobile)
    ============================================================ */
-.trunk { position: relative; padding-top: var(--space-3); }
+.trunk {
+  position: relative;
+  padding-top: var(--space-3);
+}
+
 .trunk__axis {
-  position: absolute; left: var(--axis-x); top: 0; bottom: 0;
-  width: var(--trunk-width); background: var(--line);
+  position: absolute;
+  left: var(--axis-x);
+  top: 0;
+  bottom: 0;
+  width: var(--trunk-width);
+  background: var(--line);
   transform: translateX(-50%);
   /* Starts at the neck's width (the elbow's) and reaches T at the soil */
   clip-path: polygon(calc(50% - var(--w-neck) / 2) 0, calc(50% + var(--w-neck) / 2) 0, 100% 100%, 0 100%);
@@ -124,119 +189,283 @@
    --load-indent. Its width is that distance, plus half a stem.
    ============================================================ */
 .branch {
-  --pb: var(--space-3);                      /* the branch's own top padding */
+  --pb: var(--space-3);
+  /* the branch's own top padding */
   --arc-top: var(--space-3);
   --drop: var(--space-5);
   --load-pad: var(--space-2);
-  --load-indent: var(--space-6);             /* mobile: load starts right of the knot */
-  --hang-x: var(--space-2);                  /* where a cluster's stem hangs, inside the load */
-  --stem: var(--stroke-bold);                /* sap stem width */
+  --load-indent: var(--space-6);
+  /* mobile: load starts right of the knot */
+  --hang-x: var(--space-2);
+  /* where a cluster's stem hangs, inside the load */
+  --stem: var(--stroke-bold);
+  /* sap stem width */
   --pedicel: var(--stroke-fine);
   --knot: var(--space-2);
   --node: var(--space-2);
-  --stroke: var(--stroke-bold);              /* the arc's ink */
-  --stroke-echo: var(--stroke-fine);         /* the thin arc on the note's side */
-  --arc-w: var(--space-6);                   /* a branch that carries no hanging load */
+  --stroke: var(--stroke-bold);
+  /* the arc's ink */
+  --stroke-echo: var(--stroke-fine);
+  /* the thin arc on the note's side */
+  --arc-w: var(--space-6);
+  /* a branch that carries no hanging load */
   --halo: var(--wash-8);
   --tint: transparent;
   --rise: calc(var(--pb) + var(--load-pad) - var(--arc-top));
-  position: relative; z-index: var(--z-base); display: block;
+  position: relative;
+  z-index: var(--z-base);
+  display: block;
   padding: var(--pb) 0;
   background: radial-gradient(closest-side at 62% 38%, color-mix(in oklab, var(--tint) var(--halo), transparent), transparent 72%);
 }
-.branch--blue { --tint: var(--k-blue); }
-.branch--yellow { --tint: var(--k-yellow); }
-.branch--red { --tint: var(--k-red); }
-.branch--green { --tint: var(--sprout); }
-.branch--violet { --tint: var(--k-violet); }
-.branch--ochre { --tint: var(--sap); }
-.branch--grey { --tint: var(--k-grey); }
+
+.branch--blue {
+  --tint: var(--k-blue);
+}
+
+.branch--yellow {
+  --tint: var(--k-yellow);
+}
+
+.branch--red {
+  --tint: var(--k-red);
+}
+
+.branch--green {
+  --tint: var(--sprout);
+}
+
+.branch--violet {
+  --tint: var(--k-violet);
+}
+
+.branch--ochre {
+  --tint: var(--sap);
+}
+
+.branch--grey {
+  --tint: var(--k-grey);
+}
+
 /* the stations that own a colour of their own (see --station-* tokens) */
-.branch--ink { --tint: var(--station-structure); }
-.branch--pink { --tint: var(--station-focus); }
-.branch--cyan { --tint: var(--station-live); }
-.branch--white { --tint: var(--station-synesthesia); }
-.branch--sky { --tint: var(--station-route); }
-.branch--lavender { --tint: var(--station-actions); }
-.branch--slate { --tint: var(--station-layers); }
-.branch--magenta { --tint: var(--station-color); }
-.branch--orange { --tint: var(--station-patterns); }
-.branch--thick { --stroke: var(--stroke-heavy); }
-.branch--thin { --stroke: var(--stroke-fine); }
+.branch--ink {
+  --tint: var(--station-structure);
+}
+
+.branch--pink {
+  --tint: var(--station-focus);
+}
+
+.branch--cyan {
+  --tint: var(--station-live);
+}
+
+.branch--white {
+  --tint: var(--station-synesthesia);
+}
+
+.branch--sky {
+  --tint: var(--station-route);
+}
+
+.branch--lavender {
+  --tint: var(--station-actions);
+}
+
+.branch--slate {
+  --tint: var(--station-layers);
+}
+
+.branch--magenta {
+  --tint: var(--station-color);
+}
+
+.branch--orange {
+  --tint: var(--station-patterns);
+}
+
+.branch--thick {
+  --stroke: var(--stroke-heavy);
+}
+
+.branch--thin {
+  --stroke: var(--stroke-fine);
+}
+
 .branch__arc {
-  position: absolute; left: var(--axis-x); top: var(--arc-top);
-  width: var(--arc-w); height: var(--drop);
+  position: absolute;
+  left: var(--axis-x);
+  top: var(--arc-top);
+  width: var(--arc-w);
+  height: var(--drop);
   border-top: var(--stroke) solid var(--line);
   border-top-right-radius: 100% 100%;
   z-index: var(--z-under);
 }
+
 /* Mobile: a branch with a cluster or bouquet ends its arc on the stem */
 .branch:has(> .branch__load > :is(.cluster, .bouquet, .lesson__bench)) {
   --arc-w: calc(var(--load-indent) + var(--hang-x) - var(--axis-x) + var(--stem) / 2);
 }
+
 /* A bouquet (a <fieldset>) hangs inside its own border, in the middle
    of the stretch of rule before the legend, never on its text */
 .branch:has(> .branch__load > .bouquet) {
   --hang-x: calc(var(--space-1) + var(--stroke-fine));
 }
+
 /* The end knot: where the arc hands over its load */
 .branch__arc::after {
-  content: ""; position: absolute;
-  right: calc(var(--knot) / -2); bottom: calc(var(--knot) / -2);
-  width: var(--knot); height: var(--knot); border-radius: var(--radius-round); background: var(--line);
+  content: "";
+  position: absolute;
+  right: calc(var(--knot) / -2);
+  bottom: calc(var(--knot) / -2);
+  width: var(--knot);
+  height: var(--knot);
+  border-radius: var(--radius-round);
+  background: var(--line);
 }
+
 .branch__node {
-  position: absolute; left: var(--axis-x); top: var(--arc-top);
-  width: var(--node); height: var(--node); border-radius: var(--radius-round);
-  background: var(--line); transform: translate(-50%, -50%); z-index: var(--z-under);
+  position: absolute;
+  left: var(--axis-x);
+  top: var(--arc-top);
+  width: var(--node);
+  height: var(--node);
+  border-radius: var(--radius-round);
+  background: var(--line);
+  transform: translate(-50%, -50%);
+  z-index: var(--z-under);
 }
+
 /* The leaf on the node */
 .branch__node::after {
-  content: ""; position: absolute; left: var(--node); top: calc(-1 * var(--space-1));
-  width: var(--space-2); height: var(--space-1); background: var(--sprout);
-  border-radius: 100% 0 100% 0; transform: rotate(-28deg);
+  content: "";
+  position: absolute;
+  left: var(--node);
+  top: calc(-1 * var(--space-1));
+  width: var(--space-2);
+  height: var(--space-1);
+  background: var(--sprout);
+  border-radius: 100% 0 100% 0;
+  transform: rotate(-28deg);
 }
+
 .branch__load {
-  position: relative; z-index: var(--z-base);
-  display: flex; flex-direction: column; gap: var(--gap-s);
-  padding: calc(var(--drop) + var(--load-pad)) 0 0 var(--load-indent);
+  position: relative;
+  z-index: var(--z-base);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-s);
+  padding-block-start: calc(var(--drop) + var(--load-pad));
+  padding-inline: 0;
 }
-.branch__load--flowers { align-items: flex-start; }
+
+@media (min-width: 30rem) {
+  .branch__load {
+    padding-inline-start: var(--load-indent);
+  }
+}
+
+.branch__load--flowers {
+  align-items: flex-start;
+}
+
 /* Every piece of a load may shrink to its bank: without min-width 0 a
    flex or grid item grows to its longest unbreakable line (a <pre> of
    JSON or code) and runs off a phone screen; with it, the code scrolls
    inside its own box and the page never does. */
-.branch__load > *, .branch__visual > *, .ground__load > * { min-width: 0; max-width: 100%; }
-.branch__load--flowers > .note { order: 2; }
+.branch__load>*,
+.branch__visual>*,
+.ground__load>* {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.branch__load--flowers>.note {
+  order: 2;
+}
+
 /* A lesson needs no reordering: its DOM order — claim, bench, coda — is
    already its reading order on every screen (1.3.2) */
-.lesson .branch__load--flowers > .note { order: 0; }
-.branch__load--flowers .cluster, .branch__load--flowers .bouquet { width: fit-content; max-width: 100%; }
-.satellite { position: absolute; z-index: var(--z-under); left: calc(var(--axis) + var(--space-1)); top: var(--space-1); opacity: 0.85; }
-.satellite--dot { width: var(--space-2); height: var(--space-2); border-radius: var(--radius-round); background: var(--tint); }
-.satellite--arc {
-  width: var(--space-4); height: var(--space-2);
-  border: var(--stroke-bold) solid var(--tint); border-bottom: 0; border-radius: var(--space-4) var(--space-4) 0 0;
+.lesson .branch__load--flowers>.note {
+  order: 0;
 }
-.satellite--cradle { width: var(--space-3); height: var(--space-3); background: var(--tint); clip-path: polygon(0 0, 100% 50%, 0 100%); }
+
+.branch__load--flowers .cluster,
+.branch__load--flowers .bouquet {
+  width: fit-content;
+  max-width: 100%;
+}
+
+.satellite {
+  position: absolute;
+  z-index: var(--z-under);
+  left: calc(var(--axis) + var(--space-1));
+  top: var(--space-1);
+  opacity: 0.85;
+}
+
+.satellite--dot {
+  width: var(--space-2);
+  height: var(--space-2);
+  border-radius: var(--radius-round);
+  background: var(--tint);
+}
+
+.satellite--arc {
+  width: var(--space-4);
+  height: var(--space-2);
+  border: var(--stroke-bold) solid var(--tint);
+  border-bottom: 0;
+  border-radius: var(--space-4) var(--space-4) 0 0;
+}
+
+.satellite--cradle {
+  width: var(--space-3);
+  height: var(--space-3);
+  background: var(--tint);
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+
 /* The tendril lives in the drop's band (between knot and load), never
    in the text's lane */
 .tendril {
   --tendril: var(--space-3);
-  position: absolute; left: calc(var(--axis) + var(--space-3)); top: 0; z-index: var(--z-under);
-  width: var(--tendril); height: var(--tendril);
-  border: var(--stroke-fine) solid var(--sap); border-left: 0; border-bottom: 0;
+  position: absolute;
+  left: calc(var(--axis) + var(--space-3));
+  top: 0;
+  z-index: var(--z-under);
+  width: var(--tendril);
+  height: var(--tendril);
+  border: var(--stroke-fine) solid var(--sap);
+  border-left: 0;
+  border-bottom: 0;
   border-radius: 0 100% 0 0;
 }
+
 .tendril::after {
-  content: ""; position: absolute; right: calc(-1 * var(--space-1)); top: calc(-1 * var(--space-1));
-  width: var(--space-2); height: var(--space-1); background: var(--sprout);
-  border-radius: 100% 0 100% 0; transform: rotate(-28deg);
+  content: "";
+  position: absolute;
+  right: calc(-1 * var(--space-1));
+  top: calc(-1 * var(--space-1));
+  width: var(--space-2);
+  height: var(--space-1);
+  background: var(--sprout);
+  border-radius: 100% 0 100% 0;
+  transform: rotate(-28deg);
 }
+
 .tendril::before {
-  content: ""; position: absolute; right: 0; bottom: calc(-1 * var(--half));
-  width: var(--space-2); height: var(--space-1); background: var(--sprout);
-  border-radius: 0 100% 0 100%; transform: rotate(24deg);
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: calc(-1 * var(--half));
+  width: var(--space-2);
+  height: var(--space-1);
+  background: var(--sprout);
+  border-radius: 0 100% 0 100%;
+  transform: rotate(24deg);
 }
 
 /* ============================================================
@@ -248,44 +477,136 @@
    ============================================================ */
 .note {
   --note-measure: var(--space-64);
-  position: relative; max-width: var(--note-measure); margin-top: var(--space-2);
+  position: relative;
+  max-width: min(var(--note-measure), 100%);
+  margin-top: var(--space-2);
 }
-.note--sprout { --rim: var(--sprout); }
-.note--wide { --note-measure: var(--space-80); }
-.note--blue { --rim: var(--k-blue); }
-.note--yellow { --rim: var(--k-yellow); }
-.note--red { --rim: var(--k-red); }
-.note--green { --rim: var(--sprout); }
-.note--ochre { --rim: var(--sap); }
-.note--line { --rim: var(--line); }
-.note--grey { --rim: var(--k-grey); }
-.note--violet { --rim: var(--k-violet); }
-.note--ink { --rim: var(--station-structure); }
-.note--pink { --rim: var(--station-focus); }
-.note--cyan { --rim: var(--station-live); }
-.note--sky { --rim: var(--station-route); }
-.note--lavender { --rim: var(--station-actions); }
-.note--slate { --rim: var(--station-layers); }
-.note--magenta { --rim: var(--station-color); }
-.note--orange { --rim: var(--station-patterns); }
+
+.note--sprout {
+  --rim: var(--sprout);
+}
+
+.note--wide {
+  --note-measure: var(--space-80);
+}
+
+.note--blue {
+  --rim: var(--k-blue);
+}
+
+.note--yellow {
+  --rim: var(--k-yellow);
+}
+
+.note--red {
+  --rim: var(--k-red);
+}
+
+.note--green {
+  --rim: var(--sprout);
+}
+
+.note--ochre {
+  --rim: var(--sap);
+}
+
+.note--line {
+  --rim: var(--line);
+}
+
+.note--grey {
+  --rim: var(--k-grey);
+}
+
+.note--violet {
+  --rim: var(--k-violet);
+}
+
+.note--ink {
+  --rim: var(--station-structure);
+}
+
+.note--pink {
+  --rim: var(--station-focus);
+}
+
+.note--cyan {
+  --rim: var(--station-live);
+}
+
+.note--sky {
+  --rim: var(--station-route);
+}
+
+.note--lavender {
+  --rim: var(--station-actions);
+}
+
+.note--slate {
+  --rim: var(--station-layers);
+}
+
+.note--magenta {
+  --rim: var(--station-color);
+}
+
+.note--orange {
+  --rim: var(--station-patterns);
+}
+
 /* Synesthesia's numeral: its ring is the five voices together, like its
    petal (the outer arc stays ink) */
-.note--rainbow { --rim: var(--line); }
-.note--rainbow .note__num { border-color: transparent; }
+.note--rainbow {
+  --rim: var(--line);
+}
+
+.note--rainbow .note__num {
+  border-color: transparent;
+}
+
 .note--rainbow .note__num::after {
-  content: ""; position: absolute; inset: calc(-1 * var(--num-stroke)); border-radius: var(--radius-round);
+  content: "";
+  position: absolute;
+  inset: calc(-1 * var(--num-stroke));
+  border-radius: var(--radius-round);
   background: conic-gradient(var(--shape-circle), var(--shape-triangle), var(--shape-square), var(--shape-rhombus), var(--shape-bar), var(--shape-circle));
   -webkit-mask-image: radial-gradient(closest-side, transparent calc(100% - var(--num-stroke)), #000 calc(100% - var(--num-stroke)));
   mask-image: radial-gradient(closest-side, transparent calc(100% - var(--num-stroke)), #000 calc(100% - var(--num-stroke)));
 }
+
 /* the roots' numeral, in the soil's earth */
-.roots { --rim: var(--station-roots); }
-.note__title {
-  display: flex; align-items: center; gap: var(--gap-2xs);
-  font-size: var(--type-heading); line-height: var(--type-heading-lh);
-  margin: 0 0 var(--space-1); color: var(--ink);
+.roots {
+  --rim: var(--station-roots);
 }
-.note__title--center { justify-content: center; text-align: center; }
+
+.note__title {
+  display: flex;
+  min-width: 0;
+  max-width: 100%;
+  align-items: center;
+  gap: var(--gap-2xs);
+  font-size: var(--type-heading);
+  line-height: var(--type-heading-lh);
+  margin: 0 0 var(--space-1);
+  color: var(--ink);
+}
+
+.note__heading {
+  min-width: 0;
+}
+
+@media (max-width: 20rem) {
+  .lesson__claim .note__title {
+    font-size: var(--type-body);
+    line-height: var(--type-body-lh);
+  }
+}
+
+.note__title--center {
+  justify-content: center;
+  text-align: center;
+}
+
 /* The title's numeral: a full ring and a thick branch arc in the
    lower-right quadrant — the same quadrant through which every branch
    leaves the trunk. No rotation: the arc colours two borders of a
@@ -296,31 +617,63 @@
   --num-arc: var(--stroke-bold);
   --num-arc-inset: calc(-1 * var(--half));
   position: relative;
-  display: grid; place-items: center; flex: none;
-  width: var(--num-size); height: var(--num-size); border-radius: var(--radius-round);
-  font-size: var(--type-body); line-height: var(--type-body-lh); font-weight: var(--fw-bold); color: var(--ink);
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--num-size);
+  height: var(--num-size);
+  border-radius: var(--radius-round);
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
+  font-weight: var(--fw-bold);
+  color: var(--ink);
   border: var(--num-stroke) solid var(--rim, var(--line));
 }
+
 .note__num::before {
-  content: ""; position: absolute; inset: var(--num-arc-inset); border-radius: var(--radius-round);
+  content: "";
+  position: absolute;
+  inset: var(--num-arc-inset);
+  border-radius: var(--radius-round);
   border: var(--num-arc) solid transparent;
   border-right-color: var(--rim, var(--line));
   border-bottom-color: var(--rim, var(--line));
 }
+
 .note__title--plate {
-  width: fit-content; margin-inline: auto; background: var(--surface-canvas);
-  padding: 0 var(--space-1); position: relative; z-index: var(--z-base);
+  width: fit-content;
+  margin-inline: auto;
+  background: var(--surface-canvas);
+  padding: 0 var(--space-1);
+  position: relative;
+  z-index: var(--z-base);
 }
-.note p { margin: 0 0 var(--space-1); font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink-soft); }
-.note p:last-child { margin-bottom: 0; }
-.note strong { color: var(--ink); }
+
+.note p {
+  margin: 0 0 var(--space-1);
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
+  color: var(--ink-soft);
+}
+
+.note p:last-child {
+  margin-bottom: 0;
+}
+
+.note strong {
+  color: var(--ink);
+}
+
 /* The invitation: what to try now. Read from the room, so at caption
    size in the body face (an invitation, not code); sap and medium
    weight set it apart from the prose above (sap on linen ≥ 5:1 in
    every vision palette) */
 .note .note__look {
-  font-family: var(--font-body); font-size: var(--type-caption); line-height: var(--type-caption-lh);
-  font-weight: var(--fw-medium); color: var(--sap);
+  font-family: var(--font-body);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-lh);
+  font-weight: var(--fw-medium);
+  color: var(--sap);
 }
 
 /* ============================================================
@@ -335,23 +688,48 @@
    It speaks of the web, never of this work: the flowers are specimens
    on the lesson's table.
    ============================================================ */
-.lesson__heading { display: flex; flex-direction: column; }
+.lesson__heading {
+  display: flex;
+  flex-direction: column;
+}
+
 /* category labels: display semibold, soft; mono is for code only */
-.lesson__tag, .lesson__label {
-  font-family: var(--font-display); font-weight: var(--fw-semibold);
-  font-size: var(--type-body); line-height: var(--type-body-lh);
+.lesson__tag,
+.lesson__label {
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
   color: var(--ink-soft);
 }
-.lesson__label { margin: 0 0 var(--half); }
-.lesson__fail p { margin: 0; font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink-soft); }
-.lesson__fail strong { color: var(--ink); }
+
+.lesson__label {
+  margin: 0 0 var(--half);
+}
+
+.lesson__fail p {
+  margin: 0;
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
+  color: var(--ink-soft);
+}
+
+.lesson__fail strong {
+  color: var(--ink);
+}
+
 /* 5 · when it fails: the wilted line (see THE WILTED LINE) */
 .lesson__fail {
-  margin: 0 0 var(--space-2); padding: var(--space-1) var(--space-2);
+  margin: 0 0 var(--space-2);
+  padding: var(--space-1) var(--space-2);
   background: var(--surface-canvas);
 }
+
 /* 6 · take it with you */
-.lesson__take { padding-left: var(--space-2); border-left: var(--stroke-bold) solid var(--rim, var(--line)); }
+.lesson__take {
+  padding-left: var(--space-2);
+  border-left: var(--stroke-bold) solid var(--rim, var(--line));
+}
 
 /* 3 · THE BENCH HANGS FROM THE BRANCH, as every flower of the work.
    The sap stem leaves the branch's knot and runs down the bench; each
@@ -361,141 +739,370 @@
    the specimens on both sides of it, mirrored. The stem stops at the last
    specimen's pedicel: nothing dangles. */
 .lesson__bench {
-  --bench-indent: var(--space-5);              /* one column: room for the stem and its pedicels */
+  --bench-indent: var(--space-5);
+  /* one column: room for the stem and its pedicels */
   --bench-row-gap: var(--space-4);
-  position: relative; display: grid; grid-template-columns: minmax(0, 1fr);
-  gap: var(--bench-row-gap) var(--space-6); justify-items: start; align-items: start;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--bench-row-gap) var(--space-6);
+  justify-items: start;
+  align-items: start;
   padding-left: var(--bench-indent);
 }
-.lesson__pair, .lesson__row { display: contents; }
+
+.lesson__pair,
+.lesson__row {
+  display: contents;
+}
+
 /* one column: claim and coda share the bench's gutter, and the stem runs
    down it from the knot, past the claim, to the last specimen */
-.lesson__claim, .lesson__coda { position: relative; padding-left: var(--space-5); }
+.lesson__claim,
+.lesson__coda {
+  position: relative;
+  padding-left: var(--space-5);
+}
+
 /* A LESSON'S BRANCH DOES NOT END: the arc bends and goes on down as the
    stem the specimens hang from, with no knot. It is one border with one
    width and one ink: the top border turns the corner into the side border
    (both the branch's --stroke), so the curve becomes straight without a
    seam, exactly over the stem's axis. Only the pedicels, the stalks of each
    specimen, are sap. */
-.lesson { --stem-w: var(--stroke); }
+.lesson {
+  --stem-w: var(--stroke);
+}
+
 .lesson .branch__arc {
-  width: calc(var(--arc-w) + var(--stem-w) / 2);
+  width: calc(var(--arc-w) / 2);
   height: calc(var(--drop) + var(--rise));
   border-right: var(--stem-w) solid var(--line);
   border-top-right-radius: 100% var(--drop);
 }
-.lesson .branch__arc::after { content: none; }
+
+@media (min-width: 30rem) {
+  .lesson .branch__arc {
+    width: calc(var(--arc-w) + var(--stem-w) / 2);
+  }
+}
+
+@media (max-width: 29.999rem) {
+  .lesson .branch__arc {
+    width: calc(var(--arc-w) - var(--load-indent) - var(--stem) / 2 + var(--stem-w) / 2);
+    height: calc(var(--drop) + var(--rise) + var(--space-2));
+  }
+}
+
+@media (min-width: 30rem) and (max-width: 63.999rem) {
+  .lesson .branch__arc {
+    width: calc(var(--arc-w) - var(--stem) / 2 + var(--stem-w) / 2);
+    height: calc(var(--drop) + var(--rise) + var(--space-2));
+  }
+}
+
+.lesson .branch__arc::after {
+  content: none;
+}
+
 /* one column: a chord's stem is the same branch going on, in ink */
-.lesson .cluster::before { top: 0; width: var(--stem-w); left: calc(var(--hang-x) + var(--stem) / 2 - var(--stem-w) / 2); background: var(--line); }
+.lesson .cluster::before {
+  top: 0;
+  width: var(--stem-w);
+  left: calc(var(--hang-x) - var(--stem-w) / 2);
+  background: var(--line);
+}
+
 /* one column: from the load's top, the stem runs down the gutter, past the claim */
 .lesson__claim::before {
-  content: ""; position: absolute; left: calc(var(--hang-x) - var(--stem-w) / 2); width: var(--stem-w); background: var(--line);
-  top: 0; bottom: calc(-1 * var(--gap-s));
+  content: "";
+  position: absolute;
+  left: calc(var(--hang-x) - var(--stem-w) / 2);
+  width: var(--stem-w);
+  background: var(--line);
+  top: 0;
+  bottom: calc(-1 * var(--gap-s));
 }
+
 .specimen {
-  --pedicel-y: calc(var(--space-12) / 2);      /* a flower's centre */
-  position: relative; margin: 0; display: grid; justify-items: start; gap: var(--space-1); width: min(var(--space-32), 100%);
+  --pedicel-y: calc(var(--space-12) / 2);
+  /* a flower's centre */
+  position: relative;
+  margin: 0;
+  display: grid;
+  justify-items: start;
+  gap: var(--space-1);
+  width: min(var(--space-32), 100%);
 }
+
 /* each specimen carries its stretch of the stem, and its pedicel */
-.specimen::before, .specimen::after { content: ""; position: absolute; background: var(--sap); }
+.specimen::before,
+.specimen::after {
+  content: "";
+  position: absolute;
+  background: var(--sap);
+}
+
 .specimen::before {
   background: var(--line);
-  left: calc(var(--hang-x) - var(--bench-indent) - var(--stem-w) / 2); width: var(--stem-w);
-  top: calc(-1 * var(--bench-row-gap)); bottom: calc(-1 * var(--bench-row-gap));
+  left: calc(var(--hang-x) - var(--bench-indent) - var(--stem-w) / 2);
+  width: var(--stem-w);
+  top: calc(-1 * var(--bench-row-gap));
+  bottom: calc(-1 * var(--bench-row-gap));
 }
-.specimen--last::before { bottom: auto; height: calc(var(--bench-row-gap) + var(--pedicel-y) + var(--stem) / 2); }
+
+.specimen--last::before {
+  bottom: auto;
+  height: calc(var(--bench-row-gap) + var(--pedicel-y) + var(--stem) / 2);
+}
+
 /* a pedicel leaves the stem from its edge and reaches its flower's centre,
    behind the bud, so it touches the flower closed or open */
-.specimen { isolation: isolate; }
-.specimen::after { z-index: -1; }
-figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
-.specimen::after { left: calc(var(--hang-x) - var(--bench-indent) + var(--stem-w) / 2); width: calc(var(--bench-indent) - var(--hang-x) - var(--stem-w) / 2 + var(--pedicel-reach, var(--space-0))); }
+.specimen {
+  isolation: isolate;
+}
+
 .specimen::after {
-  left: calc(var(--hang-x) - var(--bench-indent)); width: calc(var(--bench-indent) - var(--hang-x));
-  top: calc(var(--pedicel-y) - var(--stem) / 2); height: var(--stem);
+  z-index: -1;
 }
+
+figure.specimen {
+  --pedicel-reach: calc(var(--space-12) / 2);
+}
+
+.specimen::after {
+  left: calc(var(--hang-x) - var(--bench-indent) + var(--stem-w) / 2);
+  width: calc(var(--bench-indent) - var(--hang-x) - var(--stem-w) / 2 + var(--pedicel-reach, var(--space-0)));
+}
+
+.specimen::after {
+  left: calc(var(--hang-x) - var(--bench-indent));
+  width: calc(var(--bench-indent) - var(--hang-x));
+  top: calc(var(--pedicel-y) - var(--stem) / 2);
+  height: var(--stem);
+}
+
 /* a fieldset's box starts under its legend: the pedicel is measured from there */
-.specimen--group { --pedicel-y: calc(var(--mini) / 2); }
-/* the group is a small branch: one twig carries its three checkboxes */
-.specimen--group .specimen__flowers { position: relative; }
-.specimen--group .specimen__flowers::before {
-  content: ""; position: absolute; z-index: -1; left: calc(var(--space-1) + var(--mini) / 2); right: 0;
-  top: calc(var(--mini) / 2 - var(--stem) / 2); height: var(--stem); background: var(--sap);
+.specimen--group {
+  --pedicel-y: calc(var(--mini) / 2);
 }
-.specimen--slider { --pedicel-y: calc(var(--type-body-lh) + var(--space-1) + var(--touch) / 2); }
+
+/* the group is a small branch: one twig carries its three checkboxes */
+.specimen--group .specimen__flowers {
+  position: relative;
+}
+
+.specimen--group .specimen__flowers::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: calc(var(--space-1) + var(--mini) / 2);
+  right: 0;
+  top: calc(var(--mini) / 2 - var(--stem) / 2);
+  height: var(--stem);
+  background: var(--sap);
+}
+
+.specimen--slider {
+  --pedicel-y: calc(var(--type-body-lh) + var(--space-1) + var(--touch) / 2);
+}
+
 /* The plate (two banks from 64 rem): claim above, coda below, on the
    note's bank; the bench spans both rows on the other. One class more
    specific than the plate's own .note rules, which come later */
 @media (min-width: 64rem) {
-  .lesson .branch__load--flowers { grid-template-rows: auto 1fr; }
-  .lesson.branch--left .branch__load--flowers > .lesson__claim { grid-column: 2; grid-row: 1; }
-  .lesson.branch--left .branch__load--flowers > .lesson__coda { grid-column: 2; grid-row: 2; justify-self: start; }
-  .lesson.branch--left .branch__load--flowers > :is(.lesson__bench, .cluster) { grid-column: 1; grid-row: 1 / span 2; }
-  .lesson.branch--right .branch__load--flowers > .lesson__claim { grid-column: 1; grid-row: 1; }
-  .lesson.branch--right .branch__load--flowers > .lesson__coda { grid-column: 1; grid-row: 2; justify-self: end; }
-  .lesson.branch--right .branch__load--flowers > :is(.lesson__bench, .cluster) { grid-column: 2; grid-row: 1 / span 2; }
+  .lesson .branch__load--flowers {
+    grid-template-rows: auto 1fr;
+  }
+
+  .lesson.branch--left .branch__load--flowers>.lesson__claim {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .lesson.branch--left .branch__load--flowers>.lesson__coda {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: start;
+  }
+
+  .lesson.branch--left .branch__load--flowers> :is(.lesson__bench, .cluster) {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+
+  .lesson.branch--right .branch__load--flowers>.lesson__claim {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .lesson.branch--right .branch__load--flowers>.lesson__coda {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: end;
+  }
+
+  .lesson.branch--right .branch__load--flowers> :is(.lesson__bench, .cluster) {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
 }
+
 /* two banks (the plate, from 64 rem): the bench in two columns, the stem
    in the lane between them; no gutter beside the claim */
 @media (min-width: 64rem) {
-  .lesson__bench { --bench-gap: var(--space-6); grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--bench-gap); padding-left: 0; }
-  .lesson__claim, .lesson__coda { padding-left: 0; }
-  .lesson__claim::before { content: none; }
+  .lesson__bench {
+    --bench-gap: var(--space-6);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--bench-gap);
+    padding-left: 0;
+  }
+
+  .lesson__claim,
+  .lesson__coda {
+    padding-left: 0;
+  }
+
+  .lesson__claim::before {
+    content: none;
+  }
+
   .lesson.branch--left .branch__arc {
-    border-right: 0; border-left: var(--stem-w) solid var(--line);
+    border-right: 0;
+    border-left: var(--stem-w) solid var(--line);
     border-top-left-radius: 100% var(--drop);
   }
+
   /* the arc already reaches the load: a chord's rod hangs straight from it */
-  .lesson .cluster::before { content: none; }
-  .specimen--right::before { left: calc(-1 * var(--bench-gap) / 2 - var(--stem-w) / 2); }
-  .specimen--right::after { left: calc(-1 * var(--bench-gap) / 2 + var(--stem-w) / 2); width: calc(var(--bench-gap) / 2 - var(--stem-w) / 2 + var(--pedicel-reach, var(--space-0))); }
-  .specimen--left::before { display: none; }
-  .specimen--left::after { left: auto; right: calc(-1 * var(--bench-gap) / 2 + var(--stem-w) / 2); width: calc(var(--bench-gap) / 2 - var(--stem-w) / 2 + var(--pedicel-reach, var(--space-0))); }
+  .lesson .cluster::before {
+    content: none;
+  }
+
+  .specimen--right::before {
+    left: calc(-1 * var(--bench-gap) / 2 - var(--stem-w) / 2);
+  }
+
+  .specimen--right::after {
+    left: calc(-1 * var(--bench-gap) / 2 + var(--stem-w) / 2);
+    width: calc(var(--bench-gap) / 2 - var(--stem-w) / 2 + var(--pedicel-reach, var(--space-0)));
+  }
+
+  .specimen--left::before {
+    display: none;
+  }
+
+  .specimen--left::after {
+    left: auto;
+    right: calc(-1 * var(--bench-gap) / 2 + var(--stem-w) / 2);
+    width: calc(var(--bench-gap) / 2 - var(--stem-w) / 2 + var(--pedicel-reach, var(--space-0)));
+  }
+
   /* the left bank mirrors the right: its flower against the stem */
-  .specimen--left { justify-self: end; justify-items: end; text-align: end; }
-  .specimen--left .specimen__flowers { justify-content: flex-end; }
+  .specimen--left {
+    justify-self: end;
+    justify-items: end;
+    text-align: end;
+  }
+
+  .specimen--left .specimen__flowers {
+    justify-content: flex-end;
+  }
 }
+
 @media (min-width: 90rem) {
-  .specimen { --mini: var(--space-8); }
+  .specimen {
+    --mini: var(--space-8);
+  }
 }
+
 .specimen__canvas {
   --spec-size: var(--space-12);
-  position: relative; width: var(--spec-size); aspect-ratio: 1;
-  margin-bottom: calc(var(--type-body-lh) + var(--space-1));   /* room for the flower's name */
+  position: relative;
+  width: var(--spec-size);
+  aspect-ratio: 1;
+  margin-bottom: calc(var(--type-body-lh) + var(--space-1));
+  /* room for the flower's name */
 }
+
 /* texts take the width the specimen gives them, never widen it */
-.specimen__caption { contain: inline-size; width: 100%; }
 .specimen__caption {
-  margin: 0; font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink-soft);
+  contain: inline-size;
+  width: 100%;
 }
-.specimen__caption code { color: var(--ink); font-weight: var(--fw-semibold); }
+
+.specimen__caption {
+  margin: 0;
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
+  color: var(--ink-soft);
+}
+
+.specimen__caption code {
+  color: var(--ink);
+  font-weight: var(--fw-semibold);
+}
+
 .specimen__legend {
-  padding: 0; font-family: var(--font-display); font-weight: var(--fw-semibold);
-  font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink);
+  padding: 0;
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
+  color: var(--ink);
 }
+
 /* The disclosure: a button too (a blue circle), but its truth is that
    what it controls is SHOWN. It does not open petals around itself —
    that is the toggle's gesture —: a branch grows from it, carrying what
    it controls, and its ring fills while the branch is out */
 .flower--disclosure[aria-expanded="true"]::before {
-  opacity: 1; border-color: var(--color);
+  opacity: 1;
+  border-color: var(--color);
   background: color-mix(in oklab, var(--color) var(--flower-wash), transparent);
 }
-.flower--disclosure[aria-expanded="true"] .flower__corolla { opacity: 1; transform: none; }
+
+.flower--disclosure[aria-expanded="true"] .flower__corolla {
+  opacity: 1;
+  transform: none;
+}
+
 .specimen__branch {
-  position: absolute; left: calc(100% + var(--space-3)); top: 0;
-  list-style: none; margin: 0; padding: var(--space-1) 0 var(--space-1) var(--space-2);
+  position: absolute;
+  left: calc(100% + var(--space-3));
+  top: 0;
+  list-style: none;
+  margin: 0;
+  padding: var(--space-1) 0 var(--space-1) var(--space-2);
   border-left: var(--stem) solid var(--sap);
 }
+
 /* the twig from the flower to its branch */
 .specimen__branch::before {
-  content: ""; position: absolute; right: 100%; top: calc(var(--spec-size) / 2 - var(--stem) / 2);
-  width: var(--space-3); height: var(--stem); background: var(--sap);
+  content: "";
+  position: absolute;
+  right: 100%;
+  top: calc(var(--spec-size) / 2 - var(--stem) / 2);
+  width: var(--space-3);
+  height: var(--stem);
+  background: var(--sap);
 }
+
+.specimen--right .specimen__branch {
+  top: calc(-1 * var(--space-4));
+}
+
+.specimen--right .specimen__branch::before {
+  top: calc(var(--spec-size) / 2 - var(--stem) / 2 + var(--space-4));
+}
+
 .specimen__branch li {
-  position: relative; padding-left: var(--space-3);
-  font-size: var(--type-body); line-height: var(--type-lead-lh); color: var(--ink);
+  position: relative;
+  padding-left: var(--space-3);
+  font-size: var(--type-body);
+  line-height: var(--type-lead-lh);
+  color: var(--ink);
 }
+
 /* its entries are links, so they speak as links: the yellow triangle
    with an ink edge, and the name underlined (APG disclosure navigation).
    Two triangles, ink under yellow, anchored at their centroid (2/3 of
@@ -504,86 +1111,213 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
 .specimen__branch li::before,
 .specimen__branch li::after {
   --tri: var(--space-3);
-  content: ""; position: absolute; left: 0; top: 50%; translate: -50% calc(-200% / 3);
-  width: var(--tri); aspect-ratio: calc(2 / sqrt(3));
-  clip-path: polygon(50% 0, 100% 100%, 0 100%); background: var(--line);
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  translate: -50% calc(-200% / 3);
+  width: var(--tri);
+  aspect-ratio: calc(2 / sqrt(3));
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  background: var(--line);
 }
+
 .specimen__branch li::after {
   --tri: calc(var(--space-3) - 2 * sqrt(3) * var(--stroke-fine));
   background: var(--shape-triangle);
 }
+
 .specimen__branch a {
-  display: inline-block; padding-left: var(--space-1); min-height: var(--touch); line-height: var(--touch);
-  color: var(--ink); text-decoration: underline; text-underline-offset: var(--underline-offset);
-  font-family: var(--font-display); font-weight: var(--fw-semibold);
+  display: inline-block;
+  padding-left: var(--space-1);
+  min-height: var(--touch);
+  line-height: var(--touch);
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: var(--underline-offset);
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
 }
+
 @media (prefers-reduced-motion: no-preference) {
-  .specimen__branch:not([hidden]) { transform-origin: 0 0; animation: grow-down var(--motion-bloom) var(--ease-out); }
+  .specimen__branch:not([hidden]) {
+    transform-origin: 0 0;
+    animation: grow-down var(--motion-bloom) var(--ease-out);
+  }
 }
 
 /* The group and its mixed parent */
-.specimen--group { border: 0; padding: 0; min-width: 0; }
-.specimen--group { width: auto; max-width: 100%; }
-.specimen__flowers { list-style: none; margin: 0; padding: 0 var(--space-1); display: flex; flex-wrap: wrap; gap: 0 var(--space-3); }
+.specimen--group {
+  border: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.specimen--group {
+  width: auto;
+  max-width: 100%;
+}
+
+.specimen__flowers {
+  list-style: none;
+  margin: 0;
+  padding: 0 var(--space-1);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--space-3);
+}
+
 /* small flowers whose names may take two lines, centred under them */
 /* (.specimen in front: flowers.css loads later and sets every .flower to 100 %) */
-.specimen { --mini: var(--space-6); }   /* 48: the touch target, and three fit in a phone's row */
-.specimen .flower--mini { width: var(--mini); height: var(--mini); margin-bottom: calc(2 * var(--type-body-lh) + var(--space-1)); }
-.specimen .flower--mini .flower__name { white-space: normal; width: var(--space-10); text-align: center; padding: 0; }
+.specimen {
+  --mini: var(--space-6);
+}
+
+/* 48: the touch target, and three fit in a phone's row */
+.specimen .flower--mini {
+  width: var(--mini);
+  height: var(--mini);
+  margin-bottom: calc(2 * var(--type-body-lh) + var(--space-1));
+}
+
+.specimen .flower--mini .flower__name {
+  white-space: normal;
+  width: var(--space-10);
+  text-align: center;
+  padding: 0;
+}
+
 /* checked="mixed": the bud half open — petals half way out, the ring
    half washed. Neither closed nor in bloom: some of its group */
-.flower--square:has(:indeterminate) .flower__petals { --r: calc(var(--flower-open-r) * 0.6); --spin: 0deg; }
-.flower--square:has(:indeterminate) .flower__petal { opacity: 1; --s: 0.6; }
+.flower--square:has(:indeterminate) .flower__petals {
+  --r: calc(var(--flower-open-r) * 0.6);
+  --spin: 0deg;
+}
+
+.flower--square:has(:indeterminate) .flower__petal {
+  opacity: 1;
+  --s: 0.6;
+}
+
 .flower--square:has(:indeterminate)::before {
-  opacity: 1; border-color: var(--color);
+  opacity: 1;
+  border-color: var(--color);
   background: color-mix(in oklab, var(--color) calc(var(--flower-wash) / 2), transparent);
 }
 
 /* The slider: Kandinsky's point on a line — a value inside a range */
-.specimen--slider { gap: var(--space-1); }
+.specimen--slider {
+  gap: var(--space-1);
+}
+
 .slider {
-  -webkit-appearance: none; appearance: none; width: min(var(--space-32), 100%); height: var(--touch);
-  margin: 0; background: transparent; cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  width: min(var(--space-32), 100%);
+  height: var(--touch);
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
 }
-.slider::-webkit-slider-runnable-track { height: var(--stroke-bold); background: var(--line); }
-.slider::-moz-range-track { height: var(--stroke-bold); background: var(--line); }
+
+.slider::-webkit-slider-runnable-track {
+  height: var(--stroke-bold);
+  background: var(--line);
+}
+
+.slider::-moz-range-track {
+  height: var(--stroke-bold);
+  background: var(--line);
+}
+
 .slider::-webkit-slider-thumb {
-  -webkit-appearance: none; width: var(--space-4); height: var(--space-4); border-radius: var(--radius-round);
-  background: var(--line); margin-top: calc((var(--stroke-bold) - var(--space-4)) / 2);
+  -webkit-appearance: none;
+  width: var(--space-4);
+  height: var(--space-4);
+  border-radius: var(--radius-round);
+  background: var(--line);
+  margin-top: calc((var(--stroke-bold) - var(--space-4)) / 2);
 }
-.slider::-moz-range-thumb { width: var(--space-4); height: var(--space-4); border: 0; border-radius: var(--radius-round); background: var(--line); }
+
+.slider::-moz-range-thumb {
+  width: var(--space-4);
+  height: var(--space-4);
+  border: 0;
+  border-radius: var(--radius-round);
+  background: var(--line);
+}
+
 .slider__out {
-  font-family: var(--font-display); font-weight: var(--fw-semibold);
-  font-size: var(--type-subhead); line-height: var(--type-subhead-lh); color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  font-size: var(--type-subhead);
+  line-height: var(--type-subhead-lh);
+  color: var(--ink);
 }
 
 /* ============================================================
    CLUSTERS — flowers hanging from one shared sap stem
    ============================================================ */
 .cluster {
-  --slot-x: var(--space-0);                             /* each flower's drift from the stem */
-  list-style: none; margin: 0; padding: 0; position: relative;
-  display: flex; flex-direction: column; align-items: flex-start;
+  --slot-x: var(--space-0);
+  /* each flower's drift from the stem */
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   gap: clamp(var(--space-2), 3vh, var(--space-4));
 }
+
 /* The cluster's stem: from the knot down through the flowers */
 .cluster::before {
-  content: ""; position: absolute; left: var(--hang-x); top: calc(-1 * var(--rise)); bottom: 15%;
-  width: var(--stem); background: var(--sap);
+  content: "";
+  position: absolute;
+  left: var(--hang-x);
+  top: calc(-1 * var(--rise));
+  bottom: 15%;
+  width: var(--stem);
+  background: var(--sap);
 }
-.cluster__slot { position: relative; margin-left: var(--slot-x); }
+
+.cluster__slot {
+  position: relative;
+  margin-left: var(--slot-x);
+}
+
 /* The card is as wide as its widest piece: the canvas keeps its size
    (and with it the pedicel's geometry) and the cartela may be wider,
    never broken mid-word */
-.cluster .flower-card { display: grid; justify-items: start; width: auto; max-width: 100%; }
-.cluster .flower-card__canvas { width: var(--card-size); }
-.cluster .flower-card__caption { max-width: min(100%, var(--space-24)); }
+.cluster .flower-card {
+  display: grid;
+  justify-items: start;
+  width: auto;
+  max-width: 100%;
+}
+
+.cluster .flower-card__canvas {
+  width: var(--card-size);
+}
+
+.cluster .flower-card__caption {
+  max-width: min(100%, var(--space-24));
+}
+
 /* The pedicel: from the stem to each flower's bud */
-.flower-card__canvas { position: relative; }
+.flower-card__canvas {
+  position: relative;
+}
+
 .flower-card__canvas::before {
-  content: ""; position: absolute; top: calc(50% - var(--pedicel) / 2);
-  left: calc(var(--hang-x) - var(--slot-x)); right: 60%;
-  height: var(--pedicel); background: var(--sap);
+  content: "";
+  position: absolute;
+  top: calc(50% - var(--pedicel) / 2);
+  left: calc(var(--hang-x) - var(--slot-x));
+  right: 60%;
+  height: var(--pedicel);
+  background: var(--sap);
 }
 
 /* ------------------------------------------------------------
@@ -603,41 +1337,80 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
    horizontal — each flower's distance from the stem is its string, so
    the same law still reads (Do furthest, Sol nearest) and every label
    gets the full width */
-.cluster.cluster--chord { --chord-root: 262; --chord-len: var(--space-8); --chord-gap: var(--space-2); --chord-strings: 4; }
+.cluster.cluster--chord {
+  --chord-root: 262;
+  --chord-len: var(--space-8);
+  --chord-gap: var(--space-2);
+  --chord-strings: 4;
+}
+
 .cluster--chord .cluster__slot {
   --string: calc(var(--chord-len) * var(--chord-root) / var(--hz));
   --slot-x: var(--string);
   max-width: calc(100% - var(--slot-x));
 }
-.cluster--chord .flower-card__canvas { width: min(var(--card-size), 100%); }
+
+.cluster--chord .flower-card__canvas {
+  width: min(var(--card-size), 100%);
+}
+
 @media (min-width: 48rem) {
+
   /* From 768 px the strings hang: a rod, three columns, three heights */
   .cluster.cluster--chord {
     --chord-len: var(--space-16);
-    display: grid; grid-template-columns: repeat(var(--chord-strings), minmax(0, 1fr));
-    column-gap: var(--chord-gap); align-items: start; width: 100%;
+    display: grid;
+    grid-template-columns: repeat(var(--chord-strings), minmax(0, 1fr));
+    column-gap: var(--chord-gap);
+    align-items: start;
+    width: 100%;
   }
+
   /* column centres sit at (width − (n − 1) gaps) / 2n from each edge */
-  .cluster--chord { --chord-edge: calc((100% - (var(--chord-strings) - 1) * var(--chord-gap)) / (2 * var(--chord-strings))); }
+  .cluster--chord {
+    --chord-edge: calc((100% - (var(--chord-strings) - 1) * var(--chord-gap)) / (2 * var(--chord-strings)));
+  }
+
   /* the stem: from the knot down to the rod */
-  .cluster--chord::before { bottom: auto; height: calc(var(--rise) + var(--stem)); }
+  .cluster--chord::before {
+    bottom: auto;
+    height: calc(var(--rise) + var(--stem));
+  }
+
   /* the rod, from the stem (or the first string) to the last string */
   .cluster--chord::after {
-    content: ""; position: absolute; top: 0; height: var(--stem);
+    content: "";
+    position: absolute;
+    top: 0;
+    height: var(--stem);
     left: min(var(--hang-x), calc(var(--chord-edge) - var(--pedicel) / 2));
     right: calc(var(--chord-edge) - var(--pedicel) / 2);
     background: var(--sap);
   }
+
   .cluster--chord .cluster__slot {
-    margin: 0; max-width: none; padding-top: var(--string);
-    display: grid; justify-items: center;
+    margin: 0;
+    max-width: none;
+    padding-top: var(--string);
+    display: grid;
+    justify-items: center;
   }
-  .cluster--chord .flower-card { justify-items: center; }
+
+  .cluster--chord .flower-card {
+    justify-items: center;
+  }
+
   /* each string: from the rod down to the centre of its flower, which
      covers its last stretch */
   .cluster--chord .flower-card__canvas::before {
-    content: ""; position: absolute; top: calc(-1 * var(--string)); bottom: 50%;
-    left: calc(50% - var(--pedicel) / 2); right: auto; width: var(--pedicel); height: auto;
+    content: "";
+    position: absolute;
+    top: calc(-1 * var(--string));
+    bottom: 50%;
+    left: calc(50% - var(--pedicel) / 2);
+    right: auto;
+    width: var(--pedicel);
+    height: auto;
     background: var(--sap);
   }
 }
@@ -660,60 +1433,132 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
    ------------------------------------------------------------ */
 .cluster.cluster--ladder {
   --rung-bar: var(--stroke-fine);
-  --rung-reach: var(--space-3);              /* from the stem to the step's label */
+  --rung-reach: var(--space-3);
+  /* from the stem to the step's label */
   --rung-lh: var(--type-body-lh);
-  --rung-y: calc(var(--rung-lh) / 2);        /* the rung's height inside its row */
-  --rung-card: clamp(var(--space-16), 15vw, var(--space-20));   /* 128–160 */
+  --rung-y: calc(var(--rung-lh) / 2);
+  /* the rung's height inside its row */
+  --rung-card: clamp(var(--space-16), 15vw, var(--space-20));
+  /* 128–160 */
   --rung-num: var(--space-3);
-  --slot-x: calc(var(--hang-x) + var(--stem) + var(--rung-reach));   /* phones: under its label */
-  counter-reset: rung; align-items: stretch;
+  --slot-x: calc(var(--hang-x) + var(--stem) + var(--rung-reach));
+  /* phones: under its label */
+  counter-reset: rung;
+  align-items: stretch;
 }
+
 /* the pole ends exactly on the last rung (title): the ladder's foot */
-.cluster--ladder::before { bottom: calc(var(--rung-y) - var(--rung-bar) / 2); }
+.cluster--ladder::before {
+  bottom: calc(var(--rung-y) - var(--rung-bar) / 2);
+}
+
 .ladder__rung {
-  counter-increment: rung; position: relative;
-  display: grid; justify-items: start; row-gap: var(--gap-2xs);
+  counter-increment: rung;
+  position: relative;
+  display: grid;
+  justify-items: start;
+  row-gap: var(--gap-2xs);
 }
-.ladder__rung--wins { --rung-bar: var(--stem); }
+
+.ladder__rung--wins {
+  --rung-bar: var(--stem);
+}
+
 .ladder__rung::before {
-  content: ""; position: absolute; top: calc(var(--rung-y) - var(--rung-bar) / 2);
-  left: calc(var(--hang-x) + var(--stem)); width: calc(var(--rung-reach) - var(--space-1));
-  height: var(--rung-bar); background: var(--line);
+  content: "";
+  position: absolute;
+  top: calc(var(--rung-y) - var(--rung-bar) / 2);
+  left: calc(var(--hang-x) + var(--stem));
+  width: calc(var(--rung-reach) - var(--space-1));
+  height: var(--rung-bar);
+  background: var(--line);
 }
-.ladder__rung--wins::before { background: var(--sap); }
+
+.ladder__rung--wins::before {
+  background: var(--sap);
+}
+
 .ladder__step {
   margin-left: var(--slot-x);
-  font-family: var(--font-mono); font-size: var(--type-body); line-height: var(--rung-lh);
+  font-family: var(--font-mono);
+  font-size: var(--type-body);
+  line-height: var(--rung-lh);
   color: var(--ink-soft);
 }
+
 .ladder__step::before {
-  content: counter(rung); content: counter(rung) / "";
-  display: inline-block; min-width: var(--rung-num); font-weight: var(--fw-bold); color: var(--ink);
+  content: counter(rung);
+  content: counter(rung) / "";
+  display: inline-block;
+  min-width: var(--rung-num);
+  font-weight: var(--fw-bold);
+  color: var(--ink);
 }
-.ladder__rung--wins .ladder__step { color: var(--ink); }
-.ladder__name { display: block; padding-left: var(--rung-num); color: var(--sap); }
-.cluster--ladder .ladder__rung .flower-card { --card-size: var(--rung-card); margin-left: var(--slot-x); }
+
+.ladder__rung--wins .ladder__step {
+  color: var(--ink);
+}
+
+.ladder__name {
+  display: block;
+  padding-left: var(--rung-num);
+  color: var(--sap);
+}
+
+.cluster--ladder .ladder__rung .flower-card {
+  --card-size: var(--rung-card);
+  margin-left: var(--slot-x);
+}
+
 @media (min-width: 64rem) {
+
   /* The stem is centred. A narrow column keeps each rung above its
      flower, which sits on the stem. From 440 px (the flower plus a
      label column on each side) the rung crosses the bud, with the
      labels in cartela type; from 512 px, in body type. The row stays
      24 px either way, so the pole's foot does not move. */
-  .cluster.cluster--ladder { --ladder-core: var(--rung-card); container-type: inline-size; }
-  .cluster--ladder .ladder__rung .flower-card { justify-self: center; margin-left: 0; }
-  @container (27.5rem <= width < 32rem) {
-    .ladder__step { font-size: var(--type-label); }
+  .cluster.cluster--ladder {
+    --ladder-core: var(--rung-card);
+    container-type: inline-size;
   }
-  @container (min-width: 27.5rem) {
-    .ladder__rung { grid-template-columns: minmax(0, 1fr) var(--ladder-core) minmax(0, 1fr); align-items: start; }
-    .ladder__rung--wins { --rung-y: calc(var(--rung-card) / 2); }
-    /* from the stem's right edge to the label, through the bud */
-    .ladder__rung::before { width: calc(var(--ladder-core) / 2 - var(--stem) / 2); }
+
+  .cluster--ladder .ladder__rung .flower-card {
+    justify-self: center;
+    margin-left: 0;
+  }
+
+  @container (27.5rem <=width < 32rem) {
     .ladder__step {
-      grid-column: 3; grid-row: 1; margin-left: var(--space-1);
+      font-size: var(--type-label);
+    }
+  }
+
+  @container (min-width: 27.5rem) {
+    .ladder__rung {
+      grid-template-columns: minmax(0, 1fr) var(--ladder-core) minmax(0, 1fr);
+      align-items: start;
+    }
+
+    .ladder__rung--wins {
+      --rung-y: calc(var(--rung-card) / 2);
+    }
+
+    /* from the stem's right edge to the label, through the bud */
+    .ladder__rung::before {
+      width: calc(var(--ladder-core) / 2 - var(--stem) / 2);
+    }
+
+    .ladder__step {
+      grid-column: 3;
+      grid-row: 1;
+      margin-left: var(--space-1);
       padding-top: calc(var(--rung-y) - var(--rung-lh) / 2);
     }
-    .cluster--ladder .ladder__rung .flower-card { grid-column: 2; grid-row: 1; }
+
+    .cluster--ladder .ladder__rung .flower-card {
+      grid-column: 2;
+      grid-row: 1;
+    }
   }
 }
 
@@ -733,133 +1578,393 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
    Plate layout ≥ 64rem: the note and the flower share row 1, the
    switches and the score share row 2 — each idea faces its picture.
    ------------------------------------------------------------ */
-@property --ch-grey { syntax: '<number>'; inherits: true; initial-value: 0; }
-@property --ch-blur { syntax: '<length>'; inherits: true; initial-value: 0; }
-@property --ch-ink { syntax: '<number>'; inherits: true; initial-value: 1; }
+@property --ch-grey {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
+@property --ch-blur {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0;
+}
+
+@property --ch-ink {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 1;
+}
 
 /* The lone flower: the cluster's stem, ending at the pedicel's joint
    on phones and behind the bud from 64rem */
-.cluster.cluster--solo { --solo-card: clamp(var(--space-20), 22vw, var(--space-32)); }   /* 160–256 */
-.cluster--solo .cluster__slot .flower-card { --card-size: var(--solo-card); }
-.cluster--solo::before { bottom: auto; height: calc(var(--rise) + var(--solo-card) / 2 + var(--pedicel) / 2); }
-.cluster--solo { --slot-x: var(--space-3); }
+.cluster.cluster--solo {
+  --solo-card: clamp(var(--space-20), 22vw, var(--space-32));
+}
+
+/* 160–256 */
+.cluster--solo .cluster__slot .flower-card {
+  --card-size: var(--solo-card);
+}
+
+.cluster--solo::before {
+  bottom: auto;
+  height: calc(var(--rise) + var(--solo-card) / 2 + var(--pedicel) / 2);
+}
+
+.cluster--solo {
+  --slot-x: var(--space-3);
+}
 
 [data-channels-flower] {
-  --ch-grey: 0; --ch-blur: var(--space-0); --ch-ink: 1;
-  --ch-shape-off: var(--space-2);          /* the blur that dissolves the silhouette */
+  --ch-grey: 0;
+  --ch-blur: var(--space-0);
+  --ch-ink: 1;
+  --ch-shape-off: var(--space-2);
+  /* the blur that dissolves the silhouette */
 }
+
 [data-channels-flower] .flower__petals,
 [data-channels-flower] .flower::before,
-[data-channels-flower] .flower::after { filter: grayscale(var(--ch-grey)) blur(var(--ch-blur)); }
-[data-channels-flower] .flower__petals { opacity: var(--ch-ink); }
+[data-channels-flower] .flower::after {
+  filter: grayscale(var(--ch-grey)) blur(var(--ch-blur));
+}
+
+[data-channels-flower] .flower__petals {
+  opacity: var(--ch-ink);
+}
+
 /* the ring and the wave keep their own rest state (hidden in the bud) */
 [data-ch-pixels="off"] [data-channels-flower] .flower::before,
-[data-ch-pixels="off"] [data-channels-flower] .flower::after { opacity: 0; animation: none; }
-[data-ch-color="off"] [data-channels-flower] { --ch-grey: 1; }
-[data-ch-shape="off"] [data-channels-flower] { --ch-blur: var(--ch-shape-off); }
-[data-ch-text="off"] [data-channels-flower] .flower__name { opacity: 0; }
-[data-ch-pixels="off"] [data-channels-flower] { --ch-ink: 0; }
-[data-ch-pixels="off"] [data-channels-flower] .flower__name { opacity: 0; }
+[data-ch-pixels="off"] [data-channels-flower] .flower::after {
+  opacity: 0;
+  animation: none;
+}
+
+[data-ch-color="off"] [data-channels-flower] {
+  --ch-grey: 1;
+}
+
+[data-ch-shape="off"] [data-channels-flower] {
+  --ch-blur: var(--ch-shape-off);
+}
+
+[data-ch-text="off"] [data-channels-flower] .flower__name {
+  opacity: 0;
+}
+
+[data-ch-pixels="off"] [data-channels-flower] {
+  --ch-ink: 0;
+}
+
+[data-ch-pixels="off"] [data-channels-flower] .flower__name {
+  opacity: 0;
+}
+
 /* What is left without pixels: the node's frame, as in the X-ray */
 [data-channels-flower] .flower-card__canvas::after {
-  content: ""; position: absolute; inset: 0; pointer-events: none;
-  border: var(--stroke-fine) solid var(--shape-circle); opacity: 0;
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border: var(--stroke-fine) solid var(--shape-circle);
+  opacity: 0;
 }
-[data-ch-pixels="off"] [data-channels-flower] .flower-card__canvas::after { opacity: 1; }
+
+[data-ch-pixels="off"] [data-channels-flower] .flower-card__canvas::after {
+  opacity: 1;
+}
+
 /* …and the node hangs from it: without a bud to hide behind, the stem
    ends on the frame's top edge (from 64rem) or the pedicel on its left
    edge (phones). Nothing floats, not even an absence. */
-[data-ch-pixels="off"] [data-channels-flower] .flower-card__canvas::before { right: 100%; }
-@media (min-width: 64rem) {
-  [data-ch-pixels="off"] .cluster--solo::before { height: var(--rise); }
+[data-ch-pixels="off"] [data-channels-flower] .flower-card__canvas::before {
+  right: 100%;
 }
+
+@media (min-width: 64rem) {
+  [data-ch-pixels="off"] .cluster--solo::before {
+    height: var(--rise);
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
-  [data-channels-flower] { transition: --ch-grey var(--motion-bloom) ease, --ch-blur var(--motion-bloom) ease, --ch-ink var(--motion-bloom) ease; }
+  [data-channels-flower] {
+    transition: --ch-grey var(--motion-bloom) ease, --ch-blur var(--motion-bloom) ease, --ch-ink var(--motion-bloom) ease;
+  }
+
   [data-channels-flower] .flower__name,
-  [data-channels-flower] .flower-card__canvas::after { transition: opacity var(--motion-bloom) ease; }
+  [data-channels-flower] .flower-card__canvas::after {
+    transition: opacity var(--motion-bloom) ease;
+  }
 }
 
 /* The switches: buttons, so circles — a filled mark while the channel
    flows, an empty one once it is cut (shape, never colour alone) */
-.channels { display: grid; gap: var(--gap-xs); align-content: start; }
+.channels {
+  display: grid;
+  gap: var(--gap-xs);
+  align-content: start;
+}
+
 .channels__title {
-  margin: 0; font-family: var(--font-display); font-size: var(--type-heading); line-height: var(--type-heading-lh); color: var(--ink);
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--type-heading);
+  line-height: var(--type-heading-lh);
+  color: var(--ink);
 }
-.channels__remains { margin: 0; font-size: var(--type-body); line-height: var(--type-body-lh); }
+
+.channels__remains {
+  margin: 0;
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
+}
+
 /* two lines reserved: the sentence changes, the plate does not jump */
-.channels__remains { color: var(--ink); min-height: calc(2 * var(--type-body-lh)); }
-.channels__list {
-  list-style: none; margin: 0; padding: 0;
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(var(--space-12), 1fr)); gap: var(--gap-2xs);
+.channels__remains {
+  color: var(--ink);
+  min-height: calc(2 * var(--type-body-lh));
 }
-.channels__item { display: grid; justify-items: center; row-gap: var(--half); }
+
+.channels__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--space-12), 1fr));
+  gap: var(--gap-2xs);
+}
+
+.channels__item {
+  display: grid;
+  justify-items: center;
+  row-gap: var(--half);
+}
+
 /* Each channel is a toggle of the control system: filled ring while
    the channel is on, empty once it is taken away */
-.channel { width: 100%; }
-.channel__wcag { font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); }
+.channel {
+  width: 100%;
+}
+
+.channel__wcag {
+  font-size: var(--type-label);
+  line-height: var(--type-label-lh);
+  color: var(--ink-soft);
+}
+
 .channels__caption {
-  margin: 0; min-height: var(--type-caption-lh);
-  font-size: var(--type-caption); line-height: var(--type-caption-lh); color: var(--ink-soft);
+  margin: 0;
+  min-height: var(--type-caption-lh);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-lh);
+  color: var(--ink-soft);
 }
 
 /* What a machine reads: the node, the same for a screen reader, voice
    control or an AI agent. With every channel off it is all that is
    left, and its frame turns to sap. */
 .machine {
-  border: var(--stroke-fine) solid var(--line); background: var(--surface-plate);
+  border: var(--stroke-fine) solid var(--line);
+  background: var(--surface-plate);
   padding: var(--space-1) var(--space-2);
 }
-.machine__title { margin: 0; font-family: var(--font-display); font-size: var(--type-body); line-height: var(--type-body-lh); font-weight: var(--fw-semibold); color: var(--ink-soft); }
-.machine__who { font-family: var(--font-body); font-weight: var(--fw-regular); font-size: var(--type-label); color: var(--ink-soft); }
-.machine__json {
-  margin: var(--space-1) 0; white-space: pre-wrap; overflow-wrap: anywhere;
-  font-family: var(--font-mono); font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink);
+
+.machine__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
+  font-weight: var(--fw-semibold);
+  color: var(--ink-soft);
 }
-.machine__voice { margin: 0; font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink); }
-[data-ch-all="off"] .machine { border-color: var(--sap); border-width: var(--stroke-bold); padding: calc(var(--space-1) - var(--stroke-fine)) calc(var(--space-2) - var(--stroke-fine)); }
+
+.machine__who {
+  font-family: var(--font-body);
+  font-weight: var(--fw-regular);
+  font-size: var(--type-label);
+  color: var(--ink-soft);
+}
+
+.machine__json {
+  margin: var(--space-1) 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  line-height: var(--type-label-lh);
+  color: var(--ink);
+}
+
+.machine__voice {
+  margin: 0;
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
+  color: var(--ink);
+}
+
+[data-ch-all="off"] .machine {
+  border-color: var(--sap);
+  border-width: var(--stroke-bold);
+  padding: calc(var(--space-1) - var(--stroke-fine)) calc(var(--space-2) - var(--stroke-fine));
+}
+
 @media (prefers-reduced-motion: no-preference) {
-  [data-ch-all="off"] .machine__json { animation: sap var(--dur-4) var(--ease-out); }
+  [data-ch-all="off"] .machine__json {
+    animation: sap var(--dur-4) var(--ease-out);
+  }
 }
 
 /* Phones: the plate keeps its reading order — flower, switches, note,
    score */
-#synesthesia .branch__load--flowers > .score { order: 3; }
-#synesthesia .score figcaption { max-width: none; }
+#synesthesia .branch__load--flowers>.score {
+  order: 3;
+}
+
+#synesthesia .score figcaption {
+  max-width: none;
+}
+
 @media (min-width: 64rem) {
-  #synesthesia .branch__load--flowers > .score { grid-column: 2; grid-row: 2; }
+  #synesthesia .branch__load--flowers>.score {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
   /* a lone flower has no drift: it hangs centred on its stem */
-  .cluster.cluster--solo { --slot-x: var(--space-0); }
+  .cluster.cluster--solo {
+    --slot-x: var(--space-0);
+  }
 }
 
 /* Bouquet: a fieldset with radios (the group node) */
 .bouquet {
   --legend-lh: var(--type-body-lh);
   border: var(--stroke-fine) solid var(--shape-rhombus);
-  padding: var(--space-1) var(--space-3); margin: 0; background: none;
+  padding: var(--space-1) var(--space-3);
+  margin: 0;
+  background: none;
 }
+
 .bouquet__legend {
-  font-family: var(--font-display); font-weight: var(--fw-semibold); font-size: var(--type-body); line-height: var(--legend-lh);
-  color: var(--ink); padding: 0 var(--space-1);
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  font-size: var(--type-body);
+  line-height: var(--legend-lh);
+  color: var(--ink);
+  padding: 0 var(--space-1);
 }
-.bouquet__flowers { display: flex; flex-wrap: wrap; gap: clamp(var(--space-1), 2vw, var(--space-3)); justify-content: center; }
+
+.bouquet__flowers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(var(--space-1), 2vw, var(--space-3));
+  justify-content: center;
+}
+
 .bouquet__foot {
   margin: var(--space-1) 0 0;
-  font-size: var(--type-caption); line-height: var(--type-caption-lh); color: var(--ink-soft); text-align: center;
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-lh);
+  color: var(--ink-soft);
+  text-align: center;
 }
+
+@media (max-width: 63.999rem) {
+  .bouquet--vision .bouquet__flowers {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+
+  .bouquet--vision .flower--rhombus {
+    display: grid;
+    grid-template-rows: var(--flower-rhombus) auto;
+    justify-items: center;
+    width: 100%;
+    height: auto;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+  }
+
+  .bouquet--vision .flower--rhombus:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .bouquet--vision .flower--rhombus::before,
+  .bouquet--vision .flower--rhombus::after,
+  .bouquet--vision .flower__petals {
+    top: 0;
+    right: auto;
+    bottom: auto;
+    left: 50%;
+    width: var(--flower-rhombus);
+    height: var(--flower-rhombus);
+    transform: translateX(-50%);
+  }
+
+  .bouquet--vision .flower--rhombus::before,
+  .bouquet--vision .flower--rhombus::after {
+    box-sizing: border-box;
+  }
+
+  .bouquet--vision .flower__name {
+    position: static;
+    grid-row: 2;
+    transform: none;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: var(--flower-name-gap);
+    padding: 0 var(--space-1);
+    text-align: center;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+  }
+}
+
+@media (min-width: 40rem) and (max-width: 63.999rem) {
+  .bouquet--vision .bouquet__flowers {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .bouquet--vision .flower--rhombus {
+    grid-column: span 2;
+  }
+
+  .bouquet--vision .flower--rhombus:nth-last-child(2) {
+    grid-column: 2 / span 2;
+  }
+
+  .bouquet--vision .flower--rhombus:last-child {
+    grid-column: 4 / span 2;
+  }
+}
+
 /* The bouquet also hangs from the branch by its stem */
-.branch__load--flowers > .bouquet { position: relative; }
-.branch__load--flowers > .bouquet::before {
-  content: ""; position: absolute; left: var(--hang-x);
-  top: calc(-1 * var(--rise)); height: var(--rise);
-  width: var(--stem); background: var(--sap);
+.branch__load--flowers>.bouquet {
+  position: relative;
 }
+
+.branch__load--flowers>.bouquet::before {
+  content: "";
+  position: absolute;
+  left: var(--hang-x);
+  top: calc(-1 * var(--rise));
+  height: var(--rise);
+  width: var(--stem);
+  background: var(--sap);
+}
+
 /* In a <fieldset> with a <legend>, the top border takes the legend's
    WHOLE line-height and its rule runs through the middle: absolute
    children are measured from below that height. The stem climbs that
    whole line more to be born at the knot, and comes down only to the
    rule. (--hang-x is measured from the padding edge, inside the 2 px
    border: the arc's width already counts it.) */
-.branch__load--flowers > fieldset.bouquet::before {
+.branch__load--flowers>fieldset.bouquet::before {
   left: calc(var(--hang-x) - var(--stroke-fine));
   top: calc(-1 * (var(--rise) + var(--legend-lh)));
   height: calc(var(--rise) + var(--legend-lh) / 2 + var(--stroke-1));
@@ -890,114 +1995,235 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   --half-step: calc(var(--line-gap) / 2);
   --key-shape: var(--space-2);
   --staff-h: calc(var(--half-step) * 17);
-  --base: calc(var(--half-step) * 11);           /* the bottom line, Mi4 */
+  --base: calc(var(--half-step) * 11);
+  /* the bottom line, Mi4 */
   --staff-ink: var(--tint-line);
-  list-style: none; margin: var(--space-2) 0; padding: 0;
-  display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-1);
+  list-style: none;
+  margin: var(--space-2) 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-1);
 }
+
 .key__row {
-  display: grid; grid-template-columns: var(--space-10) minmax(0, 1fr);
-  grid-template-rows: auto auto 1fr; column-gap: var(--space-2); align-items: start;
-  font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink);
+  display: grid;
+  grid-template-columns: var(--space-10) minmax(0, 1fr);
+  grid-template-rows: auto auto 1fr;
+  column-gap: var(--space-2);
+  align-items: start;
+  font-size: var(--type-label);
+  line-height: var(--type-label-lh);
+  color: var(--ink);
 }
+
 /* The row's piece of staff: five lines, bottom one at --base */
 .key__staff {
-  position: relative; grid-row: 1 / -1; height: var(--staff-h);
+  position: relative;
+  grid-row: 1 / -1;
+  height: var(--staff-h);
   background-image: repeating-linear-gradient(to bottom, var(--staff-ink) 0 var(--stroke-1), transparent var(--stroke-1) var(--line-gap));
   background-size: 100% calc(4 * var(--line-gap) + var(--stroke-1));
   background-position: 0 calc(var(--base) - 4 * var(--line-gap));
   background-repeat: no-repeat;
 }
+
 /* The div's cell has no staff: it is out of the score */
-.key__row--fallen .key__staff { background: none; }
-.key__row--fallen > :not(.key__staff) { color: var(--k-grey-dark); }
+.key__row--fallen .key__staff {
+  background: none;
+}
+
+.key__row--fallen> :not(.key__staff) {
+  color: var(--k-grey-dark);
+}
+
 /* Do4 sits on a ledger line, one line gap under the staff */
 .key__row--ledger .key__staff::after {
-  content: ""; position: absolute; left: 50%; top: calc(var(--base) + var(--line-gap));
-  width: calc(var(--key-shape) + var(--line-gap)); height: var(--stroke-1);
-  translate: -50% 0; background: var(--line);
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: calc(var(--base) + var(--line-gap));
+  width: calc(var(--key-shape) + var(--line-gap));
+  height: var(--stroke-1);
+  translate: -50% 0;
+  background: var(--line);
 }
-.key__note { color: var(--ink-soft); }
-.key__note b { color: var(--ink); font-family: var(--font-display); font-weight: var(--fw-semibold); font-size: var(--type-body); line-height: var(--type-body-lh); }
+
+.key__note {
+  color: var(--ink-soft);
+}
+
+.key__note b {
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
+}
+
 /* The octave index (scientific: Do4 is middle C). Re4 and Re5 share a
    name and differ by it, as by their place on the staff */
-.key__oct { font-size: var(--type-label); line-height: 0; }
-.key__octave { display: block; color: var(--ink-soft); }
+.key__oct {
+  font-size: var(--type-label);
+  line-height: 0;
+}
+
+.key__octave {
+  display: block;
+  color: var(--ink-soft);
+}
+
 /* The sharp, drawn: two thin stems and two bars, centred on the note's
    line and one half-step to the left of the note head. Lines, not a
    glyph: it does not depend on the font. Upright, like every shape. */
 .key__sharp {
   --sharp-w: var(--line-gap);
   --sharp-bar: var(--stroke-fine);
-  position: absolute; z-index: var(--z-base);
+  position: absolute;
+  z-index: var(--z-base);
   left: calc(50% - var(--key-shape) / 2 - var(--half-step) - var(--sharp-w));
   top: calc(var(--base) - var(--step) * var(--half-step));
   translate: 0 -50%;
-  width: var(--sharp-w); height: calc(var(--half-step) * 5);
+  width: var(--sharp-w);
+  height: calc(var(--half-step) * 5);
   background:
     linear-gradient(var(--line), var(--line)) 25% 0 / var(--stroke-hair) 100% no-repeat,
     linear-gradient(var(--line), var(--line)) 75% 0 / var(--stroke-hair) 100% no-repeat,
     linear-gradient(var(--line), var(--line)) 0 35% / 100% var(--sharp-bar) no-repeat,
     linear-gradient(var(--line), var(--line)) 0 65% / 100% var(--sharp-bar) no-repeat;
 }
-.key__timbre { color: var(--ink-soft); }
-.key__shape {
-  position: absolute; left: 50%; top: calc(var(--base) - var(--step) * var(--half-step));
-  translate: -50% -50%; z-index: var(--z-base);
-  width: var(--key-shape); height: var(--key-shape);
+
+.key__timbre {
+  color: var(--ink-soft);
 }
-.key__shape--circle { border-radius: var(--radius-round); background: var(--shape-circle); }
+
+.key__shape {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--base) - var(--step) * var(--half-step));
+  translate: -50% -50%;
+  z-index: var(--z-base);
+  width: var(--key-shape);
+  height: var(--key-shape);
+}
+
+.key__shape--circle {
+  border-radius: var(--radius-round);
+  background: var(--shape-circle);
+}
+
 /* Yellow never travels alone: ink outside, yellow inside */
-.key__shape--triangle { background: var(--line); clip-path: polygon(50% 0, 100% 100%, 0 100%); }
-.key__shape--triangle::before { content: ""; position: absolute; inset: 0; background: var(--shape-triangle); clip-path: polygon(50% 14%, 90% 94%, 10% 94%); }
-.key__shape--square { background: var(--shape-square); }
+.key__shape--triangle {
+  background: var(--line);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.key__shape--triangle::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--shape-triangle);
+  clip-path: polygon(50% 14%, 90% 94%, 10% 94%);
+}
+
+.key__shape--square {
+  background: var(--shape-square);
+}
+
 /* A real rhombus, as everywhere else: a clip, never a rotated square */
-.key__shape--rhombus { background: var(--shape-rhombus); clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+.key__shape--rhombus {
+  background: var(--shape-rhombus);
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+}
+
 /* The heading's branch arc, drawn like a branch: the top border of a
    box rounded on the right. As a rest, it sits in the middle of the
    staff. No rotation. */
 .key__shape--arc {
-  background: none; height: calc(var(--key-shape) / 2);
-  border-top: var(--stroke-bold) solid var(--line); border-right: var(--stroke-bold) solid var(--line);
+  background: none;
+  height: calc(var(--key-shape) / 2);
+  border-top: var(--stroke-bold) solid var(--line);
+  border-right: var(--stroke-bold) solid var(--line);
   border-top-right-radius: 100% 100%;
 }
+
 .key__shape--bar {
-  background: var(--shape-bar); height: calc(var(--key-shape) / 2);
-  border-bottom: var(--stroke-fine) solid var(--line); box-sizing: border-box;
+  background: var(--shape-bar);
+  height: calc(var(--key-shape) / 2);
+  border-bottom: var(--stroke-fine) solid var(--line);
+  box-sizing: border-box;
 }
+
 /* The wilted bud: the only rotated shape in the work, because its tilt
    means exactly that it has wilted */
 .key__shape--grey {
-  background: var(--k-grey); border-radius: 50% 50% 50% 0;
-  transform: rotate(45deg); opacity: 0.8;
+  background: var(--k-grey);
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(45deg);
+  opacity: 0.8;
 }
+
 @media (min-width: 64rem) {
+
   /* The voices become the staff's columns: one continuous staff */
   /* The score is a grid item here: the row gap above it and its
      caption's margin under it already set it apart */
   .key {
     --line-gap: var(--space-2);
     --key-shape: var(--space-3);
-    grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0; margin: 0;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0;
+    margin: 0;
   }
+
   .key__row {
-    grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; row-gap: 0;
-    justify-items: center; text-align: center;
-    align-content: start;   /* every column starts its labels on the same line */
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+    row-gap: 0;
+    justify-items: center;
+    text-align: center;
+    align-content: start;
+    /* every column starts its labels on the same line */
   }
-  .key__staff { grid-row: auto; justify-self: stretch; margin-bottom: var(--space-1); }
+
+  .key__staff {
+    grid-row: auto;
+    justify-self: stretch;
+    margin-bottom: var(--space-1);
+  }
+
   /* the staff runs without gaps; only the labels keep apart */
-  .key__row > :not(.key__staff) { padding-inline: var(--space-1); }
+  .key__row> :not(.key__staff) {
+    padding-inline: var(--space-1);
+  }
+
   /* the note's name on its own line, its frequency under it */
-  .key__note b { display: block; }
+  .key__note b {
+    display: block;
+  }
 }
+
 .quote {
-  position: relative; margin: var(--space-2) 0 0; padding: var(--space-2);
+  position: relative;
+  margin: var(--space-2) 0 0;
+  padding: var(--space-2);
   border-left: var(--stroke-bold) solid var(--sap);
   background: color-mix(in oklab, var(--sap) var(--wash-8), transparent);
 }
-.quote p { margin: 0 0 var(--space-1); font-style: italic; color: var(--ink); }
-.quote cite { display: block; font-size: var(--type-label); line-height: var(--type-label-lh); font-style: normal; color: var(--ink-soft); }
+
+.quote p {
+  margin: 0 0 var(--space-1);
+  font-style: italic;
+  color: var(--ink);
+}
+
+.quote cite {
+  display: block;
+  font-size: var(--type-label);
+  line-height: var(--type-label-lh);
+  font-style: normal;
+  color: var(--ink-soft);
+}
 
 /* ============================================================
    THE SOIL — one more branch down from the trunk: title, sprouts
@@ -1017,24 +2243,37 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   --stem: var(--stroke-bold);
   --leaf-w: var(--space-2);
   --leaf-h: var(--space-1);
-  --tint: var(--sprout); --rim: var(--sprout);
+  --tint: var(--sprout);
+  --rim: var(--sprout);
   /* the seedbed line, in the sprout list's coordinates */
   --seedbed-x: calc(var(--axis-x) + var(--arc-w) - var(--load-indent) - var(--stem) / 2);
-  position: relative; z-index: var(--z-base); padding: var(--pb) 0 0;
+  position: relative;
+  z-index: var(--z-base);
+  padding: var(--pb) 0 0;
 }
+
 .ground__load {
-  position: relative; z-index: var(--z-base);
-  display: flex; flex-direction: column; gap: var(--gap-s);
+  position: relative;
+  z-index: var(--z-base);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-s);
   padding: calc(var(--drop) + var(--load-pad)) 0 0 var(--load-indent);
 }
+
 /* The green stem continues the branch's arc: it starts at the knot (on
    the seedbed's axis) and goes down to the soil */
 .ground__load::before {
-  content: ""; position: absolute;
+  content: "";
+  position: absolute;
   left: calc(var(--axis-x) + var(--arc-w) - var(--stem) / 2);
-  top: calc(var(--arc-top) + var(--drop) - var(--pb)); bottom: 0;
-  width: var(--stem); background: var(--sprout); z-index: var(--z-under);
+  top: calc(var(--arc-top) + var(--drop) - var(--pb));
+  bottom: 0;
+  width: var(--stem);
+  background: var(--sprout);
+  z-index: var(--z-under);
 }
+
 /* 12 · SPROUTS. Each proposal is a seedling that grows FROM the soil:
    its stem rises from the soil line to the card, and its height says
    how close it is to being a branch, on the golden scale: a seed (1),
@@ -1043,40 +2282,103 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
    from the knot down to the soil. */
 .sprouts__list {
   --sprout-unit: var(--space-4);
-  list-style: none; margin: 0; padding: 0; position: relative;
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(var(--space-24), 1fr)); align-items: end; gap: var(--gap-s);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--space-24), 1fr));
+  align-items: end;
+  gap: var(--gap-s);
 }
+
 .sprouts__list::before {
-  content: ""; position: absolute; left: var(--seedbed-x); top: calc(-1 * var(--gap-s)); bottom: 0;
-  width: var(--stem); background: var(--sprout);
+  content: "";
+  position: absolute;
+  left: var(--seedbed-x);
+  top: calc(-1 * var(--gap-s));
+  bottom: 0;
+  width: var(--stem);
+  background: var(--sprout);
 }
+
 .sprout {
   --sprout-grow: var(--sprout-unit);
   --sprout-pad: calc(var(--seedbed-x) + var(--stem) + var(--space-3));
-  position: relative; display: flex; flex-direction: column; justify-content: flex-end;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
   padding-left: var(--sprout-pad);
 }
-.sprout--rising { --sprout-grow: calc(var(--sprout-unit) * var(--phi)); }
-.sprout--grown { --sprout-grow: calc(var(--sprout-unit) * var(--phi) * var(--phi)); }
+
+.sprout--rising {
+  --sprout-grow: calc(var(--sprout-unit) * var(--phi));
+}
+
+.sprout--grown {
+  --sprout-grow: calc(var(--sprout-unit) * var(--phi) * var(--phi));
+}
+
 /* the stem, from the card down to the soil */
 .sprout::after {
-  content: ""; display: block; width: var(--stem); height: var(--sprout-grow);
-  margin-left: var(--space-2); background: var(--sprout);
+  content: "";
+  display: block;
+  width: var(--stem);
+  height: var(--sprout-grow);
+  margin-left: var(--space-2);
+  background: var(--sprout);
 }
+
 /* one leaf on each stem, half way down */
 .sprout::before {
-  content: ""; position: absolute; bottom: calc(var(--sprout-grow) / 2);
+  content: "";
+  position: absolute;
+  bottom: calc(var(--sprout-grow) / 2);
   left: calc(var(--sprout-pad) + var(--space-2) + var(--stem));
-  width: var(--leaf-w); height: var(--leaf-h); background: var(--sprout);
+  width: var(--leaf-w);
+  height: var(--leaf-h);
+  background: var(--sprout);
   border-radius: 100% 0 100% 0;
 }
-.sprout article { padding: var(--space-2); border-top: var(--stroke-bold) solid var(--sprout); background: var(--surface-plate); }
-.sprout h3 { margin: 0 0 var(--space-1); font-weight: var(--fw-semibold); font-size: var(--type-subhead); line-height: var(--type-subhead-lh); color: var(--ink); }
-.sprout p { margin: 0 0 var(--space-1); font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink-soft); }
-.sprout p:last-child { margin-bottom: 0; }
-.sprout .sprout__status { font-family: var(--font-display); font-weight: var(--fw-semibold); color: var(--sprout-text); }
+
+.sprout article {
+  padding: var(--space-2);
+  border-top: var(--stroke-bold) solid var(--sprout);
+  background: var(--surface-plate);
+}
+
+.sprout h3 {
+  margin: 0 0 var(--space-1);
+  font-weight: var(--fw-semibold);
+  font-size: var(--type-subhead);
+  line-height: var(--type-subhead-lh);
+  color: var(--ink);
+}
+
+.sprout p {
+  margin: 0 0 var(--space-1);
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
+  color: var(--ink-soft);
+}
+
+.sprout p:last-child {
+  margin-bottom: 0;
+}
+
+.sprout .sprout__status {
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  color: var(--sprout-text);
+}
+
 /* no word left alone on a line: titles and statuses wrap balanced */
-.sprout h3, .sprout .sprout__status { text-wrap: balance; }
+.sprout h3,
+.sprout .sprout__status {
+  text-wrap: balance;
+}
+
 /* What each proposal changes in the tree, drawn with the grammar of
    station 1 (knot, arc, circle), smaller. A node the proposal would add
    with no HTML behind it is a circle in the sprout's green: not yet a
@@ -1088,30 +2390,74 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   --sk-stroke: var(--stroke-fine);
   margin: var(--space-1) 0;
 }
-.ax-sketch__node--virtual > .ax-sketch__shape {
-  width: var(--sk-shape); height: var(--sk-shape); box-sizing: border-box;
-  border: var(--sk-stroke) solid var(--sprout); border-radius: var(--radius-round);
+
+.ax-sketch__node--virtual>.ax-sketch__shape {
+  width: var(--sk-shape);
+  height: var(--sk-shape);
+  box-sizing: border-box;
+  border: var(--sk-stroke) solid var(--sprout);
+  border-radius: var(--radius-round);
 }
+
 /* ONE PLANT, TWO SHOOTS. The element references and the virtual nodes
    were born in the same proposal, the AOM: one stem rises from the
    soil, names its origin at the fork, and opens in two. The short shoot
    goes straight up; the tall one leaves along an arc and climbs.
    Joints: the plant's stem ends on the fork line; the arc starts on the
    short shoot's stem axis and ends where the tall shoot's stem starts. */
-.sprout__shoots { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--gap-s); }
-.sprout__shoot { display: flex; flex-direction: column; justify-content: flex-end; }
-.sprout__origin { margin: 0; font-family: var(--font-display); font-weight: var(--fw-semibold); font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--sprout-text); }
+.sprout__shoots {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--gap-s);
+}
+
+.sprout__shoot {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.sprout__origin {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
+  color: var(--sprout-text);
+}
+
 /* the proposal's real API, as written in its source */
-.sprout .sprout__code { font-family: var(--font-mono); font-size: var(--type-caption); line-height: var(--type-caption-lh); color: var(--ink); overflow-wrap: anywhere; }
-.sprout__code code { font-size: inherit; line-height: inherit; }
+.sprout .sprout__code {
+  font-family: var(--font-mono);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-lh);
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.sprout__code code {
+  font-size: inherit;
+  line-height: inherit;
+}
+
 .ground__soil {
   --soil: var(--space-1);
-  position: relative; height: var(--soil); background: var(--line);
+  position: relative;
+  height: var(--soil);
+  background: var(--line);
   /* bleeds to the canvas edges on mobile */
   margin: 0 calc(-1 * var(--canvas-pad-m)) 0 calc(-1 * (var(--side-pad) + var(--canvas-pad-m)));
 }
+
 .ground__soil::after {
-  content: ""; position: absolute; left: 0; right: 0; top: var(--soil); height: var(--space-1);
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--soil);
+  height: var(--space-1);
   background: repeating-linear-gradient(90deg, var(--tint-line) 0 var(--space-1), transparent var(--space-1) var(--space-2));
 }
 
@@ -1130,84 +2476,173 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
      content box, hence they subtract the padding. It equals the trunk's
      own position: canvas padding + the trunk's axis. */
   --root-x: calc(var(--canvas-pad-m) + var(--axis));
-  position: relative; z-index: var(--z-base);
+  position: relative;
+  z-index: var(--z-base);
   /* One-column grid: row 1 is the manifesto, row 2 the signature. The
      main root is measured against the manifesto row and ends at the
      last rootlet, never crossing the work's name. */
-  display: grid; grid-template-columns: minmax(0, 1fr);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   background: var(--surface-band);
-  padding: 0 var(--roots-pad) var(--space-3);
+  padding: 0 var(--roots-pad) var(--space-8);
 }
+
 /* The main root: the SAME stroke as the trunk, carried down to the
    bottom of the manifesto — every rootlet-bullet grows from it */
 .roots__main {
   /* grid-row 1 / 2 (in an absolute box "auto" would be the footer's
      edge) and no column: vertically the manifesto row rules;
      horizontally, the footer's padding box */
-  position: absolute; grid-row: 1 / 2; top: calc(-1 * var(--space-3)); bottom: var(--space-1); left: var(--root-x);
+  position: absolute;
+  grid-row: 1 / 2;
+  top: calc(-1 * var(--space-3));
+  bottom: var(--space-1);
+  left: var(--root-x);
   width: var(--trunk-width);
-  background: var(--line); transform: translateX(-50%);
+  background: var(--line);
+  transform: translateX(-50%);
   /* Starts at the trunk's full width at the soil and thins */
   clip-path: polygon(0 0, 100% 0, 62% 100%, 38% 100%);
   z-index: var(--z-under);
 }
+
 /* The collar: two curved fillets where the trunk becomes root */
-.roots__main::before, .roots__main::after {
-  content: ""; position: absolute; top: var(--space-2);
-  width: var(--space-3); height: var(--space-2);
+.roots__main::before,
+.roots__main::after {
+  content: "";
+  position: absolute;
+  top: var(--space-2);
+  width: var(--space-3);
+  height: var(--space-2);
   border-top: var(--collar) solid var(--line);
 }
-.roots__main::before { right: 100%; border-top-right-radius: 100% 100%; }
+
+.roots__main::before {
+  right: 100%;
+  border-top-right-radius: 100% 100%;
+}
+
 /* The root that drinks: it goes on from the main root's tip, tangent to
    it (down, then bending into the horizontal), and runs into the spring.
    Only where the spring stands beside the roots. */
-.roots__drink { display: none; }
-.roots__main::after { left: 100%; border-top-left-radius: 100% 100%; }
-.roots__box { grid-row: 1; grid-column: 1; padding-top: var(--space-5); max-width: var(--space-120); margin: 0 auto; position: relative; z-index: var(--z-base); }
-.roots__title { padding-left: var(--load-indent); }
+.roots__drink {
+  display: none;
+}
+
+.roots__main::after {
+  left: 100%;
+  border-top-left-radius: 100% 100%;
+}
+
+.roots__box {
+  grid-row: 1;
+  grid-column: 1;
+  padding-top: var(--space-5);
+  max-width: var(--space-120);
+  margin: 0 auto;
+  position: relative;
+  z-index: var(--z-base);
+}
+
+.roots__title {
+  padding-left: var(--load-indent);
+}
+
 /* The roots are the footer, not a station: their title has no numeral, so
    it does not take the plates' two-column title grid (numeral · text),
    which squeezed it into the numeral's column, one word per line */
-.note__title.roots__title { display: block; }
-.roots__lead {
-  margin: var(--space-1) 0 0; padding-left: var(--load-indent); max-width: var(--space-80);
-  font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink);
+.note__title.roots__title {
+  display: block;
 }
+
+.roots__lead {
+  margin: var(--space-1) 0 0;
+  padding-left: var(--load-indent);
+  max-width: var(--space-80);
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
+  color: var(--ink);
+}
+
 .manifesto {
-  list-style: none; margin: 0; padding: var(--space-2) 0 0;
-  color: var(--ink-soft); font-size: var(--type-body); line-height: var(--type-body-lh);
+  list-style: none;
+  margin: 0;
+  padding: var(--space-2) 0 0;
+  color: var(--ink-soft);
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
   position: relative;
 }
-.manifesto li { position: relative; padding-left: var(--load-indent); margin-bottom: var(--space-1); }
+
+.manifesto li {
+  position: relative;
+  padding-left: var(--load-indent);
+  margin-bottom: var(--space-1);
+}
+
 /* The rising sap: each promise names the branch that keeps it. On its
    own line and in ochre, like the margin notes; the links are plain
    underlined text links, like any other in the prose. */
 .manifesto__sap {
-  display: block; font-family: var(--font-mono);
-  font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--sap);
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  line-height: var(--type-label-lh);
+  color: var(--sap);
 }
+
 /* The rootlet-bullet: a curve that STARTS on the main root's axis and
    ends at the middle of the promise's first line */
 .manifesto li::before {
-  content: ""; position: absolute; top: calc(-1 * var(--space-1));
+  content: "";
+  position: absolute;
+  top: calc(-1 * var(--space-1));
   left: calc(var(--root-x) - var(--roots-pad));
-  width: var(--space-3); height: calc(var(--type-body-lh) / 2 + var(--space-1));
-  border-left: var(--rootlet) solid var(--line); border-bottom: var(--rootlet) solid var(--line);
+  width: var(--space-3);
+  height: calc(var(--type-body-lh) / 2 + var(--space-1));
+  border-left: var(--rootlet) solid var(--line);
+  border-bottom: var(--rootlet) solid var(--line);
   border-bottom-left-radius: 100% 100%;
 }
-.score { margin: 0; }
-.score figcaption { margin-top: var(--space-1); font-size: var(--type-caption); line-height: var(--type-caption-lh); color: var(--ink-soft); max-width: var(--space-48); }
-.roots__artwork {
-  display: block; font-family: var(--font-display); font-weight: var(--fw-bold);
-  font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink);
+
+.score {
+  margin: 0;
 }
-.roots__sign { display: block; }
+
+.score figcaption {
+  margin-top: var(--space-1);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-lh);
+  color: var(--ink-soft);
+  max-width: var(--space-48);
+}
+
+.roots__artwork {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
+  color: var(--ink);
+}
+
+.roots__sign {
+  display: block;
+}
+
 /* The licence is not split at its hyphens: "BY-" at the end of a line
    and "NC-SA" at the start of the next do not read as one name */
-.roots__license { white-space: nowrap; }
+.roots__license {
+  white-space: nowrap;
+}
+
 .roots__credit {
-  grid-row: 3; margin: var(--space-3) auto 0; text-align: center;
-  font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft);
+  grid-row: 3;
+  margin: var(--space-3) auto 0;
+  text-align: center;
+  font-size: var(--type-label);
+  line-height: var(--type-label-lh);
+  color: var(--ink-soft);
 }
 
 /* ------------------------------------------------------------
@@ -1220,30 +2655,85 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
    ------------------------------------------------------------ */
 .sources {
   --water: color-mix(in oklab, var(--k-sky) var(--wash-16), transparent);
-  grid-row: 2; position: relative; z-index: var(--z-base);
-  margin: var(--space-6) 0 0; padding: var(--space-3);
-  background: var(--water); border-top: var(--stroke-bold) solid var(--k-sky);
+  grid-row: 2;
+  position: relative;
+  z-index: var(--z-base);
+  margin: var(--space-0);
+  padding: var(--space-3);
+  background: var(--water);
+  border-top: var(--stroke-bold) solid var(--k-sky);
 }
-.sources__heading {
-  margin: 0; font-family: var(--font-display); font-weight: var(--fw-bold);
-  font-size: var(--type-heading); line-height: var(--type-heading-lh); color: var(--ink);
-}
-.sources__lead { margin: var(--half) 0 var(--space-2); font-size: var(--type-caption); line-height: var(--type-caption-lh); color: var(--ink-soft); }
-.sources__group { margin: 0 0 var(--space-2); }
-.sources__group:last-child { margin-bottom: 0; }
-.sources__title {
-  margin: 0; font-family: var(--font-display); font-weight: var(--fw-semibold);
-  font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink);
-}
-/* one line of links: a middle dot between them, silent for assistive tech */
-.sources__list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; column-gap: var(--space-1); }
-.sources__list li { font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink); }
-.sources__list li:not(:last-child)::after { content: "·" / ""; margin-left: var(--space-1); color: var(--ink-soft); }
-.sources__who { color: var(--ink-soft); }
 
-.flower--disabled { cursor: not-allowed; }
-.flower--disabled .flower__bud { opacity: 0.45; }
-.flower--disabled .flower__name { color: var(--k-grey-dark); }
+.sources__heading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+  font-size: var(--type-heading);
+  line-height: var(--type-heading-lh);
+  color: var(--ink);
+}
+
+.sources__lead {
+  margin: var(--half) 0 var(--space-2);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-lh);
+  color: var(--ink-soft);
+}
+
+.sources__group {
+  margin: 0 0 var(--space-2);
+}
+
+.sources__group:last-child {
+  margin-bottom: 0;
+}
+
+.sources__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
+  color: var(--ink);
+}
+
+/* one line of links: a middle dot between them, silent for assistive tech */
+.sources__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--space-1);
+}
+
+.sources__list li {
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
+  color: var(--ink);
+}
+
+.sources__list li:not(:last-child)::after {
+  content: "·" / "";
+  margin-left: var(--space-1);
+  color: var(--ink-soft);
+}
+
+.sources__who {
+  color: var(--ink-soft);
+}
+
+.flower--disabled {
+  cursor: not-allowed;
+}
+
+.flower--disabled .flower__bud {
+  opacity: 0.45;
+}
+
+.flower--disabled .flower__name {
+  color: var(--k-grey-dark);
+}
 
 /* ------------------------------------------------------------
    FROM THE HTML TO THE TREE — this page's own header, as written and
@@ -1264,134 +2754,304 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
    Joints: every stem piece and branch is drawn by the item it leads to
    (the last one stops at its centre), so they meet exactly.
    ------------------------------------------------------------ */
-.branch__visual { display: flex; flex-direction: column; gap: var(--gap-m); order: 3; }
+.branch__visual {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-m);
+  order: 3;
+}
+
 .ax-sketch {
   --sk-knot: var(--space-2);
   --sk-shape: var(--space-6);
   --sk-mark: var(--space-2);
   --sk-stroke: var(--stroke-bold);
-  --sk-reach: var(--space-3);                 /* a branch, from its stem to its shape */
+  --sk-reach: var(--space-3);
+  /* a branch, from its stem to its shape */
   --sk-gap: var(--space-1);
   --sk-stem-x: calc(var(--sk-knot) / 2 - var(--sk-stroke) / 2);
-  margin: 0; display: grid; gap: var(--space-1);
+  margin: 0;
+  display: grid;
+  gap: var(--space-1);
 }
+
 .ax-sketch__label {
-  margin: 0; font-family: var(--font-display); font-weight: var(--fw-semibold);
-  font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink);
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
+  color: var(--ink);
 }
-.ax-sketch__gloss, .craft__gloss { font-family: var(--font-body); font-weight: var(--fw-regular); color: var(--ink-soft); }
+
+.ax-sketch__gloss,
+.craft__gloss {
+  font-family: var(--font-body);
+  font-weight: var(--fw-regular);
+  color: var(--ink-soft);
+}
+
 .ax-sketch__html {
-  margin: 0 0 var(--space-2); padding: var(--space-1) var(--space-2); overflow-x: auto;
-  background: var(--surface-plate); border-left: var(--sk-stroke) solid var(--line);
-  font-family: var(--font-mono); font-size: var(--type-caption); line-height: var(--type-caption-lh);
-  color: var(--ink); white-space: pre-wrap; overflow-wrap: anywhere;
+  margin: 0 0 var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  overflow-x: auto;
+  background: var(--surface-plate);
+  border-left: var(--sk-stroke) solid var(--line);
+  font-family: var(--font-mono);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-lh);
+  color: var(--ink);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
+
 /* on phones the code wraps (no sideways scroll); from 48rem, its real layout */
-@media (min-width: 48rem) { .ax-sketch__html { white-space: pre; overflow-wrap: normal; } }
-.ax-sketch__html code { padding: 0; background: none; }
+@media (min-width: 48rem) {
+  .ax-sketch__html {
+    white-space: pre;
+    overflow-wrap: normal;
+  }
+}
+
+.ax-sketch__html code {
+  padding: 0;
+  background: none;
+}
+
 /* each line wears its node's shape, small; a line without a node keeps the room */
 .ax-sketch__line::before {
-  content: ""; display: inline-block; box-sizing: border-box; vertical-align: middle;
-  width: var(--sk-mark); height: var(--sk-mark); margin-right: var(--space-1);
+  content: "";
+  display: inline-block;
+  box-sizing: border-box;
+  vertical-align: middle;
+  width: var(--sk-mark);
+  height: var(--sk-mark);
+  margin-right: var(--space-1);
 }
-.ax-sketch__line--region::before { background: radial-gradient(circle closest-side, var(--line) 50%, transparent 0); }
+
+.ax-sketch__line--region::before {
+  background: radial-gradient(circle closest-side, var(--line) 50%, transparent 0);
+}
+
 .ax-sketch__line--heading::before {
-  height: calc(var(--sk-mark) / 2); vertical-align: baseline;
-  border-top: var(--stroke-fine) solid var(--line); border-right: var(--stroke-fine) solid var(--line);
+  height: calc(var(--sk-mark) / 2);
+  vertical-align: baseline;
+  border-top: var(--stroke-fine) solid var(--line);
+  border-right: var(--stroke-fine) solid var(--line);
   border-left: var(--stroke-fine) solid transparent;
   border-top-right-radius: 100% 100%;
 }
-.ax-sketch__line--button::before { border: var(--stroke-fine) solid var(--shape-circle); border-radius: var(--radius-round); }
+
+.ax-sketch__line--button::before {
+  border: var(--stroke-fine) solid var(--shape-circle);
+  border-radius: var(--radius-round);
+}
 
 /* The tree: the knot and its name, then the children down its stem */
-.ax-sketch__tree, .ax-sketch__children { list-style: none; margin: 0; padding: 0; }
-.ax-sketch__root {
-  display: grid; grid-template-columns: var(--sk-knot) minmax(0, 1fr); column-gap: var(--space-1); align-items: center;
-  font-size: var(--type-caption); line-height: var(--type-caption-lh);
+.ax-sketch__tree,
+.ax-sketch__children {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
-.ax-sketch__knot { width: var(--sk-knot); height: var(--sk-knot); border-radius: var(--radius-round); background: var(--line); }
+
+.ax-sketch__root {
+  display: grid;
+  grid-template-columns: var(--sk-knot) minmax(0, 1fr);
+  column-gap: var(--space-1);
+  align-items: center;
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-lh);
+}
+
+.ax-sketch__knot {
+  width: var(--sk-knot);
+  height: var(--sk-knot);
+  border-radius: var(--radius-round);
+  background: var(--line);
+}
+
 /* the stem starts at the knot's bottom edge */
 .ax-sketch__children {
-  grid-column: 1 / -1; margin-top: calc((var(--sk-knot) - var(--type-caption-lh)) / 2);
+  grid-column: 1 / -1;
+  margin-top: calc((var(--sk-knot) - var(--type-caption-lh)) / 2);
   margin-left: var(--sk-stem-x);
 }
+
 .ax-sketch__node {
-  position: relative; display: grid; grid-template-columns: var(--sk-reach) var(--sk-shape) minmax(0, 1fr);
-  column-gap: var(--space-0); align-items: center; padding-top: var(--sk-gap);
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--sk-reach) var(--sk-shape) minmax(0, 1fr);
+  column-gap: var(--space-0);
+  align-items: center;
+  padding-top: var(--sk-gap);
 }
-.ax-sketch__node > .ax-sketch__shape { grid-column: 2; }
-.ax-sketch__node > .ax-sketch__text { grid-column: 3; padding-left: var(--space-2); }
+
+.ax-sketch__node>.ax-sketch__shape {
+  grid-column: 2;
+}
+
+.ax-sketch__node>.ax-sketch__text {
+  grid-column: 3;
+  padding-left: var(--space-2);
+}
+
 /* the stem piece down to this node, and on, unless it is the last */
 .ax-sketch__node::before {
-  content: ""; position: absolute; left: var(--space-0); top: var(--space-0); bottom: var(--space-0);
-  width: var(--sk-stroke); background: var(--line);
+  content: "";
+  position: absolute;
+  left: var(--space-0);
+  top: var(--space-0);
+  bottom: var(--space-0);
+  width: var(--sk-stroke);
+  background: var(--line);
 }
-.ax-sketch__node--end::before { bottom: auto; height: calc(var(--sk-gap) + var(--sk-shape) / 2 + var(--sk-stroke) / 2); }
+
+.ax-sketch__node--end::before {
+  bottom: auto;
+  height: calc(var(--sk-gap) + var(--sk-shape) / 2 + var(--sk-stroke) / 2);
+}
+
 /* the branch, from the stem to the shape, at the shape's centre */
 .ax-sketch__node::after {
-  content: ""; position: absolute; left: var(--space-0);
+  content: "";
+  position: absolute;
+  left: var(--space-0);
   top: calc(var(--sk-gap) + var(--sk-shape) / 2 - var(--sk-stroke) / 2);
-  width: var(--sk-reach); height: var(--sk-stroke); background: var(--line);
+  width: var(--sk-reach);
+  height: var(--sk-stroke);
+  background: var(--line);
 }
+
 /* the heading's arc continues its branch and bends down, as a plate's arc */
-.ax-sketch__node--heading > .ax-sketch__shape {
-  align-self: start; margin-top: calc(var(--sk-shape) / 2 - var(--sk-stroke) / 2);
-  width: var(--sk-shape); height: calc(var(--sk-shape) / 2); box-sizing: border-box;
-  border-top: var(--sk-stroke) solid var(--line); border-right: var(--sk-stroke) solid var(--line);
+.ax-sketch__node--heading>.ax-sketch__shape {
+  align-self: start;
+  margin-top: calc(var(--sk-shape) / 2 - var(--sk-stroke) / 2);
+  width: var(--sk-shape);
+  height: calc(var(--sk-shape) / 2);
+  box-sizing: border-box;
+  border-top: var(--sk-stroke) solid var(--line);
+  border-right: var(--sk-stroke) solid var(--line);
   /* a transparent left border of the same width: without it Chrome draws
      a hairline where the curved right border meets a zero-width edge */
   border-left: var(--sk-stroke) solid transparent;
   border-top-right-radius: 100% 100%;
 }
+
 /* that left border mitres the arc's first corner: the branch reaches one
    stroke into the arc so the joint stays solid */
-.ax-sketch__node--heading::after { width: calc(var(--sk-reach) + var(--sk-stroke)); }
-/* the button's circle: blue, empty while not pressed */
-.ax-sketch__node--button > .ax-sketch__shape {
-  width: var(--sk-shape); height: var(--sk-shape); box-sizing: border-box;
-  border: var(--sk-stroke) solid var(--shape-circle); border-radius: var(--radius-round);
+.ax-sketch__node--heading::after {
+  width: calc(var(--sk-reach) + var(--sk-stroke));
 }
-.ax-sketch__text { min-width: 0; overflow-wrap: anywhere; font-size: var(--type-caption); line-height: var(--type-caption-lh); color: var(--ink); }
-.ax-sketch__role { font-family: var(--font-mono); color: var(--ink); }
-.ax-sketch__state { font-family: var(--font-mono); color: var(--ink-soft); }
+
+/* the button's circle: blue, empty while not pressed */
+.ax-sketch__node--button>.ax-sketch__shape {
+  width: var(--sk-shape);
+  height: var(--sk-shape);
+  box-sizing: border-box;
+  border: var(--sk-stroke) solid var(--shape-circle);
+  border-radius: var(--radius-round);
+}
+
+.ax-sketch__text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-lh);
+  color: var(--ink);
+}
+
+.ax-sketch__role {
+  font-family: var(--font-mono);
+  color: var(--ink);
+}
+
+.ax-sketch__state {
+  font-family: var(--font-mono);
+  color: var(--ink-soft);
+}
 
 /* The four readings drink from the button: a sap stem from the circle's
    bottom, a sap branch to each reading's label */
 .ax-sketch__readings {
   --sk-sap-x: calc(var(--sk-stem-x) + var(--sk-reach) + var(--sk-shape) / 2 - var(--sk-stroke) / 2);
   /* the figure's row gap is undone: the sap starts at the circle's bottom */
-  margin: calc(-1 * var(--space-1)) 0 0; padding-left: var(--sk-sap-x);
+  margin: calc(-1 * var(--space-1)) 0 0;
+  padding-left: var(--sk-sap-x);
 }
+
 .ax-sketch__reading {
-  position: relative; display: grid; grid-template-columns: var(--sk-reach) minmax(0, 1fr);
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--sk-reach) minmax(0, 1fr);
   padding-top: var(--sk-gap);
 }
-.ax-sketch__reading > dt, .ax-sketch__reading > dd { grid-column: 2; padding-left: var(--space-2); }
+
+.ax-sketch__reading>dt,
+.ax-sketch__reading>dd {
+  grid-column: 2;
+  padding-left: var(--space-2);
+}
+
 .ax-sketch__reading::before {
-  content: ""; position: absolute; left: var(--space-0); top: var(--space-0); bottom: var(--space-0);
-  width: var(--sk-stroke); background: var(--sap);
+  content: "";
+  position: absolute;
+  left: var(--space-0);
+  top: var(--space-0);
+  bottom: var(--space-0);
+  width: var(--sk-stroke);
+  background: var(--sap);
 }
-.ax-sketch__reading--end::before { bottom: auto; height: calc(var(--sk-gap) + var(--type-body-lh) / 2 + var(--sk-stroke) / 2); }
+
+.ax-sketch__reading--end::before {
+  bottom: auto;
+  height: calc(var(--sk-gap) + var(--type-body-lh) / 2 + var(--sk-stroke) / 2);
+}
+
 .ax-sketch__reading::after {
-  content: ""; position: absolute; left: var(--space-0);
+  content: "";
+  position: absolute;
+  left: var(--space-0);
   top: calc(var(--sk-gap) + var(--type-body-lh) / 2 - var(--sk-stroke) / 2);
-  width: var(--sk-reach); height: var(--sk-stroke); background: var(--sap);
+  width: var(--sk-reach);
+  height: var(--sk-stroke);
+  background: var(--sap);
 }
+
 /* who reads: a category label; what reaches them: the readout */
-.ax-sketch__reading > dt {
-  font-family: var(--font-display); font-weight: var(--fw-semibold);
-  font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink-soft);
+.ax-sketch__reading>dt {
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
+  color: var(--ink-soft);
 }
-.ax-sketch__reading > dd {
-  margin: 0; font-family: var(--font-display);
-  font-size: var(--type-subhead); line-height: var(--type-subhead-lh); color: var(--ink);
+
+.ax-sketch__reading>dd {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--type-subhead);
+  line-height: var(--type-subhead-lh);
+  color: var(--ink);
 }
+
 /* the real Unicode Braille Patterns of «Sonido» (capital sign 46, s, o,
    n, i, d, o), hidden from assistive tech, which reads «Sonido» */
-.ax-sketch__cells { font-size: var(--type-title); line-height: var(--type-title-lh); letter-spacing: var(--tracking-caps); overflow-wrap: anywhere; }
-.ax-sketch__plain { color: var(--ink-soft); }
+.ax-sketch__cells {
+  font-size: var(--type-title);
+  line-height: var(--type-title-lh);
+  letter-spacing: var(--tracking-caps);
+  overflow-wrap: anywhere;
+}
+
+.ax-sketch__plain {
+  color: var(--ink-soft);
+}
+
 /* what an agent takes, the visitor can see and take too: the whole tree */
-.ax-sketch__export { margin-top: var(--half); }
+.ax-sketch__export {
+  margin-top: var(--half);
+}
 
 /* ------------------------------------------------------------
    THE AGENT'S PATH — what an AI agent takes from this page, in the
@@ -1406,35 +3066,76 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
    outlines and drop shadows.
    ------------------------------------------------------------ */
 .agent-path {
-  --path-key: var(--space-14);                     /* the chips' column */
+  --path-key: var(--space-14);
+  /* the chips' column */
   --path-gap: var(--space-1);
   --path-stem: var(--stroke-bold);
-  --path-mid: calc(var(--type-caption-lh) / 2);    /* a chip's centre: on the verb's line */
-  margin: 0; display: grid; gap: var(--gap-xs);
+  --path-mid: calc(var(--type-caption-lh) / 2);
+  /* a chip's centre: on the verb's line */
+  margin: 0;
+  display: grid;
+  gap: var(--gap-xs);
 }
-.agent-path__steps { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--path-gap); }
+
+.agent-path__steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--path-gap);
+}
+
 .agent-path__step {
-  position: relative; display: grid; grid-template-columns: var(--path-key) minmax(0, 1fr);
-  column-gap: var(--gap-xs); align-items: start;
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--path-key) minmax(0, 1fr);
+  column-gap: var(--gap-xs);
+  align-items: start;
 }
+
 .agent-path__step:not(.agent-path__step--act)::before {
-  content: ""; position: absolute;
-  left: calc(var(--path-key) / 2 - var(--path-stem) / 2); top: var(--path-mid);
-  width: var(--path-stem); height: calc(100% + var(--path-gap));
+  content: "";
+  position: absolute;
+  left: calc(var(--path-key) / 2 - var(--path-stem) / 2);
+  top: var(--path-mid);
+  width: var(--path-stem);
+  height: calc(100% + var(--path-gap));
   background: var(--line);
 }
+
 .agent-path__source {
-  position: relative; z-index: var(--z-base); justify-self: center;
+  position: relative;
+  z-index: var(--z-base);
+  justify-self: center;
   padding: 0 var(--space-1);
-  font-family: var(--font-mono); font-size: var(--type-caption); line-height: var(--type-caption-lh);
-  color: var(--ink); background: var(--surface-canvas);
-  outline: var(--stroke-fine) solid var(--line); outline-offset: calc(-1 * var(--stroke-fine));
+  font-family: var(--font-mono);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-lh);
+  color: var(--ink);
+  background: var(--surface-canvas);
+  outline: var(--stroke-fine) solid var(--line);
+  outline-offset: calc(-1 * var(--stroke-fine));
 }
-.agent-path__step--act .agent-path__source { color: var(--surface-canvas); background: var(--line); }
-.agent-path__text { margin: 0; font-size: var(--type-caption); line-height: var(--type-caption-lh); color: var(--ink-soft); }
+
+.agent-path__step--act .agent-path__source {
+  color: var(--surface-canvas);
+  background: var(--line);
+}
+
+.agent-path__text {
+  margin: 0;
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-lh);
+  color: var(--ink-soft);
+}
+
 .agent-path__verb {
-  display: block; font-family: var(--font-display); font-weight: var(--fw-semibold);
-  font-size: var(--type-subhead); line-height: var(--type-subhead-lh); color: var(--ink);
+  display: block;
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  font-size: var(--type-subhead);
+  line-height: var(--type-subhead-lh);
+  color: var(--ink);
 }
 
 /* ============================================================
@@ -1451,133 +3152,338 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
 .atlas {
   --atlas-gap: var(--gap-2xs);
   --atlas-petal: var(--space-3);
-  margin: 0; display: grid; gap: var(--gap-xs); max-width: var(--space-64);
+  margin: 0;
+  display: grid;
+  gap: var(--gap-xs);
+  max-width: var(--space-64);
 }
-.atlas__title, .focus-order__title, .strata__title, .agent-path__title {
-  font-family: var(--font-display); font-weight: var(--fw-bold);
-  font-size: var(--type-heading); line-height: var(--type-heading-lh); color: var(--ink);
+
+.atlas__title,
+.focus-order__title,
+.strata__title,
+.agent-path__title {
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+  font-size: var(--type-heading);
+  line-height: var(--type-heading-lh);
+  color: var(--ink);
 }
-.atlas__regions, .atlas__levels { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--atlas-gap); }
+
+.atlas__regions,
+.atlas__levels {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--atlas-gap);
+}
+
 .atlas__region {
-  display: grid; grid-template-columns: auto 1fr; align-items: baseline; column-gap: var(--gap-2xs);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+  column-gap: var(--gap-2xs);
   padding: var(--half) var(--space-2);
-  border: var(--stroke-bold) solid var(--line); background: var(--surface-canvas);
-  font-size: var(--type-subhead); line-height: var(--type-subhead-lh);
+  border: var(--stroke-bold) solid var(--line);
+  background: var(--surface-canvas);
+  font-size: var(--type-subhead);
+  line-height: var(--type-subhead-lh);
 }
-.atlas__region--main { padding-block: var(--space-1); }
+
+.atlas__region--main {
+  padding-block: var(--space-1);
+}
+
 /* a landmark inside another one hangs one module in */
-.atlas__region--nested { margin-left: var(--space-4); }
-.atlas__role { font-family: var(--font-mono); color: var(--ink); }
-.atlas__name { font-family: var(--font-display); color: var(--ink); }
-.atlas__petals { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: var(--half); margin-top: var(--space-1); }
+.atlas__region--nested {
+  margin-left: var(--space-4);
+}
+
+.atlas__role {
+  font-family: var(--font-mono);
+  color: var(--ink);
+}
+
+.atlas__name {
+  font-family: var(--font-display);
+  color: var(--ink);
+}
+
+.atlas__petals {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--half);
+  margin-top: var(--space-1);
+}
+
 /* a petal: a circle with two opposite corners pulled square — the
    cover's leaf, upright, never rotated */
 .atlas__petal {
-  width: var(--atlas-petal); aspect-ratio: 1;
+  width: var(--atlas-petal);
+  aspect-ratio: 1;
   border-radius: 0 var(--radius-round);
-  background: var(--tone); box-shadow: 0 0 0 var(--stroke-fine) var(--line);
+  background: var(--tone);
+  box-shadow: 0 0 0 var(--stroke-fine) var(--line);
 }
+
 .atlas__level {
   --level-w: 100%;
-  display: grid; grid-template-columns: var(--space-12) minmax(0, 1fr); align-items: center; column-gap: var(--gap-2xs);
-  font-family: var(--font-mono); font-size: var(--type-subhead); line-height: var(--type-subhead-lh); color: var(--ink);
+  display: grid;
+  grid-template-columns: var(--space-12) minmax(0, 1fr);
+  align-items: center;
+  column-gap: var(--gap-2xs);
+  font-family: var(--font-mono);
+  font-size: var(--type-subhead);
+  line-height: var(--type-subhead-lh);
+  color: var(--ink);
 }
-.atlas__level--2 { --level-w: calc(100% / var(--phi)); }
-.atlas__level--3 { --level-w: calc(100% / (var(--phi) * var(--phi))); }
-.atlas__bar { width: var(--level-w); height: var(--space-2); background: var(--line); border-radius: var(--radius-1); }
+
+.atlas__level--2 {
+  --level-w: calc(100% / var(--phi));
+}
+
+.atlas__level--3 {
+  --level-w: calc(100% / (var(--phi) * var(--phi)));
+}
+
+.atlas__bar {
+  width: var(--level-w);
+  height: var(--space-2);
+  background: var(--line);
+  border-radius: var(--radius-1);
+}
 
 /* 3 · What a list says before its first item, written for the room */
 .atlas__say {
-  margin: 0; display: grid; gap: var(--half);
-  font-family: var(--font-display); font-size: var(--type-subhead); line-height: var(--type-subhead-lh); color: var(--ink);
+  margin: 0;
+  display: grid;
+  gap: var(--half);
+  font-family: var(--font-display);
+  font-size: var(--type-subhead);
+  line-height: var(--type-subhead-lh);
+  color: var(--ink);
 }
-.atlas__say-label { font-weight: var(--fw-semibold); font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink-soft); }
+
+.atlas__say-label {
+  font-weight: var(--fw-semibold);
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
+  color: var(--ink-soft);
+}
 
 /* 7 · The focus order: four real buttons, each wearing its place in
    the HTML as a big numeral. «Mover con CSS» only changes `order`:
    the numerals stay, so the room sees Tab jump. */
-.focus-order { margin: 0; display: grid; justify-items: start; gap: var(--gap-s); }
-.focus-order__stops {
-  list-style: none; margin: 0; padding: 0; counter-reset: stop;
-  display: flex; flex-wrap: wrap; gap: var(--gap-s);
+.focus-order {
+  margin: 0;
+  display: grid;
+  justify-items: start;
+  gap: var(--gap-s);
 }
+
+.focus-order__stops {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  counter-reset: stop;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-s);
+}
+
 .focus-order__stop {
   counter-increment: stop;
-  display: grid; justify-items: center; gap: var(--gap-2xs);
+  display: grid;
+  justify-items: center;
+  gap: var(--gap-2xs);
 }
+
 .focus-order__stop::before {
   content: counter(stop);
-  font-family: var(--font-display); font-weight: var(--fw-bold);
-  font-size: var(--type-display); line-height: var(--type-display-lh); color: var(--station-focus);
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+  font-size: var(--type-display);
+  line-height: var(--type-display-lh);
+  color: var(--station-focus);
   -webkit-text-stroke: var(--stroke-fine) var(--line);
 }
-.focus-order[data-shuffled] .focus-order__stop:nth-child(1) { order: 3; }
-.focus-order[data-shuffled] .focus-order__stop:nth-child(2) { order: 1; }
-.focus-order[data-shuffled] .focus-order__stop:nth-child(3) { order: 4; }
-.focus-order[data-shuffled] .focus-order__stop:nth-child(4) { order: 2; }
-.focus-order__foot { margin: 0; }
+
+.focus-order[data-shuffled] .focus-order__stop:nth-child(1) {
+  order: 3;
+}
+
+.focus-order[data-shuffled] .focus-order__stop:nth-child(2) {
+  order: 1;
+}
+
+.focus-order[data-shuffled] .focus-order__stop:nth-child(3) {
+  order: 4;
+}
+
+.focus-order[data-shuffled] .focus-order__stop:nth-child(4) {
+  order: 2;
+}
+
+.focus-order__foot {
+  margin: 0;
+}
 
 /* WebMCP: while an AI agent fills the watering form, the browser sets
    :tool-form-active on it and :tool-submit-active on its submit button.
    The work draws them with its own solid ring (Chrome's default is
    dashed). Inside @supports, so browsers without WebMCP skip it. */
 @supports selector(:tool-form-active) {
-  form:tool-form-active { outline: var(--focus-width) solid var(--focus); outline-offset: var(--focus-offset); }
-  :tool-submit-active { outline: var(--focus-width) solid var(--focus); outline-offset: var(--focus-offset); }
+  form:tool-form-active {
+    outline: var(--focus-width) solid var(--focus);
+    outline-offset: var(--focus-offset);
+  }
+
+  :tool-submit-active {
+    outline: var(--focus-width) solid var(--focus);
+    outline-offset: var(--focus-offset);
+  }
 }
 
 
 /* 12 · Layers: two planes, one over the other. While the real dialog is
    open, the plane underneath goes grey — inert — on the plate too. */
-.strata { margin: 0; display: grid; justify-items: start; gap: var(--gap-s); }
+.strata {
+  margin: 0;
+  display: grid;
+  justify-items: start;
+  gap: var(--gap-s);
+}
+
 .strata__planes {
   --plane: clamp(var(--space-20), 16vw, var(--space-24));
   /* the upper plane is offset by plane / φ: they overlap by a golden part */
-  position: relative; width: calc(var(--plane) * (1 + 1 / var(--phi))); aspect-ratio: 1;
+  position: relative;
+  width: calc(var(--plane) * (1 + 1 / var(--phi)));
+  aspect-ratio: 1;
 }
+
 .strata__plane {
-  position: absolute; width: var(--plane); aspect-ratio: 1; padding: var(--space-1) var(--space-2);
-  display: flex; align-items: flex-end;
+  position: absolute;
+  width: var(--plane);
+  aspect-ratio: 1;
+  padding: var(--space-1) var(--space-2);
+  display: flex;
+  align-items: flex-end;
   border: var(--stroke-bold) solid var(--line);
-  font-family: var(--font-display); font-weight: var(--fw-semibold);
-  font-size: var(--type-subhead); line-height: var(--type-subhead-lh); color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  font-size: var(--type-subhead);
+  line-height: var(--type-subhead-lh);
+  color: var(--ink);
 }
-.strata__plane--under { left: 0; top: 0; background: var(--surface-plate); }
+
+.strata__plane--under {
+  left: 0;
+  top: 0;
+  background: var(--surface-plate);
+}
+
 .strata__plane--over {
-  right: 0; bottom: 0; z-index: var(--z-base);
+  right: 0;
+  bottom: 0;
+  z-index: var(--z-base);
   background: color-mix(in oklab, var(--station-layers) var(--wash-24), var(--surface-canvas));
 }
-:root:has([data-layer][open]) .strata__plane--under { background: var(--k-grey); color: var(--ink-soft); }
+
+:root:has([data-layer][open]) .strata__plane--under {
+  background: var(--k-grey);
+  color: var(--ink-soft);
+}
+
 .layer {
   max-width: min(calc(100% - var(--space-4)), var(--space-64));
-  padding: var(--space-4); border: var(--stroke-bold) solid var(--line);
-  background: var(--surface-canvas); color: var(--ink);
+  padding: var(--space-4);
+  border: var(--stroke-bold) solid var(--line);
+  background: var(--surface-canvas);
+  color: var(--ink);
 }
-.layer::backdrop { background: color-mix(in oklab, var(--station-layers) var(--wash-48), transparent); }
+
+.layer::backdrop {
+  background: color-mix(in oklab, var(--station-layers) var(--wash-48), transparent);
+}
+
 .layer__title {
-  margin: 0 0 var(--space-2); font-family: var(--font-display);
-  font-size: var(--type-title); line-height: var(--type-title-lh);
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--type-title);
+  line-height: var(--type-title-lh);
 }
-.layer__text { margin: 0 0 var(--space-3); font-size: var(--type-lead); line-height: var(--type-lead-lh); }
-.layer__foot { margin: 0; display: flex; flex-wrap: wrap; gap: var(--gap-xs); }
+
+.layer__text {
+  margin: 0 0 var(--space-3);
+  font-size: var(--type-lead);
+  line-height: var(--type-lead-lh);
+}
+
+.layer__foot {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-xs);
+}
+
+.layer--qr {
+  width: min(var(--space-64), calc(100vw - var(--space-4)));
+}
+
+.layer__qr {
+  display: block;
+  width: min(100%, var(--space-56));
+  max-height: 60dvh;
+  height: auto;
+  object-fit: contain;
+  margin: 0 auto var(--space-3);
+}
+
 /* 1 · The tree an agent takes: the same layer, wider, tinted by its
    station; the data scrolls inside it (focusable, so the keyboard
    scrolls it too), never the page */
-.layer--tree { max-width: min(calc(100% - var(--space-4)), var(--space-100)); }
-.layer--tree::backdrop { background: color-mix(in oklab, var(--station-structure) var(--wash-48), transparent); }
-.layer__data {
-  margin: 0 0 var(--space-3); max-height: 50dvh; overflow: auto;
-  padding: var(--space-2); background: var(--surface-plate);
-  border-left: var(--stroke-bold) solid var(--line);
-  font-family: var(--font-mono); font-size: var(--type-caption); line-height: var(--type-caption-lh);
-  white-space: pre; color: var(--ink);
+.layer--tree {
+  max-width: min(calc(100% - var(--space-4)), var(--space-100));
 }
+
+.layer--tree::backdrop {
+  background: color-mix(in oklab, var(--station-structure) var(--wash-48), transparent);
+}
+
+.layer__data {
+  margin: 0 0 var(--space-3);
+  max-height: 50dvh;
+  overflow: auto;
+  padding: var(--space-2);
+  background: var(--surface-plate);
+  border-left: var(--stroke-bold) solid var(--line);
+  font-family: var(--font-mono);
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-lh);
+  white-space: pre;
+  color: var(--ink);
+}
+
 /* the data is one block: no chip behind every line */
-.layer__data code { padding: 0; background: none; font-size: inherit; line-height: inherit; }
+.layer__data code {
+  padding: 0;
+  background: none;
+  font-size: inherit;
+  line-height: inherit;
+}
 
 @media (forced-colors: active) {
-  .atlas__petal, .atlas__bar { forced-color-adjust: none; }
-  .atlas__bar { background: CanvasText; }
+
+  .atlas__petal,
+  .atlas__bar {
+    forced-color-adjust: none;
+  }
+
+  .atlas__bar {
+    background: CanvasText;
+  }
 }
 
 /* ============================================================
@@ -1586,88 +3492,265 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
    and the bottom border turning double.
    ============================================================ */
 .watering {
-  border: var(--stroke-fine) solid var(--line); background: var(--surface-plate);
-  padding: var(--space-2); max-width: var(--space-64); display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gap-xs);
+  border: var(--stroke-fine) solid var(--line);
+  background: var(--surface-plate);
+  padding: var(--space-2);
+  max-width: var(--space-64);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--gap-xs);
 }
+
 .watering__title {
-  margin: 0; font-family: var(--font-display); font-weight: var(--fw-semibold);
-  font-size: var(--type-body); line-height: var(--type-body-lh);
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
 }
-.watering__title span { font-family: var(--font-body); font-weight: var(--fw-regular); font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); }
-.field { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-1); }
-.field__label { font-family: var(--font-display); font-weight: var(--fw-semibold); font-size: var(--type-body); line-height: var(--type-body-lh); }
-.field__req { font-family: var(--font-body); font-weight: var(--fw-regular); font-size: var(--type-label); line-height: var(--type-label-lh); color: var(--ink-soft); }
+
+.watering__title span {
+  font-family: var(--font-body);
+  font-weight: var(--fw-regular);
+  font-size: var(--type-label);
+  line-height: var(--type-label-lh);
+  color: var(--ink-soft);
+}
+
+.field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-1);
+}
+
+.field__label {
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
+}
+
+.field__req {
+  font-family: var(--font-body);
+  font-weight: var(--fw-regular);
+  font-size: var(--type-label);
+  line-height: var(--type-label-lh);
+  color: var(--ink-soft);
+}
+
 .field__input {
-  font-family: var(--font-body); font-size: var(--type-body); line-height: var(--type-body-lh); min-height: var(--touch);
-  padding: var(--space-1) var(--space-2); color: var(--ink); background: var(--surface-canvas);
-  border: var(--stroke-fine) solid var(--line); border-bottom: var(--space-1) solid var(--shape-bar);
+  font-family: var(--font-body);
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
+  min-height: var(--touch);
+  padding: var(--space-1) var(--space-2);
+  color: var(--ink);
+  background: var(--surface-canvas);
+  border: var(--stroke-fine) solid var(--line);
+  border-bottom: var(--space-1) solid var(--shape-bar);
 }
-.field__input:focus-visible { outline: var(--focus-width) solid var(--focus); outline-offset: var(--focus-offset); }
-.field__input[aria-invalid="true"] { border-bottom: var(--space-1) double var(--k-red); }
-.field__help { margin: 0; font-size: var(--type-caption); line-height: var(--type-caption-lh); color: var(--ink-soft); }
-.field__ok[hidden] { display: none; }
-.field__error[hidden] { visibility: hidden; }
-.field__error { min-height: calc(var(--type-body-lh) * 2); }
+
+.field__input:focus-visible {
+  outline: var(--focus-width) solid var(--focus);
+  outline-offset: var(--focus-offset);
+}
+
+.field__input[aria-invalid="true"] {
+  border-bottom: var(--space-1) double var(--k-red);
+}
+
+.field__help {
+  margin: 0;
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-lh);
+  color: var(--ink-soft);
+}
+
+.field__ok[hidden] {
+  display: none;
+}
+
+.field__error[hidden] {
+  visibility: hidden;
+}
+
 .field__error {
-  display: flex; gap: var(--space-1); align-items: flex-start; margin: 0;
-  font-size: var(--type-body); line-height: var(--type-body-lh); font-weight: var(--fw-semibold); color: var(--link-active);
+  min-height: calc(var(--type-body-lh) * 2);
 }
+
+.field__error {
+  display: flex;
+  gap: var(--space-1);
+  align-items: flex-start;
+  margin: 0;
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
+  font-weight: var(--fw-semibold);
+  color: var(--link-active);
+}
+
 .field__error-mark {
-  width: var(--space-2); height: var(--space-2); flex: none; margin-top: var(--half);
+  width: var(--space-2);
+  height: var(--space-2);
+  flex: none;
+  margin-top: var(--half);
   background:
     linear-gradient(45deg, transparent 40%, var(--link-active) 40% 60%, transparent 60%),
     linear-gradient(-45deg, transparent 40%, var(--link-active) 40% 60%, transparent 60%);
 }
+
 .field__ok {
-  display: flex; gap: var(--space-1); align-items: center; margin: 0;
-  font-size: var(--type-body); line-height: var(--type-body-lh); font-weight: var(--fw-semibold); color: var(--sprout-text);
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+  margin: 0;
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
+  font-weight: var(--fw-semibold);
+  color: var(--sprout-text);
 }
-.field__ok-mark { width: var(--space-2); height: var(--space-1); flex: none; background: var(--sprout); border-radius: 100% 0 100% 0; rotate: -14deg; }
-.watering__foot { display: flex; flex-wrap: wrap; gap: var(--gap-xs); align-items: center; }
+
+.field__ok-mark {
+  width: var(--space-2);
+  height: var(--space-1);
+  flex: none;
+  background: var(--sprout);
+  border-radius: 100% 0 100% 0;
+  rotate: -14deg;
+}
+
+.watering__foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-xs);
+  align-items: center;
+}
 
 /* ============================================================
    THE MEASURED PALETTE — swatch, name, contrast ratio and use
    ============================================================ */
-.palette { --swatch: var(--space-3); margin: 0; max-width: var(--space-64); }
-.palette__list { list-style: none; margin: 0 0 var(--space-1); padding: 0; display: grid; gap: 0; }
+.palette {
+  --swatch: var(--space-3);
+  margin: 0;
+  max-width: var(--space-64);
+}
+
+.palette__list {
+  list-style: none;
+  margin: 0 0 var(--space-1);
+  padding: 0;
+  display: grid;
+  gap: 0;
+}
+
 .palette__row {
-  display: grid; grid-template-columns: var(--swatch) minmax(var(--space-10), 1fr) auto; gap: 0 var(--space-2);
-  align-items: center; font-size: var(--type-label); line-height: var(--type-label-lh); padding: var(--space-1) 0;
+  display: grid;
+  grid-template-columns: var(--swatch) minmax(var(--space-10), 1fr) auto;
+  gap: 0 var(--space-2);
+  align-items: center;
+  font-size: var(--type-label);
+  line-height: var(--type-label-lh);
+  padding: var(--space-1) 0;
   border-bottom: var(--stroke-hair) solid var(--tint-code-strong);
 }
+
 /* Each swatch wears the silhouette of what it paints: in greyscale the
    palette still reads by shape. Ink and ochre are not grammar shapes
    but strokes: the trunk, narrowing upwards, and the sap stem curving
    towards its flower. */
 .palette__swatch {
-  position: relative; place-self: center;
-  width: var(--swatch); height: var(--swatch); background: var(--swatch-c); border: var(--stroke-fine) solid var(--line);
-  grid-row: span 2; box-sizing: border-box;
+  position: relative;
+  place-self: center;
+  width: var(--swatch);
+  height: var(--swatch);
+  background: var(--swatch-c);
+  border: var(--stroke-fine) solid var(--line);
+  grid-row: span 2;
+  box-sizing: border-box;
 }
-.palette__swatch--circle { --swatch-c: var(--k-blue); border-radius: var(--radius-round); }
-.palette__swatch--square { --swatch-c: var(--k-red); }
+
+.palette__swatch--circle {
+  --swatch-c: var(--k-blue);
+  border-radius: var(--radius-round);
+}
+
+.palette__swatch--square {
+  --swatch-c: var(--k-red);
+}
+
 /* A real rhombus: ink outside, colour inside, both clipped */
-.palette__swatch--rhombus { --swatch-c: var(--k-violet); border: 0; background: var(--line); clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
-.palette__swatch--rhombus::before {
-  content: ""; position: absolute; inset: var(--stroke-fine); background: var(--swatch-c);
+.palette__swatch--rhombus {
+  --swatch-c: var(--k-violet);
+  border: 0;
+  background: var(--line);
   clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
 }
-.palette__swatch--bar { --swatch-c: var(--k-cyan); height: var(--space-1); border-width: 0 0 var(--stroke-fine); }
-.palette__swatch--trunk { --swatch-c: var(--ink); width: var(--space-1); border: 0; clip-path: polygon(32% 0, 68% 0, 100% 100%, 0 100%); }
-.palette__swatch--sap { --swatch-c: var(--k-ochre);
-  width: var(--space-2); background: none; border: 0;
-  border-top: var(--stroke-bold) solid var(--swatch-c); border-right: var(--stroke-bold) solid var(--swatch-c);
+
+.palette__swatch--rhombus::before {
+  content: "";
+  position: absolute;
+  inset: var(--stroke-fine);
+  background: var(--swatch-c);
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+}
+
+.palette__swatch--bar {
+  --swatch-c: var(--k-cyan);
+  height: var(--space-1);
+  border-width: 0 0 var(--stroke-fine);
+}
+
+.palette__swatch--trunk {
+  --swatch-c: var(--ink);
+  width: var(--space-1);
+  border: 0;
+  clip-path: polygon(32% 0, 68% 0, 100% 100%, 0 100%);
+}
+
+.palette__swatch--sap {
+  --swatch-c: var(--k-ochre);
+  width: var(--space-2);
+  background: none;
+  border: 0;
+  border-top: var(--stroke-bold) solid var(--swatch-c);
+  border-right: var(--stroke-bold) solid var(--swatch-c);
   border-radius: 0 100% 0 0;
 }
-.palette__swatch--triangle { --swatch-c: var(--k-yellow); border: 0; background: var(--line); clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+
+.palette__swatch--triangle {
+  --swatch-c: var(--k-yellow);
+  border: 0;
+  background: var(--line);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
 .palette__swatch--triangle::before {
-  content: ""; position: absolute; inset: 0; background: var(--swatch-c);
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--swatch-c);
   clip-path: polygon(50% 15%, 89% 93%, 11% 93%);
 }
-.palette__name { font-weight: var(--fw-semibold); color: var(--ink); }
-.palette__ratio { font-family: var(--font-mono); }
-.palette__use { grid-column: 2 / -1; color: var(--ink-soft); }
-.palette figcaption { font-size: var(--type-caption); line-height: var(--type-caption-lh); color: var(--ink-soft); }
+
+.palette__name {
+  font-weight: var(--fw-semibold);
+  color: var(--ink);
+}
+
+.palette__ratio {
+  font-family: var(--font-mono);
+}
+
+.palette__use {
+  grid-column: 2 / -1;
+  color: var(--ink-soft);
+}
+
+.palette figcaption {
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-lh);
+  color: var(--ink-soft);
+}
 
 /* ============================================================
    THE CRAFT — the work's six decisions, each next to the antipattern
@@ -1682,59 +3765,146 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
    100 % of its height is exactly that); the last one draws none.
    ============================================================ */
 .craft {
-  --craft-key: var(--space-5);                  /* the marks' column */
+  --craft-key: var(--space-5);
+  /* the marks' column */
   --craft-mark: var(--space-3);
   --craft-pad: var(--half);
-  --craft-mid: calc(var(--craft-pad) + var(--type-subhead-lh) / 2);   /* a mark's centre: on the name's line */
-  margin: 0; width: 100%; table-layout: fixed; border-collapse: separate; border-spacing: 0;
+  --craft-mid: calc(var(--craft-pad) + var(--type-subhead-lh) / 2);
+  /* a mark's centre: on the name's line */
+  margin: 0;
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
 }
+
 /* on phones two columns leave a word per line: each decision stacks
    over what it refuses, and the stem waits for the two columns */
-.craft, .craft thead, .craft tbody, .craft tr, .craft__head, .craft__case { display: block; }
-.craft tbody tr { padding-block: var(--space-1); }
-@media (min-width: 48rem) {
-  .craft { display: table; }
-  .craft thead { display: table-header-group; }
-  .craft tbody { display: table-row-group; }
-  .craft tr { display: table-row; }
-  .craft__head, .craft__case { display: table-cell; }
-  .craft tbody tr { padding-block: var(--space-0); }
-}
-.craft__head {
-  padding: 0 0 var(--space-1) var(--craft-key); text-align: start;
-  font-family: var(--font-display); font-weight: var(--fw-semibold);
-  font-size: var(--type-body); line-height: var(--type-body-lh); color: var(--ink);
-}
+.craft,
+.craft thead,
+.craft tbody,
+.craft tr,
+.craft__head,
 .craft__case {
-  position: relative; vertical-align: top; text-align: start; font-weight: var(--fw-regular);
+  display: block;
+}
+
+.craft tbody tr {
+  padding-block: var(--space-1);
+}
+
+@media (min-width: 48rem) {
+  .craft {
+    display: table;
+  }
+
+  .craft thead {
+    display: table-header-group;
+  }
+
+  .craft tbody {
+    display: table-row-group;
+  }
+
+  .craft tr {
+    display: table-row;
+  }
+
+  .craft__head,
+  .craft__case {
+    display: table-cell;
+  }
+
+  .craft tbody tr {
+    padding-block: var(--space-0);
+  }
+}
+
+.craft__head {
+  padding: 0 0 var(--space-1) var(--craft-key);
+  text-align: start;
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  font-size: var(--type-body);
+  line-height: var(--type-body-lh);
+  color: var(--ink);
+  vertical-align: top;
+}
+
+.craft__case {
+  position: relative;
+  vertical-align: top;
+  text-align: start;
+  font-weight: var(--fw-regular);
   padding: var(--craft-pad) var(--space-1) var(--craft-pad) var(--craft-key);
   hyphens: auto;
 }
+
 .craft__name {
-  display: block; font-family: var(--font-display); font-weight: var(--fw-semibold);
-  font-size: var(--type-subhead); line-height: var(--type-subhead-lh); color: var(--ink);
+  display: block;
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  font-size: var(--type-subhead);
+  line-height: var(--type-subhead-lh);
+  color: var(--ink);
 }
-.craft__line { display: block; font-size: var(--type-caption); line-height: var(--type-caption-lh); color: var(--ink-soft); }
-.craft__line code { font-size: inherit; line-height: inherit; }
+
+.craft__line {
+  display: block;
+  font-size: var(--type-caption);
+  line-height: var(--type-caption-lh);
+  color: var(--ink-soft);
+}
+
+.craft__line code {
+  font-size: inherit;
+  line-height: inherit;
+}
+
 /* the mark, centred on the name's line */
 .craft__case::before {
-  content: ""; position: absolute; z-index: var(--z-base);
-  left: calc(var(--craft-key) / 2 - var(--craft-mark) / 2); top: calc(var(--craft-mid) - var(--craft-mark) / 2);
-  width: var(--craft-mark); height: var(--craft-mark);
-  border-radius: var(--radius-round); background: var(--k-blue);
+  content: "";
+  position: absolute;
+  z-index: var(--z-base);
+  left: calc(var(--craft-key) / 2 - var(--craft-mark) / 2);
+  top: calc(var(--craft-mid) - var(--craft-mark) / 2);
+  width: var(--craft-mark);
+  height: var(--craft-mark);
+  border-radius: var(--radius-round);
+  background: var(--k-blue);
 }
+
 /* the stem, to the next circle */
 @media (min-width: 48rem) {
   .craft__case:not(.craft__case--anti, .craft__case--end)::after {
-    content: ""; position: absolute;
-    left: calc(var(--craft-key) / 2 - var(--stroke-bold) / 2); top: var(--craft-mid);
-    width: var(--stroke-bold); height: 100%; background: var(--line);
+    content: "";
+    position: absolute;
+    left: calc(var(--craft-key) / 2 - var(--stroke-bold) / 2);
+    top: var(--craft-mid);
+    width: var(--stroke-bold);
+    height: 100%;
+    background: var(--line);
   }
 }
-.craft__case--anti::before { background: var(--k-grey); border-radius: 50% 50% 50% 0; rotate: 45deg; }
+
+.craft__case--anti::before {
+  background: var(--k-grey);
+  border-radius: 50% 50% 50% 0;
+  rotate: 45deg;
+}
+
 /* Arriving from a manifesto root, the row is tinted with sap */
-.craft tr, .craft__head, .note p { scroll-margin-block: var(--space-4); }
-.craft tr:target > *, .craft__head:target, .note p:target { background: color-mix(in oklab, var(--sap) var(--wash-16), transparent); }
+.craft tr,
+.craft__head,
+.note p {
+  scroll-margin-block: var(--space-4);
+}
+
+.craft tr:target>*,
+.craft__head:target,
+.note p:target {
+  background: color-mix(in oklab, var(--sap) var(--wash-16), transparent);
+}
 
 /* ============================================================
    THE WILTED LINE — what fails, breaks or is an antipattern.
@@ -1750,13 +3920,20 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
   --wilt-gap: var(--space-2);
   position: relative;
 }
+
 .lesson__fail::before {
-  content: ""; position: absolute; inset: calc(-1 * var(--stroke-fine)); pointer-events: none;
+  content: "";
+  position: absolute;
+  inset: calc(-1 * var(--stroke-fine));
+  pointer-events: none;
   border: var(--stroke-fine) solid var(--k-grey-dark);
   clip-path: polygon(0 0, calc(100% - var(--wilt-gap)) 0, calc(100% - var(--wilt-gap)) var(--wilt-gap),
-                     100% var(--wilt-gap), 100% 100%, 0 100%);
+      100% var(--wilt-gap), 100% 100%, 0 100%);
 }
-.lesson__fail { border: var(--stroke-fine) solid transparent; }
+
+.lesson__fail {
+  border: var(--stroke-fine) solid transparent;
+}
 
 /* ============================================================
    ≥ 48rem (768 px): more air, staggered clusters
@@ -1767,8 +3944,14 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
     --artwork-frame: var(--stroke-heavy);
     --canvas-pad-m: var(--space-3);
   }
-  .cluster { --slot-x: calc(var(--space-3) + var(--dz, 0) * var(--space-2)); }
-  .branch { --pb: var(--space-4); }
+
+  .cluster {
+    --slot-x: calc(var(--space-3) + var(--dz, 0) * var(--space-2));
+  }
+
+  .branch {
+    --pb: var(--space-4);
+  }
 }
 
 /* ============================================================
@@ -1776,10 +3959,13 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
    branches
    ============================================================ */
 @media (min-width: 64rem) {
+
   /* The trunk at the exact centre: --axis-x becomes 50 %, the same axis
      as the mandala's centre, the title's and the stem's. One axis. */
   .artwork {
-    --axis: 50%; --axis-x: 50%; --side-pad: var(--space-0);
+    --axis: 50%;
+    --axis-x: 50%;
+    --side-pad: var(--space-0);
     --trunk-width: clamp(var(--space-2), 1.4vw, var(--space-3));
     --canvas-pad: var(--space-3);
     --gap-canvas: clamp(var(--space-3), 2.2vw, var(--space-5));
@@ -1788,14 +3974,21 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
        reserve the inspector's column in its positioning box */
     --trunk-center: calc((100% - var(--panel-col) - var(--gap-canvas)) / 2);
   }
+
   .canvas {
-    max-width: var(--space-200); margin: 0 auto;
+    max-width: var(--space-200);
+    margin: 0 auto;
     padding: var(--canvas-pad);
-    display: grid; grid-template-columns: minmax(0, 1fr) var(--panel-col);
-    gap: var(--gap-canvas); align-items: start;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--panel-col);
+    gap: var(--gap-canvas);
+    align-items: start;
   }
 
-  .trunk__axis { left: 50%; }
+  .trunk__axis {
+    left: 50%;
+  }
+
   .branch {
     --pb: clamp(var(--space-4), 5vh, var(--space-7));
     --arc-top: var(--space-5);
@@ -1807,64 +4000,193 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
     --node: var(--space-3);
     --arc-w: 38%;
     --halo-x: 72%;
-    display: grid; grid-template-columns: 1fr 1fr;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
   }
-  .branch--thick { --drop: var(--space-12); }
-  .branch--thin { --drop: var(--space-8); --arc-w: 30%; }
-  .branch--right { background: radial-gradient(closest-side at var(--halo-x) 42%, color-mix(in oklab, var(--tint) var(--halo), transparent), transparent 72%); }
-  .branch--left { --halo-x: 28%; background: radial-gradient(closest-side at var(--halo-x) 42%, color-mix(in oklab, var(--tint) var(--halo), transparent), transparent 72%); }
-  .branch__arc { left: 50%; border-top-right-radius: 100% 100%; }
-  .branch--left .branch__arc { left: auto; right: 50%; border-top-right-radius: 0; border-top-left-radius: 100% 100%; }
-  .branch--left .branch__arc::after { right: auto; left: calc(var(--knot) / -2); }
+
+  .branch--thick {
+    --drop: var(--space-12);
+  }
+
+  .branch--thin {
+    --drop: var(--space-8);
+    --arc-w: 30%;
+  }
+
+  .branch--right {
+    background: radial-gradient(closest-side at var(--halo-x) 42%, color-mix(in oklab, var(--tint) var(--halo), transparent), transparent 72%);
+  }
+
+  .branch--left {
+    --halo-x: 28%;
+    background: radial-gradient(closest-side at var(--halo-x) 42%, color-mix(in oklab, var(--tint) var(--halo), transparent), transparent 72%);
+  }
+
+  .branch__arc {
+    left: 50%;
+    border-top-right-radius: 100% 100%;
+  }
+
+  .branch--left .branch__arc {
+    left: auto;
+    right: 50%;
+    border-top-right-radius: 0;
+    border-top-left-radius: 100% 100%;
+  }
+
+  .branch--left .branch__arc::after {
+    right: auto;
+    left: calc(var(--knot) / -2);
+  }
+
   /* The thin arc towards the text's side: the branch holds the note too */
   .branch__arc::before {
-    content: ""; position: absolute; top: calc(-1 * var(--stroke)); right: 100%;
-    width: 128%; height: calc(var(--drop) * 0.8);
-    border-top: var(--stroke-echo) solid var(--tint); border-top-left-radius: 100% 100%;
+    content: "";
+    position: absolute;
+    top: calc(-1 * var(--stroke));
+    right: 100%;
+    width: 128%;
+    height: calc(var(--drop) * 0.8);
+    border-top: var(--stroke-echo) solid var(--tint);
+    border-top-left-radius: 100% 100%;
   }
+
   .branch--left .branch__arc::before {
-    right: auto; left: 100%;
-    border-top-left-radius: 0; border-top-right-radius: 100% 100%;
+    right: auto;
+    left: 100%;
+    border-top-left-radius: 0;
+    border-top-right-radius: 100% 100%;
   }
-  .branch__node { left: 50%; }
-  .branch--left .branch__node::after { left: auto; right: var(--node); transform: rotate(28deg) scaleX(-1); }
-  .branch__load { grid-column: 1 / -1; padding: calc(var(--drop) + var(--load-pad)) 0 0; gap: clamp(var(--space-3), 3vh, var(--space-5)); }
+
+  .branch__node {
+    left: 50%;
+  }
+
+  .branch--left .branch__node::after {
+    left: auto;
+    right: var(--node);
+    transform: rotate(28deg) scaleX(-1);
+  }
+
+  .branch__load {
+    grid-column: 1 / -1;
+    padding: calc(var(--drop) + var(--load-pad)) 0 0;
+    gap: clamp(var(--space-3), 3vh, var(--space-5));
+  }
+
   /* Zigzag: the note on one side of the trunk, the flowers on the other */
   .branch__load--flowers {
-    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    column-gap: var(--col-gap); row-gap: clamp(var(--space-3), 3vh, var(--space-5));
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: var(--col-gap);
+    row-gap: clamp(var(--space-3), 3vh, var(--space-5));
     align-items: start;
   }
+
   /* The knot over the centre of the load's column: from the trunk there
      is half a lane plus half a column, (width − lane) / 4 + lane / 2 */
-  .branch:has(> .branch__load > :is(.cluster, .bouquet, .lesson__bench)) { --arc-w: calc(25% + var(--col-gap) / 4); --hang-x: calc(50% - var(--stem) / 2); }
+  .branch:has(> .branch__load > :is(.cluster, .bouquet, .lesson__bench)) {
+    --arc-w: calc(25% + var(--col-gap) / 4);
+    --hang-x: calc(50% - var(--stem) / 2);
+  }
+
   /* the bench fills its bank: its centre, the stem, is under the knot */
-  .branch__load--flowers > .lesson__bench { justify-self: stretch; }
-  .branch__load--flowers > .bouquet { justify-self: center; }
+  .branch__load--flowers>.lesson__bench {
+    justify-self: stretch;
+  }
+
+  .branch__load--flowers>.bouquet {
+    justify-self: center;
+  }
+
   /* centred: 50 % of the padding box is already the border box's centre */
-  .branch__load--flowers > fieldset.bouquet::before { left: var(--hang-x); }
-  .branch__load--flowers > .note { grid-column: 1; grid-row: 1; order: 0; margin-top: var(--space-2); }
-  .branch__load--flowers > * { grid-column: 2; }
-  .branch--left .branch__load--flowers > * { grid-column: 1; }
-  .branch--left .branch__load--flowers > .note { grid-column: 2; grid-row: 1; }
-  .branch--right .branch__load--flowers > .note { justify-self: end; }
-  .branch--left .branch__load--flowers > .note { justify-self: start; }
+  .branch__load--flowers>fieldset.bouquet::before {
+    left: var(--hang-x);
+  }
+
+  .branch__load--flowers>.note {
+    grid-column: 1;
+    grid-row: 1;
+    order: 0;
+    margin-top: var(--space-2);
+  }
+
+  .branch__load--flowers>* {
+    grid-column: 2;
+  }
+
+  .branch--left .branch__load--flowers>* {
+    grid-column: 1;
+  }
+
+  .branch--left .branch__load--flowers>.note {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .branch--right .branch__load--flowers>.note {
+    justify-self: end;
+  }
+
+  .branch--left .branch__load--flowers>.note {
+    justify-self: start;
+  }
+
   /* Cluster centred on its stem, with a painterly drift */
-  .branch__load--flowers > .cluster { width: 100%; }
-  .cluster { align-items: center; --slot-x: calc((var(--dz, 0) - 1) * var(--space-2)); }
-  .flower-card__canvas::before { content: none; }
+  .branch__load--flowers>.cluster {
+    width: 100%;
+  }
+
+  .cluster {
+    align-items: center;
+    --slot-x: calc((var(--dz, 0) - 1) * var(--space-2));
+  }
+
+  .flower-card__canvas::before {
+    content: none;
+  }
+
   /* centred on the stem */
-  .cluster .flower-card { justify-items: center; }
+  .cluster .flower-card {
+    justify-items: center;
+  }
+
   /* A cluster gives each flower its own row, so its cartela may be
      wider than the flower: read at caption size, it stays at two
      lines, centred on the stem, instead of a tall column of three */
-  .cluster .flower-card__caption { width: max-content; max-width: var(--space-40); }
-  .satellite { left: calc(50% + var(--space-6)); top: var(--space-2); }
-  .branch--left .satellite { left: auto; right: calc(50% + var(--space-6)); }
-  .tendril { left: calc(50% + var(--space-8)); top: calc(var(--arc-top) + var(--space-4)); }
-  .tendril--left { left: auto; right: calc(50% + var(--space-8)); transform: scaleX(-1); }
-  .note { --note-measure: var(--space-56); }
-  .note--wide { --note-measure: var(--space-80); }
+  .cluster .flower-card__caption {
+    width: max-content;
+    max-width: var(--space-40);
+  }
+
+  .satellite {
+    left: calc(50% + var(--space-6));
+    top: var(--space-2);
+  }
+
+  .branch--left .satellite {
+    left: auto;
+    right: calc(50% + var(--space-6));
+  }
+
+  .tendril {
+    left: calc(50% + var(--space-8));
+    top: calc(var(--arc-top) + var(--space-4));
+  }
+
+  .tendril--left {
+    left: auto;
+    right: calc(50% + var(--space-8));
+    transform: scaleX(-1);
+  }
+
+  .note {
+    --note-measure: var(--space-56);
+  }
+
+  .note--wide {
+    --note-measure: var(--space-80);
+  }
 
   /* The soil hangs its seedbed from the knot too: the arc ends over
      the seedbed line, half a lane plus the list's indent away */
@@ -1881,15 +4203,33 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
     --arc-w: calc(var(--col-gap) / 2 + var(--seedbed-x) + var(--stem) / 2);
     --rise: calc(var(--pb) + var(--load-pad) - var(--arc-top));
   }
-  .ground .branch__arc { left: 50%; }
-  .ground .branch__node { left: 50%; }
+
+  .ground .branch__arc {
+    left: 50%;
+  }
+
+  .ground .branch__node {
+    left: 50%;
+  }
+
   .ground__load {
-    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    column-gap: var(--col-gap); align-items: start;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: var(--col-gap);
+    align-items: start;
     padding: calc(var(--drop) + var(--load-pad)) 0 0;
   }
-  .ground__load::before { content: none; }
-  .ground__load > .note { grid-column: 1; justify-self: end; margin-top: var(--space-2); }
+
+  .ground__load::before {
+    content: none;
+  }
+
+  .ground__load>.note {
+    grid-column: 1;
+    justify-self: end;
+    margin-top: var(--space-2);
+  }
+
   /* The leaf-bullet stays pinned to the seedbed's stem, which starts
      at the knot */
   /* the seedlings stand on the soil: the list fills its bank down to it */
@@ -1898,79 +4238,226 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
      tallest last. Tracks: the claim bank in two, the trunk's lane, and
      the evidence bank in two. The two on trial stand under the claim,
      side by side; the AOM plant takes the evidence bank */
-  .ground__load > .sprouts__list {
-    grid-column: 1 / -1; grid-row: 1; align-self: stretch;
+  .ground__load>.sprouts__list {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    align-self: stretch;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) var(--col-gap) minmax(0, 1fr) minmax(0, 1fr);
-    column-gap: var(--space-0); padding-left: var(--space-0);
+    column-gap: var(--space-0);
+    padding-left: var(--space-0);
   }
+
   /* the claim and the sprouts share the row: the note on top, the seed
      standing on the soil under it */
-  .ground__load > .note { grid-row: 1; position: relative; z-index: var(--z-base); }
+  .ground__load>.note {
+    grid-row: 1;
+    position: relative;
+    z-index: var(--z-base);
+  }
+
+  @media (max-height: 54rem) {
+    .ground__load>.sprouts__list {
+      grid-row: 2;
+    }
+  }
+
   /* every plant rises from the soil on its own: no seedbed hangs from
      the knot, which only ends the branch arc */
-  .sprouts__list::before { content: none; }
-  .sprout--rising { --sprout-pad: var(--space-0); }
-  .sprout--rising + .sprout--rising { --sprout-pad: var(--gap-s); }
-  .sprout--plant {
-    --fork: var(--space-6);               /* the fork's height over the soil */
-    --fork-r: var(--space-2);             /* the tall shoot's arc */
-    --sprout-grow: var(--fork);
-    grid-column: 4 / -1; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto var(--fork); align-items: end;
+  .sprouts__list::before {
+    content: none;
   }
+
+  .sprout--rising {
+    --sprout-pad: var(--space-0);
+  }
+
+  .sprout--rising+.sprout--rising {
+    --sprout-pad: var(--gap-s);
+  }
+
+  .sprout--plant {
+    --fork: var(--space-6);
+    /* the fork's height over the soil */
+    --fork-r: var(--space-2);
+    /* the tall shoot's arc */
+    --sprout-grow: var(--fork);
+    grid-column: 4 / -1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto var(--fork);
+    align-items: end;
+  }
+
   /* the shoots stand on the fork line; the origin is written beside the stem, under it */
   /* the tall shoot's card takes both columns, high over the short one;
      its stem climbs in the second column */
-  .sprout--plant > .sprout__shoots { grid-row: 1; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: end; }
-  .sprout__shoot--seed { grid-column: 1; grid-row: 1; }
-  .sprout__shoot--grown { grid-column: 1 / -1; grid-row: 1; --stem-x: calc(50% + var(--gap-s) / 2 + var(--space-2)); }
-  .sprout--plant .sprout__shoot--grown::after { margin-left: var(--stem-x); }
-  .sprout--plant > .sprout__origin { grid-row: 2; align-self: center; padding-left: calc(var(--space-2) + var(--stem) + var(--leaf-w) + var(--space-2)); }
+  .sprout--plant>.sprout__shoots {
+    grid-row: 1;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: end;
+  }
+
+  .sprout__shoot--seed {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .sprout__shoot--grown {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    --stem-x: calc(50% + var(--gap-s) / 2 + var(--space-2));
+  }
+
+  .sprout--plant .sprout__shoot--grown article {
+    box-sizing: border-box;
+    width: calc(50% - var(--gap-s) / 2);
+    min-width: 0;
+    margin-left: calc(50% + var(--gap-s) / 2);
+  }
+
+  .sprout--plant .sprout__shoot--grown::after {
+    margin-left: var(--stem-x);
+  }
+
+  .sprout--plant>.sprout__origin {
+    grid-row: 2;
+    align-self: center;
+    padding-left: calc(var(--space-2) + var(--stem) + var(--leaf-w) + var(--space-2));
+  }
+
   /* the plant's own stem: from the soil to the fork */
-  .sprout--plant::after { position: absolute; left: calc(var(--sprout-pad) + var(--space-2)); bottom: var(--space-0); height: var(--fork); margin: var(--space-0); }
-  .sprout__shoot::after { content: ""; display: block; width: var(--stem); margin-left: var(--space-2); background: var(--sprout); height: var(--shoot); }
+  .sprout--plant::after {
+    position: absolute;
+    left: calc(var(--sprout-pad) + var(--space-2));
+    bottom: var(--space-0);
+    height: var(--fork);
+    margin: var(--space-0);
+  }
+
+  .sprout__shoot::after {
+    content: "";
+    display: block;
+    width: var(--stem);
+    margin-left: var(--space-2);
+    background: var(--sprout);
+    height: var(--shoot);
+  }
+
   /* the tall shoot leaves along an arc: from the short shoot's axis,
      along the fork line, curving up into its own stem */
-  .sprout__shoot--grown { position: relative; padding-bottom: var(--fork-r); }
+  .sprout__shoot--grown {
+    position: relative;
+    padding-bottom: var(--fork-r);
+  }
+
   .sprout__shoot--grown::before {
-    content: ""; position: absolute; bottom: var(--space-0);
+    content: "";
+    position: absolute;
+    bottom: var(--space-0);
     left: var(--space-2);
-    width: calc(var(--stem-x) - var(--space-2) + var(--stem)); height: var(--fork-r); box-sizing: border-box;
-    border-bottom: var(--stem) solid var(--sprout); border-right: var(--stem) solid var(--sprout);
+    width: calc(var(--stem-x) - var(--space-2) + var(--stem));
+    height: var(--fork-r);
+    box-sizing: border-box;
+    border-bottom: var(--stem) solid var(--sprout);
+    border-right: var(--stem) solid var(--sprout);
     border-bottom-right-radius: var(--fork-r);
   }
-  .ground__soil { margin: 0; }
+
+  .ground__soil {
+    margin: 0;
+  }
+
   /* The footer reserves the inspector's column: its centre is then the
      trunk's axis and the root falls straight from it */
-  .roots { padding: 0 calc(var(--canvas-pad) + var(--panel-col) + var(--gap-canvas)) var(--space-4) var(--canvas-pad); }
+  .roots {
+    padding: 0 calc(var(--canvas-pad) + var(--panel-col) + var(--gap-canvas)) var(--space-4) var(--canvas-pad);
+  }
+
   /* The manifesto opens in two columns and the main root runs down the
      central lane: each rootlet leaves towards its side */
-  .roots { max-width: var(--space-200); margin-inline: auto; background: none; }
+  .roots {
+    max-width: var(--space-200);
+    margin-inline: auto;
+    background: none;
+  }
+
   /* The band of earth still reaches the canvas edges */
   .roots::before {
-    content: ""; position: absolute; top: 0; bottom: 0; left: 50%;
-    translate: -50% 0; width: 100vw; background: var(--surface-band); z-index: -1;
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    translate: -50% 0;
+    width: 100vw;
+    background: var(--surface-band);
+    z-index: -1;
   }
-  .roots { --root-x: var(--trunk-center); --gap-manifesto: var(--space-10); }
-  .roots__box { margin-inline: auto; max-width: var(--space-120); }
+
+  .roots {
+    --root-x: var(--trunk-center);
+    --gap-manifesto: var(--space-10);
+  }
+
+  .roots__box {
+    margin-inline: auto;
+    max-width: var(--space-120);
+  }
+
   /* Title and lead face each other across the root, on the same row and
      on the same two banks as the rootlets below: the title ends where
      the odd rootlets end, the lead starts where the even ones start */
-  .roots__box { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: var(--gap-manifesto); align-items: start; }
-  .roots__title { grid-column: 1; padding: 0 var(--space-1) 0 0; text-align: right; }
-  .roots__lead { grid-column: 2; margin: 0; padding-left: var(--space-1); }
-  .roots__box > .manifesto { grid-column: 1 / -1; }
-  .manifesto {
-    display: grid; grid-template-columns: 1fr 1fr;
-    column-gap: var(--gap-manifesto); align-items: start;
+  .roots__box {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: var(--gap-manifesto);
+    align-items: start;
   }
-  .manifesto li { margin-bottom: var(--space-2); }
-  .manifesto li:nth-child(odd) { text-align: right; padding: 0 var(--space-1) 0 0; }
+
+  .roots__title {
+    grid-column: 1;
+    padding: 0 var(--space-1) 0 0;
+    text-align: right;
+  }
+
+  .roots__lead {
+    grid-column: 2;
+    margin: 0;
+    padding-left: var(--space-1);
+  }
+
+  .roots__box>.manifesto {
+    grid-column: 1 / -1;
+  }
+
+  .manifesto {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: var(--gap-manifesto);
+    align-items: start;
+  }
+
+  .manifesto li {
+    margin-bottom: var(--space-2);
+  }
+
+  .manifesto li:nth-child(odd) {
+    text-align: right;
+    padding: 0 var(--space-1) 0 0;
+  }
+
   /* Exactly half the lane: the rootlet ends on the root's axis */
   .manifesto li:nth-child(odd)::before {
-    left: auto; right: calc(-1 * var(--gap-manifesto) / 2);
-    width: calc(var(--gap-manifesto) / 2); scale: -1 1;
+    left: auto;
+    right: calc(-1 * var(--gap-manifesto) / 2);
+    width: calc(var(--gap-manifesto) / 2);
+    scale: -1 1;
   }
-  .manifesto li:nth-child(even) { padding-left: var(--space-1); }
+
+  .manifesto li:nth-child(even) {
+    padding-left: var(--space-1);
+  }
+
   .manifesto li:nth-child(even)::before {
     left: calc(-1 * var(--gap-manifesto) / 2);
     width: calc(var(--gap-manifesto) / 2);
@@ -1978,8 +4465,15 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
 }
 
 @media (min-width: 90rem) {
-  .branch, .ground { --pb: clamp(var(--space-5), 6vh, var(--space-8)); }
-  .artwork { --panel-col: var(--space-44); }
+
+  .branch,
+  .ground {
+    --pb: clamp(var(--space-5), 6vh, var(--space-8));
+  }
+
+  .artwork {
+    --panel-col: var(--space-44);
+  }
 }
 
 /* ============================================================
@@ -2009,128 +4503,302 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
    who zooms in. With reduced motion there is no snapping.
    ============================================================ */
 @media (min-width: 90rem) and (min-height: 56rem) {
-  html { scroll-snap-type: y proximity; }
-  .branch, .ground, .roots { scroll-snap-align: start; min-height: 100dvh; }
+  html {
+    scroll-snap-type: y proximity;
+  }
+
+  .branch,
+  .ground,
+  .roots {
+    scroll-snap-align: start;
+    min-height: 100dvh;
+  }
+
   /* the spring stands beside the roots, in the column the inspector
      keeps free (its panel does not reach the footer): from the edge of
      the root box to the canvas padding. Out of the grid, so the row of
      the roots (and the main root measured on it) keeps its own height */
   .roots {
     --spring-w: calc(var(--panel-col) + var(--gap-canvas) + (100% - 2 * var(--canvas-pad) - var(--panel-col) - var(--gap-canvas) - var(--space-120)) / 2 - var(--gap-m));
-    --drink-w: calc(var(--trunk-width) * 0.24);   /* the main root's tip: 62 % - 38 % of the trunk */
+    --drink-w: calc(var(--trunk-width) * 0.24);
+    /* the main root's tip: 62 % - 38 % of the trunk */
     --drink-r: var(--space-8);
   }
+
   .sources {
-    position: absolute; grid-row: 1 / 2; bottom: calc(-1 * (var(--drink-r) + var(--space-3))); right: var(--canvas-pad); margin: var(--space-0);
-    width: var(--spring-w); box-sizing: border-box;
+    position: absolute;
+    grid-row: 1 / 2;
+    bottom: calc(-1 * (var(--drink-r) + var(--space-3)));
+    right: var(--canvas-pad);
+    margin: var(--space-0);
+    width: var(--spring-w);
+    box-sizing: border-box;
   }
+
   /* Joints: it starts inside the tip (where the root is still wider, so
      the seam is covered by the same ink) and its axis is the root's; it
      ends on the spring's left edge, inside the water */
   .roots__drink {
-    display: block; position: absolute; grid-row: 1 / 2; pointer-events: none; z-index: var(--z-under);
-    top: calc(100% - var(--space-1) - var(--drink-w)); left: calc(var(--root-x) - var(--drink-w) / 2);
+    display: block;
+    position: absolute;
+    grid-row: 1 / 2;
+    pointer-events: none;
+    z-index: var(--z-under);
+    top: calc(100% - var(--space-1) - var(--drink-w));
+    left: calc(var(--root-x) - var(--drink-w) / 2);
     width: calc(100% - var(--canvas-pad) - var(--spring-w) - var(--root-x) + var(--drink-w) / 2);
-    height: calc(var(--drink-r) + var(--drink-w)); box-sizing: border-box;
-    border-left: var(--drink-w) solid var(--line); border-bottom: var(--drink-w) solid var(--line);
+    height: calc(var(--drink-r) + var(--drink-w));
+    box-sizing: border-box;
+    border-left: var(--drink-w) solid var(--line);
+    border-bottom: var(--drink-w) solid var(--line);
     border-bottom-left-radius: var(--drink-r);
   }
+
   /* the signature weighs against the spring: on the left, on the edge of
      the roots */
-  .roots__credit { justify-self: start; text-align: start; margin-left: calc((100% - var(--space-120)) / 2); }
+  .roots__credit {
+    justify-self: start;
+    text-align: start;
+    margin-left: calc((100% - var(--space-120)) / 2);
+  }
+
   /* The canvas uses the whole screen width: wider banks, fewer lines */
-  .canvas { max-width: none; }
-  .branch, .ground {
+  .canvas {
+    max-width: none;
+  }
+
+  .branch,
+  .ground {
     --pb: var(--space-4);
     --arc-top: var(--space-3);
     --load-pad: var(--space-2);
   }
+
   /* The minimum height already fills the screen: bottom padding would
      only take room from the load */
-  .branch { padding-bottom: var(--space-2); }
+  .branch {
+    padding-bottom: var(--space-2);
+  }
 
   /* --- THE PLATE --- */
-  .branch__load--flowers > .note, .ground__load > .note { --note-measure: none; margin-top: 0; }
+  .branch__load--flowers>.note,
+  .ground__load>.note {
+    --note-measure: none;
+    margin-top: 0;
+  }
+
   .note__title {
     --plate-num: var(--space-14);
-    display: grid; grid-template-columns: var(--plate-num) minmax(0, 1fr);
-    align-items: center; column-gap: var(--gap-s);
-    font-size: var(--type-title); line-height: var(--type-title-lh);
+    display: grid;
+    grid-template-columns: var(--plate-num) minmax(0, 1fr);
+    align-items: center;
+    column-gap: var(--gap-s);
+    font-size: var(--type-title);
+    line-height: var(--type-title-lh);
     margin-bottom: var(--space-3);
   }
+
   .note__num {
     --num-size: var(--plate-num);
     --num-stroke: var(--stroke-bold);
     --num-arc: var(--stroke-heavy);
     --num-arc-inset: calc(-1 * var(--space-1));
   }
-  .note__num { font-size: var(--type-display); line-height: var(--type-display-lh); letter-spacing: var(--tracking-tight); }
-  .note__title + p {
-    font-size: var(--type-lead); line-height: var(--type-lead-lh); color: var(--ink);
+
+  .note__num {
+    font-size: var(--type-display);
+    line-height: var(--type-display-lh);
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .note__title+p {
+    font-size: var(--type-lead);
+    line-height: var(--type-lead-lh);
+    color: var(--ink);
     margin-bottom: var(--space-2);
   }
-  .note .note__look { margin-top: var(--space-2); }
+
+  .note .note__look {
+    margin-top: var(--space-2);
+  }
 
   /* --- The two banks, named: the claim and the proof swap sides with
      the branch, so a station's layout never depends on which side it
      grows on --- */
-  .branch--right { --bank-claim: 1; --bank-proof: 2; }
-  .branch--left { --bank-claim: 2; --bank-proof: 1; }
-  :is(#color) .branch__load--flowers { grid-template-rows: auto 1fr; }
-  #live .branch__visual { display: contents; }
+  .branch--right {
+    --bank-claim: 1;
+    --bank-proof: 2;
+  }
+
+  .branch--left {
+    --bank-claim: 2;
+    --bank-proof: 1;
+  }
+
+  :is(#color) .branch__load--flowers {
+    grid-template-rows: auto 1fr;
+  }
+
+  #live .branch__visual {
+    display: contents;
+  }
+
   /* 8 · Change: the claim alone on its bank; the proof reads try it (the
      watering) → the pairs, drawn */
-  #live .branch__load--flowers { grid-template-rows: auto 1fr; }
-  #live .branch__load--flowers > .note { grid-column: var(--bank-claim); grid-row: 1 / span 2; }
-  #live .watering { grid-column: var(--bank-proof); grid-row: 1; max-width: none; }
-  #live .craft { grid-column: var(--bank-proof); grid-row: 2; align-self: start; }
+  #live .branch__load--flowers {
+    grid-template-rows: auto 1fr;
+  }
+
+  #live .branch__load--flowers>.note {
+    grid-column: var(--bank-claim);
+    grid-row: 1 / span 2;
+  }
+
+  #live .watering {
+    grid-column: var(--bank-proof);
+    grid-row: 1;
+    max-width: none;
+  }
+
+  #live .craft {
+    grid-column: var(--bank-proof);
+    grid-row: 2;
+    align-self: start;
+  }
+
   /* 1 · Structure: the HTML and its tree and, under them, the four readings on
      the proof bank; under the claim, what an agent takes from the page */
-  :is(#structure, #route, #patterns) .branch__visual { display: contents; }
-  :is(#structure, #route, #patterns) .branch__load--flowers > .note { grid-column: var(--bank-claim); grid-row: 1; }
+  :is(#structure, #route, #patterns) .branch__visual {
+    display: contents;
+  }
+
+  :is(#structure, #route, #patterns) .branch__load--flowers>.note {
+    grid-column: var(--bank-claim);
+    grid-row: 1;
+  }
+
   /* The free height goes to the last row only: shared between two auto
      rows, it pushed the lower piece down */
-  :is(#structure, #patterns) .branch__load--flowers { grid-template-rows: auto 1fr; }
+  :is(#structure, #patterns) .branch__load--flowers {
+    grid-template-rows: auto 1fr;
+  }
+
   /* EACH BANK STACKS ON ITS OWN. Rows only line up the two banks'
      tops; a piece never waits for the other bank's height. Three rows:
      the first piece of each bank, a hinge, and the free height (1fr,
      always last, so opening a fold never shifts what is above it).
      A bank's first piece spans the hinge when it is the taller one;
      the other bank's second piece starts in the hinge. */
-  #structure .branch__load--flowers { grid-template-rows: auto auto 1fr; }
-  #structure .branch__load--flowers > .note { grid-row: 1 / span 2; }
-  #structure .ax-sketch { grid-column: var(--bank-proof); grid-row: 1 / span 3; }
-  #structure .agent-path { grid-column: var(--bank-claim); grid-row: 3; align-self: start; }
+  #structure .branch__load--flowers {
+    grid-template-rows: auto auto 1fr;
+  }
+
+  #structure .branch__load--flowers>.note {
+    grid-row: 1 / span 2;
+  }
+
+  #structure .ax-sketch {
+    grid-column: var(--bank-proof);
+    grid-row: 1 / span 3;
+  }
+
+  #structure .agent-path {
+    grid-column: var(--bank-claim);
+    grid-row: 3;
+    align-self: start;
+  }
+
   /* 2 · Synesthesia: the flower, and right under it the switches that
      take its channels away; the claim, and under it the score */
-  #synesthesia .branch__load--flowers { grid-template-rows: auto auto 1fr; }
-  #synesthesia .branch__load--flowers > .note { grid-column: var(--bank-claim); grid-row: 1 / span 2; }
-  #synesthesia .cluster { grid-column: var(--bank-proof); grid-row: 1; }
-  #synesthesia .channels { grid-column: var(--bank-proof); grid-row: 2 / span 2; }
-  #synesthesia .branch__load--flowers > .score { grid-column: var(--bank-claim); grid-row: 3; }
+  #synesthesia .branch__load--flowers {
+    grid-template-rows: auto auto 1fr;
+  }
+
+  #synesthesia .branch__load--flowers>.note {
+    grid-column: var(--bank-claim);
+    grid-row: 1 / span 2;
+  }
+
+  #synesthesia .cluster {
+    grid-column: var(--bank-proof);
+    grid-row: 1;
+  }
+
+  #synesthesia .channels {
+    grid-column: var(--bank-proof);
+    grid-row: 2 / span 2;
+  }
+
+  #synesthesia .branch__load--flowers>.score {
+    grid-column: var(--bank-claim);
+    grid-row: 3;
+  }
+
   /* 3 · The map on the proof bank; the group (the bouquet) under the claim */
-  #route .atlas { grid-column: var(--bank-proof); grid-row: 1 / span 2; }
-  #route .bouquet { grid-column: var(--bank-claim); grid-row: 2; align-self: start; }
+  #route .atlas {
+    grid-column: var(--bank-proof);
+    grid-row: 1 / span 2;
+  }
+
+  #route .bouquet {
+    grid-column: var(--bank-claim);
+    grid-row: 2;
+    align-self: start;
+  }
+
   /* 10 · The three flowers on the proof bank; the decisions under the claim */
-  #patterns .cluster { grid-column: var(--bank-proof); grid-row: 1 / span 2; }
-  #patterns .craft { grid-column: var(--bank-claim); grid-row: 2; align-self: start; }
+  #patterns .cluster {
+    grid-column: var(--bank-proof);
+    grid-row: 1 / span 2;
+  }
+
+  #patterns .craft {
+    grid-column: var(--bank-claim);
+    grid-row: 2;
+    align-self: start;
+  }
+
   /* 10 · Colour: the palette in two columns, under the flower that turns
      it grey; the claim spans both rows */
-  #color .branch__load--flowers > .note { grid-row: 1 / span 2; }
-  #color .palette { max-width: none; }
-  #color .palette__list { grid-template-columns: 1fr 1fr; column-gap: var(--gap-s); }
+  #color .branch__load--flowers>.note {
+    grid-row: 1 / span 2;
+  }
+
+  #color .palette {
+    max-width: none;
+  }
+
+  #color .palette__list {
+    grid-template-columns: 1fr 1fr;
+    column-gap: var(--gap-s);
+  }
+
   /* The pattern pair and the long boxes fill their bank */
 
   /* Clusters measured by height too: three flowers and their cartelas
      fit one screen. Never under the 48 px touch target. (.cluster in
      front: flowers.css loads later and would win at equal specificity.) */
-  .cluster .flower-card { --card-size: max(var(--touch), min(clamp(var(--space-16), 15vw, var(--space-20)), 12dvh)); }
-  .cluster .flower-card--xl { --card-size: max(var(--touch), min(clamp(var(--space-20), 22vw, var(--space-32)), 17dvh)); }
-  .cluster .flower-card--l { --card-size: max(var(--touch), min(clamp(var(--space-16), 18vw, var(--space-24)), 15dvh)); }
-  .cluster .flower-card--s { --card-size: max(var(--touch), min(clamp(var(--space-10), 11vw, var(--space-12)), 9dvh)); }
+  .cluster .flower-card {
+    --card-size: max(var(--touch), min(clamp(var(--space-16), 15vw, var(--space-20)), 12dvh));
+  }
+
+  .cluster .flower-card--xl {
+    --card-size: max(var(--touch), min(clamp(var(--space-20), 22vw, var(--space-32)), 17dvh));
+  }
+
+  .cluster .flower-card--l {
+    --card-size: max(var(--touch), min(clamp(var(--space-16), 18vw, var(--space-24)), 15dvh));
+  }
+
+  .cluster .flower-card--s {
+    --card-size: max(var(--touch), min(clamp(var(--space-10), 11vw, var(--space-12)), 9dvh));
+  }
+
   /* The ladder holds two flowers, not three: its own height law, kept
      in --rung-card so the lit rung and the bud share one number */
-  .cluster.cluster--ladder { --rung-card: max(var(--touch), min(clamp(var(--space-16), 15vw, var(--space-20)), 16dvh)); }
+  .cluster.cluster--ladder {
+    --rung-card: max(var(--touch), min(clamp(var(--space-16), 15vw, var(--space-20)), 16dvh));
+  }
 
   /* THE BRANCH BENDS UNDER ITS LOAD. In a scene with little load, the
      load neither stays at the top over half an empty screen nor drops
@@ -2141,49 +4809,230 @@ figure.specimen { --pedicel-reach: calc(var(--space-12) / 2); }
      they still start at the knot. In full scenes the room is zero and
      nothing changes. */
   .branch {
-    --drop0: var(--space-10); --hc: 100dvh; --bend: 0.45;
+    --drop0: var(--space-10);
+    --hc: 100dvh;
+    --bend: 0.45;
     --drop: calc(var(--drop0) + max(var(--space-0), (100dvh - var(--pb) - var(--drop0) - var(--load-pad) - var(--space-2) - var(--hc)) * var(--bend)));
   }
-  .branch--thick { --drop0: var(--space-12); }
+
+  .branch--thick {
+    --drop0: var(--space-12);
+  }
+
   /* measured load heights, in grid modules (1707 × 917). Declaring
      less than the real load bends the branch too deep and pushes the
      scene past the screen: re-measure when a plate's type changes
      (route and patterns, 2026-11-23, after the caption tier) */
-  #synesthesia { --hc: calc(var(--unit) * 93); }
-  #role { --hc: calc(var(--unit) * 72); }   /* claim + coda, the taller bank */
-  #name { --hc: calc(var(--unit) * 85); }
-  #state { --hc: calc(var(--unit) * 76); }
-  #color { --hc: calc(var(--unit) * 67); }
-  #route { --hc: calc(var(--unit) * 83); }
-  #live { --hc: calc(var(--unit) * 80); }
-  #layers { --hc: calc(var(--unit) * 48); }
+  #synesthesia {
+    --hc: calc(var(--unit) * 93);
+  }
+
+  #role {
+    --hc: calc(var(--unit) * 72);
+  }
+
+  /* claim + coda, the taller bank */
+  #name {
+    --hc: calc(var(--unit) * 85);
+  }
+
+  #state {
+    --hc: calc(var(--unit) * 76);
+  }
+
+  #color {
+    --hc: calc(var(--unit) * 67);
+  }
+
+  #route {
+    --hc: calc(var(--unit) * 83);
+  }
+
+  #live {
+    --hc: calc(var(--unit) * 80);
+  }
+
+  #layers {
+    --hc: calc(var(--unit) * 48);
+  }
+
   /* the stems measure the screen: 1 · 2 · 4 rungs (blocked, on trial,
      Baseline), so the tallest card stands highest */
-  .sprouts__list { --rung: 11dvh; }
-  .sprout--rising { --sprout-grow: calc(var(--rung) * 2); }
-  .sprout__shoot--seed { --shoot: calc(var(--rung) - var(--fork)); }
-  .sprout__shoot--grown { --shoot: calc(var(--rung) * 4 - var(--fork) - var(--fork-r)); }
+  .sprouts__list {
+    --rung: 11dvh;
+  }
+
+  .sprout--rising {
+    --sprout-grow: calc(var(--rung) * 2);
+  }
+
+  .sprout__shoot--seed {
+    --shoot: calc(var(--rung) - var(--fork));
+  }
+
+  .sprout__shoot--grown {
+    --shoot: calc(var(--rung) * 4 - var(--fork) - var(--fork-r));
+  }
+
   .ground {
-    --hc: 100dvh; --bend: 0.45;
+    --hc: 100dvh;
+    --bend: 0.45;
     --drop: calc(var(--space-10) + max(var(--space-0), (100dvh - var(--pb) - var(--space-10) - var(--load-pad) - var(--space-2) - var(--hc)) * var(--bend)));
   }
 
   /* The soil is the bottom edge of its screen: the earth goes to the
      bottom and the trunk ends on it, as always */
-  .ground { display: flex; flex-direction: column; }
-  .ground__load { flex: 1 1 auto; }
-  .ground__soil { margin-top: auto; }
+  .ground {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ground__load {
+    flex: 1 1 auto;
+  }
+
+  .ground__soil {
+    margin-top: auto;
+  }
+
   /* The roots: manifesto at the top, rows not stretched */
   /* The roots fill their screen: their row takes the height left by the
      signature, the promises spread down it, and the main root reaches
      the bottom, where it drinks */
-  .roots { grid-template-rows: minmax(0, 1fr) auto; align-content: stretch; }
-  .roots__credit { grid-row: 2; }
-  .roots__box { grid-template-rows: auto minmax(0, 1fr); }
-  .roots__box > .manifesto { align-self: stretch; align-content: space-between; }
-  .roots__box { padding-top: var(--space-4); }
-  .manifesto li { margin-bottom: var(--space-1); }
+  .roots {
+    grid-template-rows: minmax(0, 1fr) auto;
+    align-content: stretch;
+  }
+
+  .roots__credit {
+    grid-row: 2;
+  }
+
+  .roots__box {
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .roots__box>.manifesto {
+    align-self: stretch;
+    align-content: space-between;
+  }
+
+  .roots__box {
+    padding-top: var(--space-4);
+  }
+
+  .manifesto li {
+    margin-bottom: var(--space-1);
+  }
 }
+
 @media (min-width: 90rem) and (min-height: 56rem) and (prefers-reduced-motion: reduce) {
-  html { scroll-snap-type: none; }
+  html {
+    scroll-snap-type: none;
+  }
+}
+
+@media (min-width: 64rem) {
+  .cluster--chord .flower-card {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .cluster--chord .flower-card__caption {
+    width: 100%;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (min-width: 64rem) and (max-width: 89.999rem) {
+  .atlas {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .atlas__region {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    font-size: var(--type-body);
+    line-height: var(--type-body-lh);
+  }
+
+  .atlas__role {
+    min-width: 0;
+    font-size: var(--type-label);
+    line-height: var(--type-label-lh);
+    overflow-wrap: normal;
+  }
+
+  .atlas__name {
+    min-width: 0;
+    overflow-wrap: normal;
+  }
+
+  .cluster--chord .flower-card__caption {
+    width: var(--space-8);
+    min-width: var(--space-8);
+    max-width: var(--space-8);
+    padding-inline: 0;
+    font-size: var(--type-label);
+    line-height: var(--type-label-lh);
+    overflow-wrap: normal;
+  }
+
+  .key {
+    --line-gap: var(--space-1);
+    --key-shape: var(--space-2);
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-1);
+    margin: var(--space-2) 0;
+  }
+
+  .key__row {
+    grid-template-columns: var(--space-10) minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr;
+    column-gap: var(--space-2);
+    justify-items: start;
+    text-align: left;
+    align-content: start;
+  }
+
+  .key__staff {
+    grid-row: 1 / -1;
+    margin-bottom: 0;
+  }
+
+  .key__row> :not(.key__staff) {
+    padding-inline: 0;
+  }
+
+  .key__note b {
+    display: inline;
+  }
+
+  .ground__load>.note {
+    grid-row: 1;
+  }
+
+  .ground__load>.sprouts__list {
+    grid-row: 2;
+  }
+
+  .sprout--plant {
+    grid-column: 3 / -1;
+  }
+
+  .sprout .ax-sketch {
+    --sk-knot: var(--space-1);
+    --sk-shape: var(--space-2);
+    --sk-reach: var(--space-1);
+  }
+
+  .sprout .ax-sketch__node>.ax-sketch__text {
+    padding-left: var(--space-1);
+  }
+
+  .sprout .ax-sketch__text {
+    overflow-wrap: break-word;
+  }
 }

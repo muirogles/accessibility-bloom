@@ -118,11 +118,11 @@
    -------------------------------------------------------------- */
 :is(.flower__petal--1, .flower__petal--3, .flower__petal--5, .flower__petal--7) { background: color-mix(in oklab, var(--color) var(--flower-echo), var(--surface-canvas)); }
 .flower--circle .flower__petal, .flower--square .flower__petal { box-shadow: 0 0 0 var(--flower-outline) var(--line); }
-/* Triangle and rhombus are cut with clip-path, which also clips any
-   drop-shadow of the same element: their ink outline is drawn by the
-   petals' container around everything cut. Four unblurred shadows, one
-   per side: a crisp outline, the same as circle and square petals. */
-:is(.flower--triangle, .flower--rhombus) .flower__petals {
+/* Rhombus: clip-path eats box-shadow, so the petals' container draws the
+   ink with four unblurred axis shadows. Triangles cannot use that: the
+   shadows stair-step the apex (three tips). Triangle outline is two
+   parallel clip-paths instead — see .flower--triangle .flower__bud. */
+.flower--rhombus .flower__petals {
   filter: drop-shadow(var(--flower-outline) 0 0 var(--line)) drop-shadow(calc(-1 * var(--flower-outline)) 0 0 var(--line))
           drop-shadow(0 var(--flower-outline) 0 var(--line)) drop-shadow(0 calc(-1 * var(--flower-outline)) 0 var(--line));
 }
@@ -233,9 +233,31 @@ a.flower:focus-visible, button.flower:focus-visible {
   clip-path: polygon(50% 0, 100% 100%, 0 100%);
   --rot: 0deg;
 }
+/* Exact ink edge: ink triangle under a yellow one inset by the outline
+   on every side (side shortens by 2·√3·edge). Anchored at the centroid
+   (2/3 of the height), same construction as specimen__branch. No
+   drop-shadow — that stair-steps the apex. */
 .flower--triangle .flower__bud {
-  border-radius: 0; clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  border-radius: 0;
+  background: transparent;
   box-shadow: none;
+  clip-path: none;
+}
+.flower--triangle .flower__bud::before,
+.flower--triangle .flower__bud::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  aspect-ratio: calc(2 / sqrt(3));
+  translate: -50% calc(-200% / 3);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+.flower--triangle .flower__bud::before { background: var(--line); }
+.flower--triangle .flower__bud::after {
+  width: calc(100% - 2 * sqrt(3) * var(--flower-outline));
+  background: var(--color);
 }
 .flower--triangle .flower__corolla {
   border: 0; clip-path: polygon(50% 0, 100% 100%, 0 100%); background: transparent;

@@ -24,12 +24,33 @@ export function initCover({ play, announce, refresh }) {
     refresh(button);
   };
 
+  const revealLowerMenu = (chapter) => {
+    if (!chapter.matches('.chapter--3, .chapter--4') || window.matchMedia('(min-width: 64rem)').matches) return;
+    window.requestAnimationFrame(() => {
+      if (toggleOf(chapter).getAttribute('aria-expanded') !== 'true') return;
+      const lastStation = chapter.querySelector('.chapter__station--3 .fruit');
+      const dock = document.querySelector('.open-controls');
+      if (!lastStation || !dock) return;
+      const clearance = parseFloat(getComputedStyle(document.documentElement).fontSize);
+      const distance = lastStation.getBoundingClientRect().bottom
+        - dock.getBoundingClientRect().top
+        + clearance;
+      if (distance <= 0) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        window.scrollBy(0, distance);
+      } else {
+        window.scrollBy({ top: distance, behavior: 'smooth' });
+      }
+    });
+  };
+
   chapters.forEach((chapter) => {
     const button = toggleOf(chapter);
     button.addEventListener('click', () => {
       const open = button.getAttribute('aria-expanded') !== 'true';
       chapters.forEach((other) => { if (other !== chapter) setOpen(other, false); });
       setOpen(chapter, open);
+      if (open) revealLowerMenu(chapter);
       play(button, open);
       announce(`${nameOf(chapter)}: ${open ? 'estaciones a la vista' : 'cerrado'}`);
     });
